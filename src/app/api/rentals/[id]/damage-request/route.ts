@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import prisma from "@/lib/prisma";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { prisma } from '@/lib/prisma';
+import { authOptions } from '@/lib/auth';
 import { DamageStatus, RentalStatus } from "@prisma/client";
 
 // Type for damage request payload
@@ -28,7 +28,7 @@ export async function POST(
     const rentalId = params.id;
 
     // Validate rental ID
-    if (\!rentalId) {
+    if (!rentalId) {
       return NextResponse.json(
         { error: "Rental ID is required" },
         { status: 400 }
@@ -38,7 +38,7 @@ export async function POST(
     // Get authenticated user session
     const session = await getServerSession(authOptions);
     
-    if (\!session || \!session.user) {
+    if (!session || !session.user) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -59,7 +59,7 @@ export async function POST(
     });
 
     // Check if rental exists
-    if (\!rental) {
+    if (!rental) {
       return NextResponse.json(
         { error: "Rental not found" },
         { status: 404 }
@@ -67,7 +67,7 @@ export async function POST(
     }
 
     // Check if user is the lessor of this rental
-    if (rental.lessorId \!== userId) {
+    if (rental.lessorId !== userId) {
       return NextResponse.json(
         { error: "You are not authorized to create damage reports for this rental" },
         { status: 403 }
@@ -78,7 +78,7 @@ export async function POST(
     const { description, damageStatus, photoUrls, repairCost, repairNotes } = await request.json() as DamageRequestPayload;
 
     // Validate required fields
-    if (\!description) {
+    if (!description) {
       return NextResponse.json(
         { error: "Description is required" },
         { status: 400 }
@@ -164,7 +164,7 @@ export async function GET(
     const rentalId = params.id;
 
     // Validate rental ID
-    if (\!rentalId) {
+    if (!rentalId) {
       return NextResponse.json(
         { error: "Rental ID is required" },
         { status: 400 }
@@ -174,7 +174,7 @@ export async function GET(
     // Get authenticated user session
     const session = await getServerSession(authOptions);
     
-    if (\!session || \!session.user) {
+    if (!session || !session.user) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
@@ -192,7 +192,7 @@ export async function GET(
     });
 
     // Check if rental exists
-    if (\!rental) {
+    if (!rental) {
       return NextResponse.json(
         { error: "Rental not found" },
         { status: 404 }
@@ -200,7 +200,7 @@ export async function GET(
     }
 
     // Check if user is the lessor or renter of this rental
-    if (rental.lessorId \!== userId && rental.renterId \!== userId) {
+    if (rental.lessorId !== userId && rental.renterId !== userId) {
       return NextResponse.json(
         { error: "You are not authorized to view damage reports for this rental" },
         { status: 403 }
@@ -240,4 +240,3 @@ export async function GET(
     );
   }
 }
-EOL < /dev/null
