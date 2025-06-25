@@ -1,0 +1,50 @@
+{
+  "checkReservation": {
+    "title": "Confirm your reservation",
+    "personalInfo": {
+      "title": "Personal Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "driversLicense": "Driver's License Number",
+      "notProvided": "Not provided"
+    },
+    "messageToLessor": {
+      "title": "Send a message to the lessor",
+      "description": "Do you have a question or comment about this trailer? Send a message to the lessor right away!",
+      "placeholder": "Message"
+    },
+    "paymentMethod": {
+      "title": "Payment method",
+      "description": "Choose a secure payment method for your reservation"
+    },
+    "priceBreakdown": {
+      "title": "Price overview",
+      "rentalPeriod": "Rental period",
+      "pickup": "Pickup",
+      "return": "Return",
+      "price": "Price",
+      "days": "days",
+      "serviceFee": "Service fee (5%)",
+      "deliveryCost": "Delivery cost",
+      "securityDeposit": "Security deposit (refundable)",
+      "total": "Total"
+    },
+    "actions": {
+      "goBack": "Go back",
+      "changeRentalPeriod": "Change rental period",
+      "backToTrailer": "Back to trailer"
+    },
+    "errors": {
+      "wrongBookingData": "Wrong booking data found. Please start over.",
+      "noBookingData": "No booking data found. Please start over.",
+      "loadingError": "A problem occurred while loading your booking data.",
+      "datesUnavailable": "These dates are no longer available. Choose a different period.",
+      "genericError": "An error occurred.",
+      "paymentError": "A problem occurred while creating payment.",
+      "unknownPeriod": "Unknown period",
+      "noImageAvailable": "No image available"
+    }
+  }
+}

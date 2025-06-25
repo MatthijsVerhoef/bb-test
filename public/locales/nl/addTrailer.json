@@ -1,0 +1,219 @@
+{
+  "title": "Aanhanger toevoegen",
+  "description": "Vul de gegevens van je aanhanger in om deze te kunnen verhuren.",
+  "errors": {
+    "requiredFields": "Vul alle verplichte velden in om door te gaan",
+    "acceptTerms": "Je moet akkoord gaan met de voorwaarden",
+    "defaultError": "Er is een fout opgetreden",
+    "submissionError": "Er is een fout opgetreden bij het plaatsen van de aanhanger"
+  },
+  "sections": {
+    "type": {
+      "title": "Type aanhanger",
+      "description": "Selecteer het type aanhanger dat je wilt verhuren. Dit helpt huurders de juiste aanhanger te vinden.",
+      "customType": "Typ het type aanhanger",
+      "customTypePlaceholder": "Bijv. vlakzeil aanhanger"
+    },
+    "details": {
+      "title": "Afmetingen",
+      "description": "Vul de afmetingen in zodat huurders weten of de aanhanger past bij hun behoeften.",
+      "length": "Lengte (cm)",
+      "width": "Breedte (cm)",
+      "height": "Hoogte (cm)",
+      "weight": "Gewicht (kg)",
+      "capacity": "Max. last (kg)"
+    },
+    "location": {
+      "title": "Locatie",
+      "description": "Waar kunnen huurders je aanhanger ophalen?",
+      "search": "Zoek een adres",
+      "searchPlaceholder": "Begin met typen om te zoeken...",
+      "address": "Adres",
+      "addressPlaceholder": "Straat en huisnummer",
+      "postalCode": "Postcode",
+      "postalCodePlaceholder": "1234 AB",
+      "city": "Plaats",
+      "cityPlaceholder": "Amsterdam",
+      "privacy": "Het volledige adres wordt alleen getoond aan huurders na bevestiging van de boeking. In zoekresultaten wordt alleen je stad of postcode weergegeven.",
+      "locationSelected": "Locatie geselecteerd",
+      "searchYourLocation": "Zoek jouw locatie",
+      "searchInstruction": "Typ een adres om de kaart automatisch in te vullen, of gebruik je huidige locatie.",
+      "currentLocation": "Huidige locatie",
+      "otherLocation": "Andere locatie",
+      "adjustAddressNote": "Pas de adresgegevens hieronder aan indien nodig.",
+      "mapLoading": "Kaart wordt geladen...",
+      "addressDetails": "Adresgegevens",
+      "addressDetailsNote": "Deze gegevens zijn automatisch ingevuld op basis van de kaart, maar kunnen indien nodig worden aangepast.",
+      "trailerLocation": "Trailer locatie",
+      "currentLocationTitle": "Huidige locatie",
+      "geolocationNotSupported": "Geolocatie wordt niet ondersteund door uw browser",
+      "geolocationError": "Er is een fout opgetreden bij het ophalen van uw locatie. Controleer of locatietoegang is ingeschakeld in uw browser."
+    },
+    "availability": {
+      "title": "Beschikbaarheid",
+      "description": "Stel in wanneer je aanhanger beschikbaar is voor verhuur.",
+      "days": "Beschikbare dagen",
+      "timeSlots": "Tijdsloten",
+      "addTimeSlot": "Tijdslot toevoegen",
+      "from": "Van",
+      "to": "Tot",
+      "dayLabels": {
+        "monday": "Ma",
+        "tuesday": "Di",
+        "wednesday": "Wo",
+        "thursday": "Do",
+        "friday": "Vr",
+        "saturday": "Za",
+        "sunday": "Zo"
+      },
+      "dayNames": {
+        "monday": "Maandag",
+        "tuesday": "Dinsdag",
+        "wednesday": "Woensdag",
+        "thursday": "Donderdag",
+        "friday": "Vrijdag",
+        "saturday": "Zaterdag",
+        "sunday": "Zondag"
+      },
+      "everyDayAvailable": "Elke dag beschikbaar",
+      "daysAvailable": "dagen beschikbaar",
+      "quickSettings": "Snelle instellingen",
+      "quickActions": {
+        "everyday": "Elke dag 9-5",
+        "weekdays": "Werkdagen 9-5",
+        "weekend": "Weekend",
+        "clearAll": "Alles wissen"
+      },
+      "quickActionsDesc": {
+        "everyday": "Elke dag 9:00-17:00",
+        "weekdays": "Ma-Vr 9:00-17:00",
+        "weekend": "Za-Zo 10:00-18:00",
+        "clearAll": "Alles uitschakelen"
+      },
+      "availabilityPerDay": "Beschikbaarheid per dag",
+      "editTimes": "Tijden bewerken",
+      "noTimesSet": "Geen tijden ingesteld",
+      "notAvailableThisDay": "Niet beschikbaar deze dag",
+      "saveAvailability": "Beschikbaarheid opslaan",
+      "saveAndContinue": "Opslaan en doorgaan",
+      "selectAtLeastOneDay": "Selecteer minimaal één dag om door te gaan",
+      "timeEditor": {
+        "title": "Tijden voor",
+        "quickSelection": "Snelle selectie",
+        "customTimes": "Aangepaste tijden",
+        "startTime": "Starttijd",
+        "endTime": "Eindtijd",
+        "selectTime": "Selecteer tijd",
+        "addTimeSlot": "Nog een tijdslot toevoegen",
+        "cancel": "Annuleren",
+        "saveTimes": "Tijden opslaan",
+        "presets": {
+          "workDay": "Werkdag",
+          "allDay": "Hele dag",
+          "morning": "Ochtend",
+          "afternoon": "Middag",
+          "evening": "Avond"
+        }
+      }
+    },
+    "pricing": {
+      "title": "Prijzen",
+      "description": "Stel je verhuurprijzen in.",
+      "pricePerDay": "Prijs per dag (€)",
+      "securityDeposit": "Borg (€)",
+      "securityDepositDescription": "Optionele borg die huurders vooraf betalen en terugkrijgen na het onbeschadigd terugbrengen van de aanhanger.",
+      "perDay": "dag",
+      "goodPrice": "Prima prijs voor dit type aanhanger",
+      "yourEarnings": "Jouw verdienste per dag:",
+      "afterServiceFee": "Na 15% servicevergoeding (verzekering, betalingen & platform)",
+      "savePricing": "Prijzen opslaan"
+    },
+    "accessories": {
+      "title": "Accessoires",
+      "description": "Welke accessoires kun je bij je aanhanger aanbieden?",
+      "customAccessory": "Eigen accessoire",
+      "customAccessoryPlaceholder": "Bijv. spanriemen",
+      "price": "Prijs (€)",
+      "addCustom": "Eigen accessoire toevoegen",
+      "accessorySingular": "accessoire",
+      "accessoryPlural": "accessoires",
+      "addedToTrailer": "Toegevoegd aan je aanhanger",
+      "addToTrailer": "Voeg dit toe aan je aanhanger",
+      "addCustomTitle": "Eigen accessoire toevoegen",
+      "addCustomDescription": "Heb je een uniek accessoire dat niet in de lijst staat?",
+      "pricePlaceholder": "Prijs per dag (optioneel)",
+      "cancel": "Annuleren",
+      "add": "Toevoegen",
+      "saveAccessories": "Accessoires opslaan",
+      "noAccessories": "Geen accessoires toevoegen"
+    },
+    "photos": {
+      "title": "Foto's",
+      "description": "Upload minimaal 3 foto's van je aanhanger. Goede foto's verhogen de kans op verhuur.",
+      "dropzone": "Sleep je foto's hierheen of klik om foto's te selecteren",
+      "uploadedPhotos": "Geüploade foto's",
+      "uploading": "Uploading...",
+      "required": "Je moet minimaal 3 foto's uploaden om door te gaan.",
+      "progress": "foto's geüpload"
+    },
+    "extra": {
+      "title": "Extra informatie",
+      "description": "Voeg extra details toe over je aanhanger om de verhuurkans te verhogen.",
+      "license": {
+        "title": "Rijbewijsvereisten",
+        "description": "Geef aan of voor deze aanhanger een speciaal rijbewijs nodig is.",
+        "required": "Voor deze aanhanger is een speciaal rijbewijs vereist",
+        "type": "Vereist rijbewijs",
+        "none": "Geen speciaal rijbewijs",
+        "b": "B rijbewijs",
+        "be": "BE rijbewijs",
+        "bplus": "B+ rijbewijs"
+      },
+      "delivery": {
+        "title": "Bezorgopties",
+        "description": "Bied aan om de aanhanger bij de huurder te bezorgen tegen een extra vergoeding.",
+        "offer": "Bied bezorgservice aan",
+        "fee": "Bezorgkosten (€)",
+        "freeDelivery": "Laat leeg voor gratis bezorging",
+        "maxDistance": "Maximale bezorgafstand (km)"
+      },
+      "insurance": {
+        "title": "Verzekering",
+        "included": "Verzekering is inbegrepen in de huurprijs"
+      },
+      "duration": {
+        "title": "Huurduur",
+        "description": "Stel minimale en maximale huurduur in.",
+        "minimum": "Minimum (dagen)",
+        "maximum": "Maximum (dagen)"
+      },
+      "cancellation": {
+        "title": "Annuleringsbeleid",
+        "select": "Selecteer je annuleringsbeleid",
+        "flexible": "Flexibel (Volledige terugbetaling 24 uur voor ophalen)",
+        "moderate": "Gemiddeld (Volledige terugbetaling 3 dagen voor ophalen)",
+        "strict": "Strikt (50% terugbetaling 7 dagen voor ophalen)"
+      },
+      "instructions": {
+        "title": "Gebruiksinstructies",
+        "description": "Geef gedetailleerde instructies om huurders te helpen je aanhanger goed te gebruiken.",
+        "placeholder": "Geef eventuele speciale instructies voor het gebruik van deze aanhanger..."
+      },
+      "continue": "Doorgaan"
+    }
+  },
+  "common": {
+    "saveAndContinue": "Opslaan en verder",
+    "saving": "Opslaan...",
+    "saveAsConcept": "Opslaan als concept"
+  },
+  "termsSubmit": {
+    "agreeText": "Ik ga akkoord met de",
+    "termsLink": "algemene voorwaarden",
+    "andText": "en het",
+    "privacyLink": "privacybeleid",
+    "submitButton": "Aanhanger plaatsen",
+    "submitting": "Bezig met plaatsen...",
+    "formIncomplete": "Vul minimaal de verplichte secties in om je aanhanger te kunnen plaatsen"
+  }
+}

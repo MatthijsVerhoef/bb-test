@@ -1,0 +1,1220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  LESSOR
+  SUPPORT // Toegevoegd voor klantenservice-medewerkers
+}
+
+enum TrailerType {
+  OPEN_AANHANGER // Open aanhanger
+  GESLOTEN_AANHANGER // Gesloten aanhanger
+  AUTOTRANSPORTER // Autotransporter
+  PAARDENTRAILER // Paardentrailer
+  BOOTTRAILER // Boottrailer
+  KIPPER // Kipper
+  MOTORFIETS_AANHANGER // Motorfiets aanhanger
+  FLATBED_AANHANGER // Flatbed aanhanger
+  BAGAGE_AANHANGER // Bagage aanhanger
+  VERKOOPWAGEN // Verkoopwagen
+  FIETSEN_AANHANGER // Fietsen aanhanger
+  SCHAMEL_AANHANGERS // Schamel aanhangers
+  PLATEAUWAGENS // Plateauwagens
+  OVERIG // Overig/Other
+}
+
+enum RentalStatus {
+  PENDING
+  CONFIRMED
+  ACTIVE // Toegevoegd: de huidige huurperiode loopt
+  CANCELLED
+  COMPLETED
+  LATE_RETURN // Toegevoegd: aanhanger te laat teruggebracht
+  DISPUTED // Toegevoegd: er is een conflict
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED // Toegevoegd: terugbetaling
+  PARTIALLY_REFUNDED // Toegevoegd: gedeeltelijke terugbetaling
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT // Voor handleidingen, instructies etc.
+}
+
+enum NotificationType {
+  BOOKING
+  PAYMENT
+  CHAT
+  SYSTEM
+  REMINDER // Toegevoegd: voor bijv. ophaal/retourneer herinneringen
+  PROMOTION // Toegevoegd: voor marketing
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  REJECTED
+}
+
+enum DocumentType {
+  ID
+  LICENSE
+  INSURANCE
+  REGISTRATION // Toegevoegd: kentekenregistratie
+  INSPECTION // Toegevoegd: APK/keuring
+  OTHER
+}
+
+enum PaymentMethod {
+  CARD
+  PAYPAL
+  BANK_TRANSFER
+  IDEAL // Toegevoegd: voor Nederlandse markt
+  SOFORT // Toegevoegd: voor Duitse markt
+  CASH // Toegevoegd: contante betaling bij overdracht
+  OTHER
+}
+
+enum TransactionType {
+  BOOKING
+  PAYMENT
+  REVIEW
+  REPORT
+  WITHDRAWAL // Toegevoegd: opname van verdiend geld
+  DEPOSIT // Toegevoegd: storten van geld
+  FEE // Toegevoegd: platformkosten
+  REFUND // Toegevoegd: terugbetaling
+  DISPUTE // Toegevoegd: geschilafhandeling
+  OTHER
+}
+
+enum DamageStatus {
+  NONE
+  MINOR
+  MODERATE
+  SEVERE
+}
+
+enum InsuranceType {
+  BASIC
+  PREMIUM
+  COMPREHENSIVE
+}
+
+/// Enum voor dagen van de week (voor de wekelijkse beschikbaarheid)
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model User {
+  id                     String    @id @default(uuid())
+  email                  String    @unique
+  password               String
+  firstName              String?
+  lastName               String?
+  phone                  String?
+  address                String?
+  city                   String? // Toegevoegd
+  postalCode             String? // Toegevoegd
+  country                String? // Toegevoegd
+  profilePicture         String?
+  bio                    String? // Toegevoegd: persoonlijke beschrijving
+  companyName            String? // Toegevoegd: voor zakelijke verhuurders
+  kvkNumber              String? // Toegevoegd: KVK-nummer voor zakelijke verhuurders
+  vatNumber              String? // Toegevoegd: BTW-nummer
+  responseRate           Float? // Toegevoegd: percentage beantwoorde berichten
+  responseTime           Int? // Toegevoegd: gemiddelde responstijd in minuten
+  isVerified             Boolean   @default(false)
+  verificationToken      String?
+  resetPasswordToken     String? // Toegevoegd
+  resetTokenExpiry       DateTime? // Toegevoegd
+  emailNotifications     Boolean   @default(true) // Toegevoegd
+  pushNotifications      Boolean   @default(true) // Toegevoegd
+  smsNotifications       Boolean   @default(false) // Toegevoegd
+  languagePreference     String    @default("nl") // Toegevoegd
+  lastLogin              DateTime? // Toegevoegd
+  lastActive             DateTime? // Toegevoegd
+  referralCode           String?   @unique // Toegevoegd: voor verwijzingsprogramma
+  referredBy             String? // Toegevoegd: ID van gebruiker die heeft verwezen
+  stripeCustomerId       String? // Toegevoegd: voor betalingen
+  stripeAccountId        String? // Toegevoegd: voor uitbetalingen aan verhuurders
+  role                   UserRole  @default(USER)
+  memberSince            DateTime  @default(now())
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  hasValidDriversLicense Boolean   @default(false) // Added for driver's license verification
+
+  // Relaties
+  listings             Trailer[]             @relation("TrailersByOwner")
+  rentals              Rental[]              @relation("RentalsByRenter")
+  ownedRentals         Rental[]              @relation("RentalsByLessor") // Toegevoegd
+  writtenReviews       Review[]              @relation("ReviewerReviews")
+  receivedReviews      Review[]              @relation("UserReviews")
+  notifications        Notification[]
+  documents            Document[]
+  favorites            Favorite[]
+  sentMessages         ChatMessage[]         @relation("MessagesSent")
+  receivedMessages     ChatMessage[]         @relation("MessagesReceived")
+  chatRoomMembers      ChatRoomParticipant[]
+  transactionLogs      TransactionLog[]
+  stats                UserStats?
+  reports              Report[]              @relation("ReportsByReporter")
+  reportedBy           Report[]              @relation("ReportsOnUser")
+  wallet               Wallet? // Toegevoegd
+  insurance            Insurance[] // Toegevoegd
+  supportTickets       SupportTicket[] // Toegevoegd
+  supportReplies       SupportReply[] // Toegevoegd
+  searchHistory        SearchHistory[] // Toegevoegd
+  loginHistory         LoginHistory[] // Toegevoegd
+  deviceTokens         DeviceToken[] // Toegevoegd
+  insuranceClaims      InsuranceClaim[] // Toegevoegd
+  damages              DamageReport[] // Toegevoegd
+  preferences          UserPreference? // Toegevoegd
+  blockedPeriods       BlockedPeriod[] // Toegevoegd
+  verification         UserVerification?
+  notificationSettings NotificationSetting[]
+  LessorSettings       LessorSettings?
+
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
+}
+
+// Added model for driver's license verification
+model UserVerification {
+  id                      String    @id @default(uuid())
+  userId                  String    @unique
+  licenseHash             String?
+  licenseVerificationId   String?
+  licenseCategories       String?   @db.Text // Store as JSON string
+  licenseCountry          String?
+  licenseExpiryDate       DateTime?
+  licenseVerified         Boolean   @default(false)
+  licenseVerificationDate DateTime?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model UserPreference {
+  id                     String  @id @default(uuid())
+  darkMode               Boolean @default(false)
+  notifyBeforeRental     Int     @default(24) // Hours before pickup
+  notifyBeforeReturn     Int     @default(24) // Hours before return
+  defaultSearchRadius    Int     @default(25) // km
+  hideEmail              Boolean @default(false)
+  hidePhone              Boolean @default(false)
+  newsletterSubscription Boolean @default(true)
+
+  // Notification Settings Fields
+  emailBookingUpdates      Boolean @default(true)
+  emailPaymentUpdates      Boolean @default(true)
+  emailChatMessages        Boolean @default(true)
+  emailSystemAnnouncements Boolean @default(true)
+  emailReminders           Boolean @default(true)
+  emailPromotions          Boolean @default(false)
+
+  pushBookingUpdates      Boolean @default(true)
+  pushPaymentUpdates      Boolean @default(true)
+  pushChatMessages        Boolean @default(true)
+  pushSystemAnnouncements Boolean @default(true)
+  pushReminders           Boolean @default(true)
+  pushPromotions          Boolean @default(false)
+
+  // Keep for backwards compatibility but mark as deprecated
+  appearanceSettings String? // Deprecated: JSON of appearance settings
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LoginHistory {
+  id         String   @id @default(uuid())
+  ipAddress  String?
+  userAgent  String?
+  device     String?
+  location   String?
+  successful Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model DeviceToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  device    String?
+  platform  String? // ios, android, web
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model SearchHistory {
+  id           String   @id @default(uuid())
+  query        String
+  location     String?
+  filters      Json? // Opgeslagen filters als JSON
+  resultsCount Int?
+  createdAt    DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model LessorSettings {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  // Auto-approval settings
+  autoApprovalEnabled      Boolean @default(false)
+  autoApprovalMinRating    Float? // Made optional - null means no minimum rating required
+  autoApprovalMinRentals   Int     @default(3)
+  autoApprovalVerifiedOnly Boolean @default(true)
+
+  // Default rental settings
+  defaultMinRentalDuration Int @default(1) // days
+  defaultMaxRentalDuration Int @default(30) // days
+  defaultSecurityDeposit   Int @default(20) // percentage
+
+  // Cancellation policy
+  cancellationPolicy     String  @default("moderate") // flexible, moderate, strict, custom
+  customCancellationText String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Trailer {
+  id                     String       @id @default(uuid())
+  title                  String
+  description            String       @db.Text
+  pricePerDay            Float
+  pricePerWeek           Float? // Toegevoegd: weekprijs met korting
+  pricePerMonth          Float? // Toegevoegd: maandprijs met korting
+  securityDeposit        Float? // Toegevoegd: borg
+  available              Boolean      @default(true)
+  location               String
+  address                String? // Toegevoegd: specifiek afleveradres
+  city                   String? // Toegevoegd
+  postalCode             String? // Toegevoegd
+  country                String? // Toegevoegd
+  latitude               Float? // Toegevoegd: voor kaartweergave
+  longitude              Float? // Toegevoegd: voor kaartweergave
+  licensePlate           String? // Toegevoegd: kenteken
+  cancellationPolicy     String?      @db.Text
+  maxRentalDuration      Int? // Toegevoegd: maximale huurperiode in dagen
+  minRentalDuration      Int? // Toegevoegd: minimale huurperiode in dagen
+  features               Json
+  requiresDriversLicense Boolean      @default(false) // Toegevoegd
+  includesInsurance      Boolean      @default(false) // Toegevoegd
+  homeDelivery           Boolean      @default(false) // Toegevoegd: thuisbezorging
+  deliveryFee            Float? // Toegevoegd: bezorgkosten
+  maxDeliveryDistance    Int? // Toegevoegd: maximale bezorgafstand in km
+  instructions           String?      @db.Text // Toegevoegd: gebruiksinstructies
+  views                  Int          @default(0) // Toegevoegd: aantal keer bekeken
+  featured               Boolean      @default(false) // Toegevoegd: gepromote advertentie
+  status                 String       @default("ACTIVE") // Toegevoegd: ACTIVE, MAINTENANCE, DEACTIVATED
+  type                   TrailerType?
+  manufacturer           String?
+  model                  String?
+  year                   Int?
+  weight                 Float? // in kg
+  length                 Float? // in cm
+  width                  Float? // in cm
+  height                 Float? // in cm
+  capacity               Float? // in tonnen, bv. laadvermogen
+  axles                  Int? // Toegevoegd: aantal assen
+  brakes                 Boolean      @default(false) // Toegevoegd: heeft remmen
+  towBallWeight          Float? // Toegevoegd: kogeldruk in kg
+  maxSpeed               Int? // Toegevoegd: maximale snelheid in km/u
+  vinNumber              String? // Toegevoegd: chassisnummer
+  lastMaintenance        DateTime? // Toegevoegd: laatste onderhoudsbeurt
+  nextMaintenance        DateTime? // Toegevoegd: volgende geplande onderhoudsbeurt
+  maintenanceNotes       String? // Toegevoegd: onderhoudsinstructies
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  // Relatie met eigenaar (verhuurder)
+  owner   User   @relation("TrailersByOwner", fields: [ownerId], references: [id])
+  ownerId String
+
+  // Overige relaties
+  rentals                Rental[]                @relation("TrailerRentals")
+  images                 Media[]
+  reviews                Review[]                @relation("TrailerReviews")
+  favorites              Favorite[]
+  reports                Report[]                @relation("ReportsOnTrailer")
+  weeklyAvailability     WeeklyAvailability[]
+  availabilityExceptions AvailabilityException[]
+  insurance              Insurance? // Toegevoegd
+  damages                DamageReport[] // Toegevoegd
+  faqs                   TrailerFAQ[] // Toegevoegd
+  accessories            Accessory[] // Toegevoegd
+  maintenanceLogs        MaintenanceLog[] // Toegevoegd
+  category               TrailerCategory?        @relation(fields: [categoryId], references: [id]) // Toegevoegd
+  categoryId             String? // Toegevoegd
+  blockedPeriods         BlockedPeriod[] // Toegevoegd
+
+  @@index([ownerId, id])
+  @@index([available])
+  @@index([city])
+  @@index([pricePerDay])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@index([available, city])
+  @@index([ownerId, status])
+  @@index([available, pricePerDay])
+  @@index([categoryId])
+  @@index([weight])
+  @@index([length])
+  @@index([width])
+  @@index([nextMaintenance])
+  @@index([ownerId, status, createdAt])
+  @@index([ownerId, createdAt])
+}
+
+model MainCategory {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  icon        String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation to TrailerCategory
+  trailerCategories TrailerCategory[]
+}
+
+// Then update your TrailerCategory model to include the relation
+model TrailerCategory {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  @db.Text // Use Text type for longer descriptions
+  icon        String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation to MainCategory
+  mainCategory   MainCategory? @relation(fields: [mainCategoryId], references: [id])
+  mainCategoryId String?
+
+  // Other existing relations
+  trailers Trailer[]
+}
+
+model MaintenanceLog {
+  id          String   @id @default(uuid())
+  date        DateTime
+  description String
+  cost        Float?
+  performedBy String? // Naam van persoon of bedrijf
+  documents   Json
+  createdAt   DateTime @default(now())
+
+  trailer   Trailer @relation(fields: [trailerId], references: [id])
+  trailerId String
+}
+
+model Accessory {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float? // Extra kosten per dag
+  quantity    Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  trailer   Trailer @relation(fields: [trailerId], references: [id])
+  trailerId String
+}
+
+model TrailerFAQ {
+  id        String   @id @default(uuid())
+  question  String
+  answer    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  trailer   Trailer @relation(fields: [trailerId], references: [id])
+  trailerId String
+}
+
+/// Dit model definieert de standaard beschikbaarheid per dag (dagdelen: ochtend, middag, avond)
+model WeeklyAvailability {
+  id        String    @id @default(uuid())
+  day       DayOfWeek
+  available Boolean   @default(false) // Is this day available for rentals
+
+  // Time slots for pickup/return (up to 3)
+  timeSlot1Start String? // Format: "HH:MM"
+  timeSlot1End   String? // Format: "HH:MM"
+
+  timeSlot2Start String? // Format: "HH:MM"
+  timeSlot2End   String? // Format: "HH:MM"
+
+  timeSlot3Start String? // Format: "HH:MM"
+  timeSlot3End   String? // Format: "HH:MM"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation to trailer
+  trailer   Trailer @relation(fields: [trailerId], references: [id])
+  trailerId String
+
+  @@unique([trailerId, day])
+  @@index([trailerId])
+  @@index([day])
+}
+
+model AvailabilityException {
+  id   String   @id @default(uuid())
+  date DateTime // Gebruik de datum; de tijd-component kan genegeerd worden.
+
+  // Boolean flags for time slot availability
+  morning   Boolean @default(true)
+  afternoon Boolean @default(true)
+  evening   Boolean @default(true)
+
+  // Actual time ranges for each time slot (optional overrides)
+  morningStart   String? // Format: "HH:MM", null means use default from WeeklyAvailability
+  morningEnd     String? // Format: "HH:MM"
+  afternoonStart String? // Format: "HH:MM"
+  afternoonEnd   String? // Format: "HH:MM"
+  eveningStart   String? // Format: "HH:MM"
+  eveningEnd     String? // Format: "HH:MM"
+
+  createdAt DateTime @default(now())
+
+  trailer   Trailer @relation(fields: [trailerId], references: [id])
+  trailerId String
+
+  @@unique([trailerId, date])
+  @@index([trailerId])
+  @@index([date])
+  @@index([trailerId, date])
+}
+
+model BlockedPeriod {
+  id        String   @id @default(uuid())
+  startDate DateTime
+  endDate   DateTime
+  reason    String? // Optional reason for blocking (maintenance, vacation, etc.)
+  allDay    Boolean  @default(true) // If false, use specific time slots
+
+  // Time slot specific blocking (when allDay is false)
+  morning   Boolean @default(false)
+  afternoon Boolean @default(false)
+  evening   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Can be linked to a specific trailer or apply to all trailers (for user vacation)
+  trailer   Trailer? @relation(fields: [trailerId], references: [id])
+  trailerId String?
+
+  // User who created this blocked period (trailer owner)
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@index([trailerId])
+  @@index([userId])
+  @@index([startDate, endDate])
+}
+
+model Rental {
+  id                 String       @id @default(uuid())
+  startDate          DateTime
+  endDate            DateTime
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  status             RentalStatus @default(PENDING)
+  totalPrice         Float
+  serviceFee         Float? // optioneel, als extra platform fee
+  insuranceFee       Float? // Toegevoegd: verzekeringsbedrag
+  deliveryFee        Float? // Toegevoegd: bezorgkosten
+  securityDeposit    Float? // Toegevoegd: borg
+  discountAmount     Float? // Toegevoegd: korting bedrag
+  pickupLocation     String? // Toegevoegd
+  returnLocation     String? // Toegevoegd
+  pickupTime         DateTime? // Toegevoegd: specifieke ophaaltijd
+  returnTime         DateTime? // Toegevoegd: specifieke inlevertijd
+  actualReturnDate   DateTime? // Toegevoegd: werkelijke retourdatum
+  needsDelivery      Boolean      @default(false) // Toegevoegd: thuisbezorging
+  cancellationReason String?
+  cancellationDate   DateTime? // Toegevoegd
+  specialNotes       String?
+  termsAccepted      Boolean      @default(false) // Toegevoegd
+
+  // Relaties
+  trailer   Trailer @relation("TrailerRentals", fields: [trailerId], references: [id])
+  trailerId String
+
+  renter   User   @relation("RentalsByRenter", fields: [renterId], references: [id])
+  renterId String
+
+  lessor   User   @relation("RentalsByLessor", fields: [lessorId], references: [id]) // Toegevoegd
+  lessorId String // Toegevoegd
+
+  payment         Payment?
+  coupon          Coupon?    @relation(fields: [couponId], references: [id])
+  couponId        String?
+  insurancePolicy Insurance? @relation(fields: [insuranceId], references: [id]) // Toegevoegd
+  insuranceId     String? // Toegevoegd
+
+  pickupChecklistItems RentalChecklistItem[] @relation("PickupChecklist") // Toegevoegd
+  returnChecklistItems RentalChecklistItem[] @relation("ReturnChecklist") // Toegevoegd
+  rentalExtensions     RentalExtension[] // Toegevoegd
+  damageReports        DamageReport[] // Toegevoegd
+  insuranceClaims      InsuranceClaim[] // Toegevoegd
+
+  @@index([lessorId])
+  @@index([renterId])
+  @@index([trailerId])
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate])
+  @@index([lessorId, status])
+  @@index([trailerId, status])
+  @@index([lessorId, startDate])
+  @@index([status, startDate, endDate])
+  @@index([trailerId, lessorId])
+}
+
+model RentalExtension {
+  id              String    @id @default(uuid())
+  originalEndDate DateTime
+  newEndDate      DateTime
+  additionalCost  Float
+  requestDate     DateTime  @default(now())
+  approved        Boolean?
+  approvedDate    DateTime?
+  note            String?
+
+  rental   Rental @relation(fields: [rentalId], references: [id])
+  rentalId String
+}
+
+model RentalChecklistItem {
+  id        String   @id @default(uuid())
+  itemName  String
+  checked   Boolean  @default(false)
+  note      String?
+  photo     String? // URL naar foto
+  createdAt DateTime @default(now())
+
+  // Een checklist item kan bij ophalen of inleveren horen
+  pickupRental   Rental? @relation("PickupChecklist", fields: [pickupRentalId], references: [id])
+  pickupRentalId String?
+
+  returnRental   Rental? @relation("ReturnChecklist", fields: [returnRentalId], references: [id])
+  returnRentalId String?
+}
+
+model Review {
+  id            String    @id @default(uuid())
+  rating        Int // bijvoorbeeld 1 tot 5
+  title         String?
+  comment       String?
+  response      String? // Toegevoegd: antwoord van verhuurder op een recensie
+  responseDate  DateTime? // Toegevoegd
+  photos        Json?
+  cleanliness   Int? // Toegevoegd: subcategorie rating
+  maintenance   Int? // Toegevoegd: subcategorie rating
+  valueForMoney Int? // Toegevoegd: subcategorie rating
+  communication Int? // Toegevoegd: subcategorie rating
+  accuracy      Int? // Toegevoegd: subcategorie rating
+  recommended   Boolean? // Toegevoegd
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Recensie voor een trailer (optioneel)
+  trailer   Trailer? @relation("TrailerReviews", fields: [trailerId], references: [id])
+  trailerId String?
+
+  // Of recensie voor een verhuurder (User) (optioneel)
+  reviewedUser   User?   @relation("UserReviews", fields: [reviewedUserId], references: [id])
+  reviewedUserId String?
+
+  // De gebruiker die de recensie heeft geschreven
+  reviewer   User   @relation("ReviewerReviews", fields: [reviewerId], references: [id])
+  reviewerId String
+
+  @@index([trailerId, rating])
+  @@index([reviewerId, rating])
+  @@index([trailerId, createdAt])
+  @@index([reviewerId, createdAt])
+}
+
+model Payment {
+  id                    String        @id @default(uuid())
+  amount                Float
+  currency              String        @default("EUR")
+  status                PaymentStatus @default(PENDING)
+  paymentMethod         PaymentMethod
+  externalTransactionId String? // bijv. referentie van de payment gateway
+  invoiceNumber         String? // Toegevoegd
+  receiptUrl            String? // Toegevoegd
+  refundAmount          Float? // Toegevoegd
+  refundReason          String? // Toegevoegd
+  refundDate            DateTime? // Toegevoegd
+  paymentDate           DateTime? // Toegevoegd
+  dueDate               DateTime? // Toegevoegd
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  rental   Rental @relation(fields: [rentalId], references: [id])
+  rentalId String @unique
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  message   String
+  read      Boolean          @default(false)
+  type      NotificationType @default(OTHER)
+  actionUrl String? // Toegevoegd: URL om naartoe te navigeren
+  expiresAt DateTime? // Toegevoegd: verloopdatum
+  createdAt DateTime         @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@index([userId, read])
+  @@index([userId, expiresAt])
+}
+
+model UserStats {
+  id               String   @id @default(uuid())
+  totalRentals     Int      @default(0)
+  totalIncome      Float    @default(0)
+  totalSpent       Float    @default(0)
+  cancelledRentals Int      @default(0) // Toegevoegd
+  completedRentals Int      @default(0) // Toegevoegd
+  averageRating    Float? // Toegevoegd
+  responseRate     Float? // Toegevoegd: percentage beantwoorde berichten
+  responseTime     Int? // Toegevoegd: gemiddelde responstijd in minuten
+  acceptanceRate   Float? // Toegevoegd: percentage geaccepteerde aanvragen
+  lastUpdated      DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  message     String
+  createdAt   DateTime @default(now())
+  read        Boolean  @default(false)
+  attachments Json
+
+  // Directe berichten tussen twee gebruikers
+  sender   User   @relation("MessagesSent", fields: [senderId], references: [id])
+  senderId String
+
+  receiver   User?   @relation("MessagesReceived", fields: [receiverId], references: [id])
+  receiverId String?
+
+  // Indien bericht binnen een chatroom (groepschat)
+  chatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String?
+
+  @@index([chatRoomId, createdAt(sort: Desc)])
+  @@index([senderId, read])
+  @@index([chatRoomId, senderId, read])
+  @@index([receiverId, read]) // For direct messages
+  @@index([createdAt(sort: Desc)])
+}
+
+model ChatRoom {
+  id        String   @id @default(uuid())
+  name      String? // bv. voor groepschats
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages     ChatMessage[]
+  participants ChatRoomParticipant[]
+
+  @@index([updatedAt(sort: Desc)])
+  @@index([createdAt])
+}
+
+model ChatRoomParticipant {
+  id             String    @id @default(uuid())
+  joinedAt       DateTime  @default(now())
+  isAdmin        Boolean   @default(false)
+  isApproved     Boolean   @default(false)
+  isTrailerOwner Boolean   @default(false)
+  lastRead       DateTime?
+
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@unique([chatRoomId, userId])
+  @@index([userId])
+  @@index([chatRoomId])
+  @@index([userId, lastRead])
+  @@index([chatRoomId, userId])
+}
+
+model Media {
+  id          String    @id @default(uuid())
+  url         String
+  type        MediaType @default(IMAGE)
+  title       String? // Toegevoegd
+  description String? // Toegevoegd
+  size        Int? // Toegevoegd: bestandsgrootte in bytes
+  order       Int       @default(0) // Toegevoegd: volgorde voor weergave
+  createdAt   DateTime  @default(now())
+
+  trailer   Trailer? @relation(fields: [trailerId], references: [id])
+  trailerId String?
+
+  @@index([trailerId])
+  @@index([order])
+  @@index([trailerId, order])
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  note      String? // Toegevoegd: persoonlijke notitie
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  trailer   Trailer @relation(fields: [trailerId], references: [id])
+  trailerId String
+
+  @@unique([userId, trailerId])
+  @@index([userId])
+  @@index([trailerId])
+}
+
+model Report {
+  id            String       @id @default(uuid())
+  reason        String
+  description   String?
+  status        ReportStatus @default(PENDING)
+  adminResponse String? // Toegevoegd
+  responseDate  DateTime? // Toegevoegd
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Degene die het rapport indient
+  reporter   User   @relation("ReportsByReporter", fields: [reporterId], references: [id])
+  reporterId String
+
+  // Het gerapporteerde object kan een trailer of een gebruiker zijn
+  reportedTrailer   Trailer? @relation("ReportsOnTrailer", fields: [reportedTrailerId], references: [id])
+  reportedTrailerId String?
+
+  reportedUser   User?   @relation("ReportsOnUser", fields: [reportedUserId], references: [id])
+  reportedUserId String?
+}
+
+model Coupon {
+  id                 String   @id @default(uuid())
+  code               String   @unique
+  description        String?
+  discountPercentage Float? // bv. 10 voor 10% korting
+  discountAmount     Float? // Toegevoegd: vast bedrag korting
+  minOrderAmount     Float? // Toegevoegd: minimaal orderbedrag
+  validFrom          DateTime
+  validTo            DateTime
+  active             Boolean  @default(true)
+  usageLimit         Int? // maximaal aantal keer bruikbaar
+  usedCount          Int      @default(0)
+  isFirstRentalOnly  Boolean  @default(false) // Toegevoegd: alleen voor nieuwe klanten
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  rentals Rental[]
+}
+
+model Document {
+  id          String       @id @default(uuid())
+  url         String
+  type        DocumentType @default(OTHER)
+  name        String? // Toegevoegd
+  description String? // Toegevoegd
+  verified    Boolean      @default(false) // Toegevoegd: of het document geverifieerd is
+  verifiedAt  DateTime? // Toegevoegd
+  expiryDate  DateTime? // Toegevoegd: bijv. voor rijbewijs
+  createdAt   DateTime     @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model TransactionLog {
+  id          String          @id @default(uuid())
+  type        TransactionType
+  amount      Float? // Toegevoegd
+  currency    String? // Toegevoegd
+  message     String
+  referenceId String? // Toegevoegd: ID van gerelateerde entiteit
+  ipAddress   String? // Toegevoegd
+  createdAt   DateTime        @default(now())
+
+  // Eventueel gekoppeld aan een gebruiker
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+model Wallet {
+  id         String    @id @default(uuid())
+  balance    Float     @default(0)
+  currency   String    @default("EUR")
+  lastPayout DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  transactions WalletTransaction[]
+}
+
+model WalletTransaction {
+  id                String   @id @default(uuid())
+  amount            Float
+  type              String // DEPOSIT, WITHDRAWAL, EARNING, REFUND, FEE
+  status            String   @default("COMPLETED") // PENDING, COMPLETED, FAILED
+  description       String?
+  externalReference String?
+  createdAt         DateTime @default(now())
+
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+  walletId String
+}
+
+model Insurance {
+  id              String        @id @default(uuid())
+  policyNumber    String?
+  provider        String
+  type            InsuranceType @default(BASIC)
+  coverageDetails String?
+  policyDocument  String? // URL naar het beleidsdocument
+  startDate       DateTime
+  endDate         DateTime?
+  premium         Float
+  deductible      Float? // Eigen risico
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  trailer   Trailer? @relation(fields: [trailerId], references: [id])
+  trailerId String?  @unique // Een aanhanger heeft max. één verzekering
+
+  rentals Rental[] // Verzekeringspolissen gekoppeld aan huurovereenkomsten
+  claims  InsuranceClaim[]
+}
+
+model InsuranceClaim {
+  id            String    @id @default(uuid())
+  claimNumber   String?
+  description   String
+  date          DateTime
+  status        String    @default("PENDING") // PENDING, APPROVED, REJECTED, PAID
+  amount        Float? // Bedrag van de claim
+  evidenceUrls  Json
+  notes         String?
+  processedDate DateTime?
+  processedBy   String? // ID of naam van medewerker die claim verwerkt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  insurance   Insurance @relation(fields: [insuranceId], references: [id])
+  insuranceId String
+
+  rental   Rental? @relation(fields: [rentalId], references: [id])
+  rentalId String?
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  damageReport   DamageReport? @relation(fields: [damageReportId], references: [id])
+  damageReportId String?
+}
+
+model DamageReport {
+  id           String       @id @default(uuid())
+  description  String
+  date         DateTime     @default(now())
+  location     String?
+  damageStatus DamageStatus @default(NONE)
+  photoUrls    Json
+  repairCost   Float?
+  repairNotes  String?
+  resolved     Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  trailer   Trailer @relation(fields: [trailerId], references: [id])
+  trailerId String
+
+  rental   Rental? @relation(fields: [rentalId], references: [id])
+  rentalId String?
+
+  reportedBy   User   @relation(fields: [reportedById], references: [id])
+  reportedById String
+
+  insuranceClaims InsuranceClaim[]
+}
+
+model SupportTicket {
+  id          String    @id @default(uuid())
+  subject     String
+  description String
+  status      String    @default("OPEN") // OPEN, IN_PROGRESS, CLOSED, REOPENED
+  priority    String    @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  category    String? // Bijv. "PAYMENT", "RENTAL", "ACCOUNT"
+  attachments Json
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  closedAt    DateTime?
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  replies SupportReply[]
+}
+
+model SupportReply {
+  id           String   @id @default(uuid())
+  message      String   @db.LongText
+  attachments  Json
+  isStaffReply Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  ticket   SupportTicket @relation(fields: [ticketId], references: [id])
+  ticketId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model Blog {
+  id              String    @id @default(uuid())
+  title           String
+  slug            String    @unique
+  content         String    @db.LongText
+  excerpt         String?
+  coverImage      String?
+  published       Boolean   @default(false)
+  publishedAt     DateTime?
+  authorName      String
+  authorId        String? // Optioneel: link naar een gebruiker als die de auteur is
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  categories BlogCategory[]
+}
+
+model BlogCategory {
+  id          String  @id @default(uuid())
+  name        String
+  slug        String  @unique
+  description String?
+
+  posts Blog[]
+}
+
+model EmailTemplate {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  subject   String
+  bodyHtml  String
+  bodyText  String?
+  variables Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SEOSettings {
+  id            String   @id @default(uuid())
+  pagePath      String   @unique // Bijv. "/trailers", "/profile"
+  title         String
+  description   String
+  keywords      Json
+  ogTitle       String?
+  ogDescription String?
+  ogImage       String?
+  structured    Json? // Gestructureerde data voor specifieke pagina's
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SystemSettings {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  eventType String // Bijv. "PAGE_VIEW", "SEARCH", "BOOKING_STARTED"
+  page      String?
+  userId    String? // Optioneel: kan anonieme gebruikers hebben
+  sessionId String?
+  ipAddress String?
+  userAgent String?
+  referrer  String?
+  data      Json? // Extra data gerelateerd aan het event
+  createdAt DateTime @default(now())
+}
+
+model PaymentProvider {
+  id         String   @id @default(uuid())
+  name       String   @unique // bijv. "STRIPE", "PAYPAL"
+  isActive   Boolean  @default(true)
+  publicKey  String?
+  privateKey String?
+  mode       String   @default("SANDBOX") // "SANDBOX" of "LIVE"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model MarketingStat {
+  id              String   @id @default(uuid())
+  date            DateTime
+  visitors        Int      @default(0)
+  signups         Int      @default(0)
+  newListings     Int      @default(0)
+  bookings        Int      @default(0)
+  totalRevenue    Float    @default(0)
+  marketingSource String? // bijv. "FACEBOOK", "GOOGLE", "ORGANIC"
+  campaign        String?
+  createdAt       DateTime @default(now())
+}
+
+model NotificationSetting {
+  id         String   @id @default(uuid())
+  settingKey String // e.g., "payments:payment_failed"
+  enabled    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relation to user
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@unique([userId, settingKey])
+  @@index([userId])
+}
+
+model BusinessHours {
+  id        String    @id @default(uuid())
+  day       DayOfWeek
+  openTime  String? // tijdsformaat "HH:MM", null betekent gesloten
+  closeTime String? // tijdsformaat "HH:MM", null betekent gesloten
+  isOpen    Boolean   @default(true)
+
+  @@unique([day])
+}
+
+model Page {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  content         String
+  isPublished     Boolean  @default(true)
+  metaTitle       String?
+  metaDescription String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FAQ {
+  id          String   @id @default(uuid())
+  question    String
+  answer      String
+  category    String?
+  order       Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  name        String
+  key         String    @unique
+  permissions Json
+  expiresAt   DateTime?
+  lastUsed    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  userId String? // Optioneel: geassocieerde gebruiker
+}
+
+model Contact {
+  id          String    @id @default(uuid())
+  name        String
+  email       String
+  subject     String
+  message     String
+  responded   Boolean   @default(false)
+  respondedAt DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model PlatformFeedback {
+  id             Int      @id @default(autoincrement())
+  rating         Int
+  email          String
+  improvement    String?
+  wouldRentAgain Boolean
+  createdAt      DateTime @default(now())
+
+  @@index([createdAt])
+}

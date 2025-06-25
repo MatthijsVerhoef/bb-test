@@ -1,0 +1,19 @@
+// Add this new model to the schema.prisma file
+
+model NotificationSetting {
+  id          String   @id @default(uuid())
+  settingKey  String   // e.g., "payments:payment_failed"
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relation to user
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  @@unique([userId, settingKey])
+  @@index([userId])
+}
+
+// Then add this relation to the User model:
+// NotificationSetting[] relation

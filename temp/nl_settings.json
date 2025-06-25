@@ -1,0 +1,289 @@
+{
+  "settings": {
+    "dialog": {
+      "title": "Instellingen",
+      "description": "Beheer je account instellingen en voorkeuren",
+      "backButton": "Terug"
+    },
+    "sections": {
+      "account": "Account",
+      "lessorSettings": "Verhuurders instellingen",
+      "notifications": "Notificaties",
+      "security": "Beveiliging",
+      "billing": "Facturering"
+    },
+    "logout": "Uitloggen",
+    "account": {
+      "password": {
+        "title": "Wachtwoord",
+        "description": "Houd je account veilig met een sterk wachtwoord",
+        "changeButton": "Wachtwoord wijzigen",
+        "dialog": {
+          "title": "Wachtwoord wijzigen",
+          "description": "Kies een sterk wachtwoord van minimaal 8 karakters",
+          "currentPassword": "Huidig wachtwoord",
+          "newPassword": "Nieuw wachtwoord",
+          "confirmPassword": "Bevestig wachtwoord",
+          "passwordMismatch": "Wachtwoorden komen niet overeen",
+          "passwordTooShort": "Wachtwoord moet minimaal 8 karakters lang zijn",
+          "cancel": "Annuleren",
+          "change": "Wijzigen"
+        },
+        "success": "Wachtwoord succesvol gewijzigd"
+      },
+      "accountManagement": {
+        "title": "Account beheer",
+        "description": "Tijdelijk deactiveren of permanent verwijderen",
+        "deactivateButton": "Account deactiveren",
+        "deleteButton": "Account verwijderen",
+        "deactivateDialog": {
+          "title": "Account deactiveren?",
+          "description": "Je account wordt tijdelijk uitgeschakeld. Je kunt op elk moment weer inloggen om je account te reactiveren.",
+          "cancel": "Annuleren",
+          "deactivate": "Deactiveren"
+        },
+        "deleteDialog": {
+          "title": "Account permanent verwijderen?",
+          "description": "Deze actie kan niet ongedaan worden gemaakt. Al je gegevens worden permanent verwijderd.",
+          "confirmationLabel": "Typ je e-mailadres om te bevestigen:",
+          "cancel": "Annuleren",
+          "delete": "Verwijderen",
+          "deleting": "Verwijderen..."
+        }
+      }
+    },
+    "lessorSettings": {
+      "autoApproval": {
+        "title": "Automatische goedkeuring",
+        "description": "Accepteer boekingen automatisch van betrouwbare huurders",
+        "toggle": "Automatisch goedkeuren",
+        "toggleDescription": "Boekingen worden direct bevestigd als ze aan je criteria voldoen",
+        "minRating": {
+          "toggle": "Minimale beoordeling vereisen",
+          "toggleDescription": "Accepteer alleen huurders met een minimale beoordeling",
+          "label": "Minimale score",
+          "star": "ster"
+        },
+        "minRentals": {
+          "label": "Minimaal aantal eerdere verhuren",
+          "options": {
+            "none": "Geen minimum",
+            "one": "1 verhuur",
+            "three": "3 verhuren",
+            "five": "5 verhuren",
+            "ten": "10 verhuren"
+          }
+        },
+        "verifiedOnly": {
+          "label": "Alleen geverifieerde gebruikers",
+          "description": "Alleen gebruikers met een geverifieerd rijbewijs"
+        }
+      },
+      "rentalTerms": {
+        "title": "Verhuurvoorwaarden",
+        "description": "Standaard instellingen voor nieuwe aanhangers",
+        "minDuration": {
+          "label": "Minimale huurduur",
+          "options": {
+            "oneDay": "1 dag",
+            "twoDays": "2 dagen",
+            "threeDays": "3 dagen",
+            "oneWeek": "1 week"
+          }
+        },
+        "maxDuration": {
+          "label": "Maximale huurduur",
+          "options": {
+            "oneWeek": "1 week",
+            "twoWeeks": "2 weken",
+            "oneMonth": "1 maand",
+            "twoMonths": "2 maanden",
+            "threeMonths": "3 maanden"
+          }
+        },
+        "securityDeposit": {
+          "label": "Borgpercentage",
+          "description": "Percentage van de totale huurprijs als borg"
+        }
+      },
+      "cancellationPolicy": {
+        "title": "Annuleringsbeleid",
+        "description": "Bepaal wanneer huurders kunnen annuleren",
+        "policies": {
+          "flexible": {
+            "label": "Flexibel",
+            "description": "Gratis annuleren tot 24 uur voor ophalen"
+          },
+          "moderate": {
+            "label": "Gematigd",
+            "description": "100% terugbetaling bij annulering binnen 72 uur"
+          },
+          "strict": {
+            "label": "Strikt",
+            "description": "Geen terugbetaling binnen 7 dagen"
+          },
+          "custom": {
+            "label": "Aangepast",
+            "description": "Maak je eigen beleid",
+            "placeholder": "Beschrijf je annuleringsbeleid..."
+          }
+        }
+      },
+      "saveButton": {
+        "saving": "Opslaan...",
+        "save": "Instellingen opslaan",
+        "noChanges": "Geen wijzigingen om op te slaan"
+      }
+    },
+    "notifications": {
+      "loading": "Instellingen laden...",
+      "emailNotifications": {
+        "disabled": {
+          "title": "E-mailnotificaties zijn uitgeschakeld",
+          "description": "Je ontvangt geen e-mails van ons totdat je dit weer inschakelt"
+        }
+      },
+      "categories": {
+        "bookings": {
+          "title": "Boekingen",
+          "description": "Updates over je verhuren en reserveringen",
+          "settings": {
+            "booking_request": {
+              "label": "Nieuwe boekingsaanvragen",
+              "description": "Wanneer iemand je aanhanger wil huren"
+            },
+            "booking_confirmed": {
+              "label": "Boekingsbevestigingen",
+              "description": "Wanneer een boeking is bevestigd"
+            },
+            "booking_cancelled": {
+              "label": "Annuleringen",
+              "description": "Wanneer een boeking wordt geannuleerd"
+            },
+            "booking_modified": {
+              "label": "Wijzigingen",
+              "description": "Wanneer boekingsdetails worden aangepast"
+            }
+          }
+        },
+        "payments": {
+          "title": "Betalingen",
+          "description": "Financiële transacties en uitbetalingen",
+          "settings": {
+            "payment_received": {
+              "label": "Betaling ontvangen",
+              "description": "Wanneer je een betaling hebt ontvangen"
+            },
+            "payout_processed": {
+              "label": "Uitbetaling verwerkt",
+              "description": "Wanneer geld naar je rekening is overgemaakt"
+            },
+            "payment_failed": {
+              "label": "Mislukte betalingen",
+              "description": "Wanneer een betaling niet is gelukt"
+            }
+          }
+        },
+        "messages": {
+          "title": "Berichten",
+          "description": "Communicatie met huurders en verhuurders",
+          "settings": {
+            "new_message": {
+              "label": "Nieuwe berichten",
+              "description": "Wanneer je een nieuw bericht ontvangt"
+            },
+            "unread_reminder": {
+              "label": "Ongelezen berichten herinnering",
+              "description": "Dagelijkse herinnering voor ongelezen berichten"
+            }
+          }
+        },
+        "reminders": {
+          "title": "Herinneringen",
+          "description": "Belangrijke data en acties",
+          "settings": {
+            "pickup_reminder": {
+              "label": "Ophaalherinnering",
+              "description": "24 uur voor het ophalen van een aanhanger"
+            },
+            "return_reminder": {
+              "label": "Retourherinnering",
+              "description": "24 uur voor het inleveren van een aanhanger"
+            },
+            "review_reminder": {
+              "label": "Beoordeling achterlaten",
+              "description": "Herinnering om een review achter te laten"
+            }
+          }
+        },
+        "marketing": {
+          "title": "Aanbiedingen & Nieuws",
+          "description": "Updates over nieuwe functies en aanbiedingen",
+          "settings": {
+            "promotions": {
+              "label": "Speciale aanbiedingen",
+              "description": "Kortingen en promoties"
+            },
+            "newsletter": {
+              "label": "Nieuwsbrief",
+              "description": "Maandelijkse updates en tips"
+            },
+            "new_features": {
+              "label": "Nieuwe functies",
+              "description": "Wanneer we nieuwe features lanceren"
+            }
+          }
+        }
+      },
+      "saveButton": {
+        "saving": "Opslaan...",
+        "save": "Instellingen opslaan",
+        "noChanges": "Geen wijzigingen om op te slaan"
+      }
+    },
+    "security": {
+      "twoFactor": {
+        "title": "Tweestapsverificatie",
+        "description": "Extra beveiliging voor je account",
+        "authApp": {
+          "label": "Authenticatie-app gebruiken",
+          "description": "Vereist een code bij elke nieuwe inlog"
+        }
+      },
+      "loginAlerts": {
+        "title": "Meldingen",
+        "description": "Waarschuwingen bij account activiteit",
+        "newLogin": {
+          "label": "E-mail bij nieuwe inlog",
+          "description": "Melding wanneer vanaf een nieuw apparaat wordt ingelogd"
+        }
+      },
+      "devices": {
+        "title": "Apparaten",
+        "description": "{{count}} actieve sessies",
+        "current": "huidig",
+        "removeButton": "Verwijderen",
+        "removeDialog": {
+          "title": "Apparaat verwijderen?",
+          "description": "Dit apparaat wordt uitgelogd en moet opnieuw inloggen.",
+          "cancel": "Annuleren",
+          "remove": "Verwijderen"
+        }
+      }
+    },
+    "billing": {
+      "paymentMethods": {
+        "title": "Betaalmethoden",
+        "description": "Beheer je kaarten voor betalingen en ontvang verhuurinkomsten"
+      },
+      "transactions": {
+        "title": "Transactiegeschiedenis",
+        "emptyState": "Er zijn nog geen transacties om weer te geven",
+        "status": {
+          "completed": "Voltooid",
+          "pending": "In behandeling"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,271 @@
+{
+  "backToListing": "Terug naar aanbod",
+  "reportAd": "Deze advertentie rapporteren",
+  "accessories": "Accessoires",
+  "perDay": "per dag",
+  "included": "Inbegrepen",
+  "reviews": "reviews",
+  "reserve": "Reserveren",
+  "gallery": {
+    "showAll": "Alle foto's bekijken",
+    "photos": "foto's",
+    "noImages": "Geen afbeeldingen beschikbaar",
+    "noMoreImages": "Geen verdere afbeeldingen",
+    "dialog": "Aanhanger dialoog"
+  },
+  "specs": {
+    "title": "Specificaties",
+    "type": "Type",
+    "category": "Categorie",
+    "manufacturer": "Fabrikant",
+    "model": "Model",
+    "year": "Bouwjaar",
+    "dimensions": "Afmetingen",
+    "length": "Lengte",
+    "width": "Breedte",
+    "height": "Hoogte",
+    "weight": "Gewicht",
+    "capacity": "Laadvermogen",
+    "axles": "Assen",
+    "brakes": "Remmen",
+    "maxSpeed": "Max. snelheid",
+    "towBallWeight": "Kogeldruk",
+    "vinNumber": "VIN-nummer",
+    "lastMaintenance": "Laatste onderhoud",
+    "details": "Details",
+    "unknown": "Onbekend",
+    "singleAxle": "Enkele as",
+    "tandemAxle": "Tandem as",
+    "tripleAxle": "Drievoudige as",
+    "hydraulic": "Hydraulisch",
+    "overrun": "Oplooprem",
+    "electric": "Elektrisch",
+    "none": "Geen remmen"
+  },
+  "description": {
+    "title": "Beschrijving",
+    "features": "Kenmerken",
+    "detailedSpecs": "Gedetailleerde specificaties",
+    "featuresList": {
+      "foldable": "Opklapbaar",
+      "tilt": "Kippend",
+      "ramps": "Met oprijplaten",
+      "spare_wheel": "Reservewiel",
+      "weatherproof": "Waterdicht",
+      "lockable": "Afsluitbaar",
+      "lighting": "Verlichting",
+      "stabilizer": "Stabilisator",
+      "winch": "Lier",
+      "jockey_wheel": "Neuswiel"
+    },
+    "standardDescription": {
+      "open": "Deze open aanhanger is perfect voor het vervoeren van diverse ladingen. Het open design maakt laden en lossen eenvoudig en biedt flexibiliteit voor verschillende toepassingen.",
+      "closed": "Deze gesloten aanhanger biedt uitstekende bescherming voor uw lading tegen weersinvloeden. Ideaal voor waardevolle of gevoelige goederen die droog moeten blijven.",
+      "car": "Deze autotransporter is speciaal ontworpen voor het veilig vervoeren van voertuigen. Met stevige oprijplaten en bevestigingspunten is uw auto in goede handen.",
+      "boat": "Deze boottrailer is perfect voor het veilig transporteren van uw boot. Voorzien van een stevig frame en verstelbare steunen voor verschillende boottypen.",
+      "motorcycle": "Deze motorfietsaanhanger maakt het vervoeren van uw motor veilig en eenvoudig. Speciale bevestigingspunten zorgen voor stabiliteit tijdens het transport.",
+      "bicycle": "Deze fietsenaanhanger is ideaal voor het vervoeren van meerdere fietsen. Compact design met veilige bevestigingsmogelijkheden.",
+      "horse": "Deze paardentrailer biedt comfort en veiligheid voor het transport van uw paard(en). Voorzien van ventilatie en antislip vloer.",
+      "tipper": "Deze kiepwagen maakt het lossen van bulk materialen snel en efficiënt. Perfect voor bouw- en tuinprojecten.",
+      "flatbed": "Deze plateauwagen biedt maximale laadruimte en flexibiliteit. Ideaal voor lange of onregelmatige ladingen.",
+      "refrigerated": "Deze koelwagen houdt uw temperatuurgevoelige lading op de juiste temperatuur. Perfect voor transport van voedsel of medische producten.",
+      "furniture": "Deze verhuiswagen is speciaal ingericht voor het veilig vervoeren van meubels en huisraad. Met bevestigingspunten en beschermende bekleding.",
+      "market": "Deze marktwagen is perfect ingericht voor mobiele verkoop. Voorzien van uitklapbare delen en presentatiemogelijkheden.",
+      "other": "Deze aanhanger is geschikt voor diverse toepassingen. Neem contact op voor specifieke mogelijkheden en gebruik."
+    }
+  },
+  "owner": {
+    "title": "Over de verhuurder",
+    "responseRate": "Reactiepercentage",
+    "responseTime": "Reactietijd",
+    "memberSince": "Lid sinds",
+    "verifiedIdentity": "Geverifieerde identiteit",
+    "viewProfile": "Profiel bekijken",
+    "contactOwner": "Contact opnemen",
+    "responseTimeValues": {
+      "within_hour": "Binnen een uur",
+      "within_day": "Binnen een dag",
+      "within_week": "Binnen een week"
+    },
+    "defaultName": "Eigenaar",
+    "joined": "Lid voor {{time}}",
+    "respondsInLessThanHour": "Reageert meestal binnen een uur",
+    "respondsInHours": "Reageert meestal binnen {{count}} uur",
+    "respondsInDays": "Reageert meestal binnen {{count}} dagen",
+    "responseRateValue": "{{rate}}% reactiepercentage",
+    "viewReviews": "Bekijk reviews"
+  },
+  "location": {
+    "title": "Locatie",
+    "viewOnMap": "Bekijk op kaart"
+  },
+  "reviews": {
+    "title": "Beoordelingen",
+    "noReviews": "Nog geen beoordelingen",
+    "beFirstReview": "Wees de eerste om deze aanhanger te beoordelen!",
+    "averageRating": "Gemiddelde beoordeling",
+    "totalReviews": "beoordelingen",
+    "showMore": "Meer beoordelingen tonen",
+    "showAll": "Toon alle {{count}} beoordelingen",
+    "helpful": "Nuttig",
+    "reportReview": "Beoordeling rapporteren",
+    "recommendedPercentage": "{{percentage}}% van de huurders zou deze aanhanger aanbevelen.",
+    "responseFromOwner": "Reactie van eigenaar",
+    "categories": {
+      "cleanliness": "Netheid",
+      "maintenance": "Onderhoud",
+      "valueForMoney": "Goede deal",
+      "communication": "Communicatie",
+      "accuracy": "Komt overeen"
+    }
+  },
+  "booking": {
+    "title": "Boek deze aanhanger",
+    "pricePerDay": "per dag",
+    "pricePerWeek": "per week",
+    "pricePerMonth": "per maand",
+    "selectDates": "Selecteer datums",
+    "pickupDate": "Ophaaldatum",
+    "returnDate": "Retourdatum",
+    "duration": "Huurduur",
+    "days": "dagen",
+    "totalCost": "Totale kosten",
+    "securityDeposit": "Borg",
+    "deliveryOptions": "Bezorgopties",
+    "pickup": "Ophalen",
+    "delivery": "Bezorging",
+    "deliveryFee": "Bezorgkosten",
+    "maxDeliveryDistance": "Max. bezorgafstand",
+    "minRentalDuration": "Min. huurduur",
+    "maxRentalDuration": "Max. huurduur",
+    "insurance": "Verzekering",
+    "includedInPrice": "Inbegrepen in prijs",
+    "checkAvailability": "Beschikbaarheid controleren",
+    "bookNow": "Nu boeken",
+    "contactOwner": "Contact met verhuurder",
+    "notAvailable": "Niet beschikbaar",
+    "selectDateFirst": "Selecteer eerst datums",
+    "rentalDates": "Huur Data",
+    "discounts": {
+      "title": "Kortingen",
+      "perWeek": "Per week:",
+      "perMonth": "Per maand:"
+    },
+    "dates": {
+      "select": "Selecteer datums",
+      "loading": "Laden...",
+      "minDays": "Min: {{days}} dagen",
+      "maxDays": "Max: {{days}} dagen",
+      "apply": "Toepassen",
+      "selectEndDate": "Einddatum"
+    },
+    "time": {
+      "pickup": "Ophalen",
+      "return": "Terugbrengen",
+      "selectTime": "Kies tijd",
+      "noAvailability": "Geen beschikbaarheid voor deze dag"
+    },
+    "delivery": {
+      "homeDelivery": "Thuis afgeleverd",
+      "fee": "(+€{{fee}})",
+      "availableWithin": "Beschikbaar binnen {{distance}} km",
+      "addressPlaceholder": "Geef volledig adres op"
+    },
+    "pricing": {
+      "perDay": "€{{price}} × {{days}} dagen",
+      "basePrice": "€{{price}}",
+      "deliveryCosts": "Bezorgkosten",
+      "deposit": "Borg",
+      "serviceFee": "Servicekosten",
+      "depositTooltip": "De borg wordt terugbetaald bij het inleveren van de trailer in originele staat.",
+      "total": "Totaal"
+    },
+    "button": {
+      "reserve": "Reserveren",
+      "loading": "Laden..."
+    },
+    "confirmation": {
+      "title": "Bevestig jouw reservering",
+      "description": "Vul je gegevens in om de {{trailerTitle}} te reserveren voor {{days}} dagen."
+    },
+    "form": {
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "email": "Email",
+      "phone": "Telefoonnummer",
+      "driversLicense": "Rijbewijsnummer",
+      "driversLicenseInfo": "Wordt gebruikt om je identiteit te bevestigen en fraude te voorkomen."
+    },
+    "terms": {
+      "agree": "Ik ga akkoord met de algemene voorwaarden.",
+      "details": "Inclusief de huurovereenkomst en annuleringsvoorwaarden."
+    },
+    "submit": {
+      "toPayment": "Naar Betaling"
+    },
+    "errors": {
+      "selectValidPeriod": "Selecteer een geldige periode",
+      "minRentalDuration": "Minimale huurduur is {{days}} dagen",
+      "maxRentalDuration": "Maximale huurduur is {{days}} dagen",
+      "datesNotAvailable": "Een of meer geselecteerde datums zijn niet beschikbaar",
+      "datesBlocked": "Een of meer geselecteerde datums zijn geblokkeerd door de eigenaar",
+      "pickupTimeNotAvailable": "Geselecteerde ophaaltijd is niet beschikbaar",
+      "returnTimeNotAvailable": "Geselecteerde inlevertijd is niet beschikbaar",
+      "deliveryAddressRequired": "Bezorgadres is verplicht",
+      "firstNameRequired": "Voornaam is verplicht",
+      "lastNameRequired": "Achternaam is verplicht",
+      "emailRequired": "Email is verplicht",
+      "emailInvalid": "Voer een geldig emailadres in",
+      "phoneRequired": "Telefoonnummer is verplicht",
+      "phoneInvalid": "Voer een geldig telefoonnummer in",
+      "driversLicenseRequired": "Rijbewijsnummer is verplicht",
+      "termsRequired": "Je moet akkoord gaan met de voorwaarden"
+    }
+  },
+  "share": {
+    "title": "Deze aanhanger delen",
+    "shareThis": "Deel deze aanhanger",
+    "copyLink": "Kopieer",
+    "linkCopied": "Gekopiëerd",
+    "shareOn": "Delen op",
+    "shareText": "Bekijk deze aanhanger: {{title}} te huur voor €{{price}}/dag",
+    "emailSubject": "Aanhanger verhuur aanbeveling"
+  },
+  "favorite": {
+    "add": "Toevoegen aan favorieten",
+    "remove": "Verwijderen uit favorieten",
+    "loginRequired": "Je moet inloggen om favorieten toe te voegen"
+  },
+  "map": {
+    "loadingMap": "Kaart laden...",
+    "loadingLocationMap": "Locatiekaart laden...",
+    "approximateLocation": "Geschatte locatie · Exacte adres na boeking"
+  },
+  "quickMessage": {
+    "askQuestion": "Stel een vraag",
+    "title": "Vraag stellen aan de eigenaar",
+    "description": "Nog vragen over {{trailerTitle}}? Stel een korte vraag aan de eigenaar.",
+    "messageFormat": "Vraag over {{trailerTitle}} (ID: {{trailerId}}): {{message}}",
+    "checkingConversations": "Gesprekken controleren...",
+    "errors": {
+      "enterMessage": "Voer een bericht in",
+      "somethingWentWrong": "Er ging iets mis. Probeer het later opnieuw."
+    },
+    "auth": {
+      "loginRequired": "Je moet ingelogd zijn om een bericht te kunnen sturen aan de eigenaar.",
+      "loginButton": "Inloggen om een vraag te stellen"
+    },
+    "existingConversation": {
+      "pendingTitle": "Je hebt al een lopend gesprek over deze aanhanger",
+      "pendingDescription": "Wacht op een reactie van de eigenaar voordat je een nieuw bericht stuurt.",
+      "goToButton": "Ga naar bestaand gesprek",
+      "continuing": "Je hebt al eerder over deze aanhanger gecommuniceerd. Je nieuwe bericht wordt toegevoegd aan de bestaande conversatie."
+    },
+    "form": {
+      "placeholder": "Typ je vraag hier...",
+      "cancel": "Annuleren",
+      "send": "Versturen",
+      "sending": "Versturen..."
+    }
+  }
+}

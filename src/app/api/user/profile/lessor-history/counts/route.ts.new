@@ -1,0 +1,164 @@
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { UserStatsService } from '@/services/user-stats-updater';
+
+// Simple in-memory cache for counts
+const countsCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 30 * 1000; // 30 seconds cache
+
+export async function GET() {
+  try {
+    const startTime = performance.now();
+    
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
+    const userId = session.user.id;
+    
+    // Check cache first
+    const cached = countsCache.get(userId);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      return NextResponse.json(cached.data);
+    }
+    
+    // Check if we have up-to-date UserStats
+    const userStats = await prisma.userStats.findUnique({
+      where: { userId },
+      select: {
+        pendingRentals: true,
+        confirmedRentals: true,
+        activeRentals: true,
+        completedRentalsCount: true,
+        cancelledRentalsCount: true,
+        lateReturnRentals: true,
+        disputedRentals: true,
+        totalRentals: true,
+        lastUpdated: true,
+      }
+    });
+    
+    // If we have recent stats (less than 5 minutes old), use them
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    if (userStats && userStats.lastUpdated > fiveMinutesAgo) {
+      // Calculate aggregated counts for UI tabs
+      const result = {
+        total: userStats.totalRentals,
+        upcoming: userStats.pendingRentals + userStats.confirmedRentals,
+        current: userStats.activeRentals + userStats.lateReturnRentals + userStats.disputedRentals,
+        past: userStats.completedRentalsCount + userStats.cancelledRentalsCount,
+        detailed: {
+          PENDING: userStats.pendingRentals,
+          CONFIRMED: userStats.confirmedRentals,
+          ACTIVE: userStats.activeRentals,
+          COMPLETED: userStats.completedRentalsCount,
+          CANCELLED: userStats.cancelledRentalsCount,
+          LATE_RETURN: userStats.lateReturnRentals,
+          DISPUTED: userStats.disputedRentals
+        },
+        _debug: process.env.NODE_ENV === 'development' ? {
+          executionTime: Math.round(performance.now() - startTime),
+          userId,
+          fromCache: 'userStats',
+          statsAge: Math.round((Date.now() - userStats.lastUpdated.getTime()) / 1000) + 's'
+        } : undefined
+      };
+      
+      // Cache the result
+      countsCache.set(userId, { data: result, timestamp: Date.now() });
+      
+      const response = NextResponse.json(result);
+      response.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60');
+      
+      return response;
+    }
+    
+    // If we don't have recent stats, query the database
+    const rentalCounts = await prisma.rental.groupBy({
+      by: ['status'],
+      where: {
+        OR: [
+          {
+            trailer: {
+              ownerId: userId
+            }
+          },
+          {
+            lessorId: userId
+          }
+        ]
+      },
+      _count: {
+        id: true
+      }
+    });
+    
+    // Initialize counts with all possible statuses
+    const statusCounts: Record<string, number> = {
+      PENDING: 0,
+      CONFIRMED: 0,
+      ACTIVE: 0,
+      COMPLETED: 0,
+      CANCELLED: 0,
+      LATE_RETURN: 0,
+      DISPUTED: 0
+    };
+    
+    // Fill in actual counts from query results
+    rentalCounts.forEach(item => {
+      if (item.status in statusCounts) {
+        statusCounts[item.status] = item._count.id;
+      }
+    });
+    
+    // Calculate aggregated counts for UI tabs
+    const result = {
+      total: Object.values(statusCounts).reduce((sum, count) => sum + count, 0),
+      upcoming: statusCounts.PENDING + statusCounts.CONFIRMED,
+      current: statusCounts.ACTIVE + statusCounts.LATE_RETURN + statusCounts.DISPUTED,
+      past: statusCounts.COMPLETED + statusCounts.CANCELLED,
+      detailed: statusCounts,
+      _debug: process.env.NODE_ENV === 'development' ? {
+        executionTime: Math.round(performance.now() - startTime),
+        userId,
+        countsFound: rentalCounts.length,
+        fromCache: 'none'
+      } : undefined
+    };
+    
+    // Cache the result
+    countsCache.set(userId, { data: result, timestamp: Date.now() });
+    
+    // Schedule an update of the user stats in the background
+    UserStatsService.scheduleUpdate(userId);
+    
+    // Periodically clean old cache entries (10% chance)
+    if (Math.random() < 0.1) {
+      const now = Date.now();
+      for (const [key, value] of countsCache.entries()) {
+        if (now - value.timestamp > CACHE_TTL * 10) {
+          countsCache.delete(key);
+        }
+      }
+    }
+    
+    const response = NextResponse.json(result);
+    response.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60');
+    
+    return response;
+    
+  } catch (error) {
+    console.error('Error fetching lessor rental counts', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch lessor rental counts' },
+      { status: 500 }
+    );
+  }
+}

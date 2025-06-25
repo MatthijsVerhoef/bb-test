@@ -1,0 +1,76 @@
+{
+  "locale": "de",
+  "header": {
+    "home": "Startseite",
+    "trailers": "Angebot",
+    "addTrailer": "Anhänger hinzufügen",
+    "profile": "Profil",
+    "chat": "Nachrichten",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "blogs": "Blogs",
+    "contact": "Kontakt",
+    "register": "Registrieren",
+    "rentOut": "Ich möchte vermieten",
+    "favorites": "Favoriten",
+    "myRentals": "Meine Buchungen",
+    "myTrailers": "Meine Anhänger",
+    "howItWorks": "Wie es funktioniert",
+    "faq": "Häufige Fragen",
+    "help": "Hilfe"
+  },
+  "footer": {
+    "about": "Über uns",
+    "howItWorks": "Wie es funktioniert",
+    "contact": "Kontakt",
+    "terms": "Bedingungen",
+    "privacy": "Datenschutz",
+    "sitemap": "Seitenverzeichnis"
+  },
+  "feedback": {
+    "triggerButton": "Geben Sie uns Feedback!",
+    "title": "Feedback geben",
+    "description": "Helfen Sie uns, unsere Plattform zu verbessern, indem Sie die folgenden Fragen beantworten.",
+    "successMessage": "Vielen Dank für Ihr Feedback! Wir schätzen Ihre Meinung.",
+    "ratingLabel": "Wie bewerten Sie unsere Plattform?",
+    "improvementsLabel": "Welche Verbesserungen würden Sie gerne sehen?",
+    "improvementsHint": "Denken Sie an Dinge, die Sie bei der Nutzung unserer Plattform vermisst haben, Dinge, die Sie anders sehen möchten, und alles andere, was Ihnen einfällt!",
+    "improvementsPlaceholder": "Schreiben Sie, was Sie gerne anders sehen würden/vermissen...",
+    "recommendLabel": "Würden Sie wieder über unsere Plattform mieten/vermieten?",
+    "yes": "Ja",
+    "no": "Nein",
+    "emailLabel": "E-Mail",
+    "emailPlaceholder": "E-Mail",
+    "submitButton": "Feedback senden",
+    "error": {
+      "missingFields": "Es scheint, dass nicht alle Felder ausgefüllt wurden!",
+      "submissionFailed": "Beim Senden Ihres Feedbacks ist etwas schief gelaufen"
+    }
+  },
+  "language": {
+    "select": "Sprache wählen"
+  },
+  "general": {
+    "loading": "Wird geladen...",
+    "error": "Etwas ist schief gelaufen",
+    "tryAgain": "Erneut versuchen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "yes": "Ja",
+    "no": "Nein",
+    "confirm": "Bestätigen",
+    "viewMore": "Mehr anzeigen",
+    "viewLess": "Weniger anzeigen",
+    "showAll": "Alle anzeigen",
+    "noResults": "Keine Ergebnisse gefunden",
+    "done": "Fertig"
+  }
+}

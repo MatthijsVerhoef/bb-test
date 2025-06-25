@@ -1,0 +1,287 @@
+{
+  "dialog": {
+    "title": "Einstellungen",
+    "description": "Verwalten Sie Ihre Kontoeinstellungen und Präferenzen",
+    "backButton": "Zurück"
+  },
+  "sections": {
+    "account": "Konto",
+    "lessorSettings": "Vermietereinstellungen",
+    "notifications": "Benachrichtigungen",
+    "security": "Sicherheit",
+    "billing": "Abrechnung"
+  },
+  "logout": "Abmelden",
+  "account": {
+    "password": {
+      "title": "Passwort",
+      "description": "Halten Sie Ihr Konto mit einem starken Passwort sicher",
+      "changeButton": "Passwort ändern",
+      "dialog": {
+        "title": "Passwort ändern",
+        "description": "Wählen Sie ein starkes Passwort mit mindestens 8 Zeichen",
+        "currentPassword": "Aktuelles Passwort",
+        "newPassword": "Neues Passwort",
+        "confirmPassword": "Passwort bestätigen",
+        "passwordMismatch": "Passwörter stimmen nicht überein",
+        "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+        "cancel": "Abbrechen",
+        "change": "Ändern"
+      },
+      "success": "Passwort erfolgreich geändert"
+    },
+    "accountManagement": {
+      "title": "Kontoverwaltung",
+      "description": "Vorübergehend deaktivieren oder dauerhaft löschen",
+      "deactivateButton": "Konto deaktivieren",
+      "deleteButton": "Konto löschen",
+      "deactivateDialog": {
+        "title": "Konto deaktivieren?",
+        "description": "Ihr Konto wird vorübergehend deaktiviert. Sie können sich jederzeit wieder anmelden, um Ihr Konto zu reaktivieren.",
+        "cancel": "Abbrechen",
+        "deactivate": "Deaktivieren"
+      },
+      "deleteDialog": {
+        "title": "Konto dauerhaft löschen?",
+        "description": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten werden dauerhaft gelöscht.",
+        "confirmationLabel": "Geben Sie Ihre E-Mail-Adresse zur Bestätigung ein:",
+        "cancel": "Abbrechen",
+        "delete": "Löschen",
+        "deleting": "Wird gelöscht..."
+      }
+    }
+  },
+  "lessorSettings": {
+    "autoApproval": {
+      "title": "Automatische Genehmigung",
+      "description": "Buchungen von vertrauenswürdigen Mietern automatisch akzeptieren",
+      "toggle": "Automatische Genehmigung",
+      "toggleDescription": "Buchungen werden direkt bestätigt, wenn sie Ihren Kriterien entsprechen",
+      "minRating": {
+        "toggle": "Mindestbewertung erforderlich",
+        "toggleDescription": "Nur Mieter mit einer Mindestbewertung akzeptieren",
+        "label": "Mindestwert",
+        "star": "Stern"
+      },
+      "minRentals": {
+        "label": "Mindestanzahl früherer Vermietungen",
+        "options": {
+          "none": "Kein Minimum",
+          "one": "1 Vermietung",
+          "three": "3 Vermietungen",
+          "five": "5 Vermietungen",
+          "ten": "10 Vermietungen"
+        }
+      },
+      "verifiedOnly": {
+        "label": "Nur verifizierte Benutzer",
+        "description": "Nur Benutzer mit verifiziertem Führerschein"
+      }
+    },
+    "rentalTerms": {
+      "title": "Mietbedingungen",
+      "description": "Standardeinstellungen für neue Anhänger",
+      "minDuration": {
+        "label": "Mindestmietdauer",
+        "options": {
+          "oneDay": "1 Tag",
+          "twoDays": "2 Tage",
+          "threeDays": "3 Tage",
+          "oneWeek": "1 Woche"
+        }
+      },
+      "maxDuration": {
+        "label": "Maximale Mietdauer",
+        "options": {
+          "oneWeek": "1 Woche",
+          "twoWeeks": "2 Wochen",
+          "oneMonth": "1 Monat",
+          "twoMonths": "2 Monate",
+          "threeMonths": "3 Monate"
+        }
+      },
+      "securityDeposit": {
+        "label": "Kaution-Prozentsatz",
+        "description": "Prozentsatz des Gesamtmietpreises als Kaution"
+      }
+    },
+    "cancellationPolicy": {
+      "title": "Stornierungsrichtlinie",
+      "description": "Bestimmen Sie, wann Mieter stornieren können",
+      "policies": {
+        "flexible": {
+          "label": "Flexibel",
+          "description": "Kostenlose Stornierung bis 24 Stunden vor Abholung"
+        },
+        "moderate": {
+          "label": "Moderat",
+          "description": "100% Rückerstattung bei Stornierung innerhalb von 72 Stunden"
+        },
+        "strict": {
+          "label": "Streng",
+          "description": "Keine Rückerstattung innerhalb von 7 Tagen"
+        },
+        "custom": {
+          "label": "Benutzerdefiniert",
+          "description": "Erstellen Sie Ihre eigene Richtlinie",
+          "placeholder": "Beschreiben Sie Ihre Stornierungsrichtlinie..."
+        }
+      }
+    },
+    "saveButton": {
+      "saving": "Speichern...",
+      "save": "Einstellungen speichern",
+      "noChanges": "Keine Änderungen zu speichern"
+    }
+  },
+  "notifications": {
+    "loading": "Einstellungen werden geladen...",
+    "emailNotifications": {
+      "disabled": {
+        "title": "E-Mail-Benachrichtigungen sind deaktiviert",
+        "description": "Sie erhalten keine E-Mails von uns, bis Sie dies wieder aktivieren"
+      }
+    },
+    "categories": {
+      "bookings": {
+        "title": "Buchungen",
+        "description": "Updates zu Ihren Vermietungen und Reservierungen",
+        "settings": {
+          "booking_request": {
+            "label": "Neue Buchungsanfragen",
+            "description": "Wenn jemand Ihren Anhänger mieten möchte"
+          },
+          "booking_confirmed": {
+            "label": "Buchungsbestätigungen",
+            "description": "Wenn eine Buchung bestätigt wird"
+          },
+          "booking_cancelled": {
+            "label": "Stornierungen",
+            "description": "Wenn eine Buchung storniert wird"
+          },
+          "booking_modified": {
+            "label": "Änderungen",
+            "description": "Wenn Buchungsdetails geändert werden"
+          }
+        }
+      },
+      "payments": {
+        "title": "Zahlungen",
+        "description": "Finanztransaktionen und Auszahlungen",
+        "settings": {
+          "payment_received": {
+            "label": "Zahlung erhalten",
+            "description": "Wenn Sie eine Zahlung erhalten haben"
+          },
+          "payout_processed": {
+            "label": "Auszahlung verarbeitet",
+            "description": "Wenn Geld auf Ihr Konto überwiesen wurde"
+          },
+          "payment_failed": {
+            "label": "Fehlgeschlagene Zahlungen",
+            "description": "Wenn eine Zahlung fehlgeschlagen ist"
+          }
+        }
+      },
+      "messages": {
+        "title": "Nachrichten",
+        "description": "Kommunikation mit Mietern und Vermietern",
+        "settings": {
+          "new_message": {
+            "label": "Neue Nachrichten",
+            "description": "Wenn Sie eine neue Nachricht erhalten"
+          },
+          "unread_reminder": {
+            "label": "Erinnerung an ungelesene Nachrichten",
+            "description": "Tägliche Erinnerung für ungelesene Nachrichten"
+          }
+        }
+      },
+      "reminders": {
+        "title": "Erinnerungen",
+        "description": "Wichtige Termine und Aktionen",
+        "settings": {
+          "pickup_reminder": {
+            "label": "Abholungserinnerung",
+            "description": "24 Stunden vor der Abholung eines Anhängers"
+          },
+          "return_reminder": {
+            "label": "Rückgabeerinnerung",
+            "description": "24 Stunden vor der Rückgabe eines Anhängers"
+          },
+          "review_reminder": {
+            "label": "Bewertung abgeben",
+            "description": "Erinnerung, eine Bewertung abzugeben"
+          }
+        }
+      },
+      "marketing": {
+        "title": "Angebote & Neuigkeiten",
+        "description": "Updates über neue Funktionen und Angebote",
+        "settings": {
+          "promotions": {
+            "label": "Sonderangebote",
+            "description": "Rabatte und Werbeaktionen"
+          },
+          "newsletter": {
+            "label": "Newsletter",
+            "description": "Monatliche Updates und Tipps"
+          },
+          "new_features": {
+            "label": "Neue Funktionen",
+            "description": "Wenn wir neue Funktionen einführen"
+          }
+        }
+      }
+    },
+    "saveButton": {
+      "saving": "Speichern...",
+      "save": "Einstellungen speichern",
+      "noChanges": "Keine Änderungen zu speichern"
+    }
+  },
+  "security": {
+    "twoFactor": {
+      "title": "Zwei-Faktor-Authentifizierung",
+      "description": "Zusätzliche Sicherheit für Ihr Konto",
+      "authApp": {
+        "label": "Authenticator-App verwenden",
+        "description": "Erfordert einen Code bei jeder neuen Anmeldung"
+      }
+    },
+    "loginAlerts": {
+      "title": "Benachrichtigungen",
+      "description": "Benachrichtigungen für Kontoaktivitäten",
+      "newLogin": {
+        "label": "E-Mail bei neuer Anmeldung",
+        "description": "Benachrichtigung bei Anmeldung von einem neuen Gerät"
+      }
+    },
+    "devices": {
+      "title": "Geräte",
+      "description": "{{count}} aktive Sitzungen",
+      "current": "aktuell",
+      "removeButton": "Entfernen",
+      "removeDialog": {
+        "title": "Gerät entfernen?",
+        "description": "Dieses Gerät wird abgemeldet und muss sich erneut anmelden.",
+        "cancel": "Abbrechen",
+        "remove": "Entfernen"
+      }
+    }
+  },
+  "billing": {
+    "paymentMethods": {
+      "title": "Zahlungsmethoden",
+      "description": "Verwalten Sie Ihre Karten für Zahlungen und erhalten Sie Mieteinnahmen"
+    },
+    "transactions": {
+      "title": "Transaktionsverlauf",
+      "emptyState": "Es gibt noch keine Transaktionen anzuzeigen",
+      "status": {
+        "completed": "Abgeschlossen",
+        "pending": "In Bearbeitung"
+      }
+    }
+  }
+}

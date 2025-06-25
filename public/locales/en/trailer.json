@@ -1,0 +1,274 @@
+{
+  "backToListing": "Back to listing",
+  "reportAd": "Report this listing",
+  "accessories": "Accessories",
+  "perDay": "per day",
+  "included": "Included",
+  "reviews": "reviews",
+  "reserve": "Reserve",
+  "gallery": {
+    "showAll": "Show all photos",
+    "photos": "photos",
+    "noImages": "No images available",
+    "noMoreImages": "No more images",
+    "dialog": "Trailer dialog"
+  },
+  "specs": {
+    "title": "Specifications",
+    "type": "Type",
+    "category": "Category",
+    "manufacturer": "Manufacturer",
+    "model": "Model",
+    "year": "Year",
+    "dimensions": "Dimensions",
+    "length": "Length",
+    "width": "Width",
+    "height": "Height",
+    "weight": "Weight",
+    "capacity": "Load capacity",
+    "axles": "Axles",
+    "brakes": "Brakes",
+    "maxSpeed": "Max speed",
+    "towBallWeight": "Towball weight",
+    "vinNumber": "VIN number",
+    "lastMaintenance": "Last maintenance",
+    "details": "Details",
+    "unknown": "Unknown",
+    "singleAxle": "Single axle",
+    "tandemAxle": "Tandem axle",
+    "tripleAxle": "Triple axle",
+    "hydraulic": "Hydraulic",
+    "overrun": "Overrun",
+    "electric": "Electric",
+    "none": "None"
+  },
+  "description": {
+    "title": "Description",
+    "features": "Features",
+    "detailedSpecs": "Detailed specifications",
+    "featuresList": {
+      "foldable": "Foldable",
+      "tilt": "Tilting",
+      "ramps": "With ramps",
+      "spare_wheel": "Spare wheel",
+      "weatherproof": "Weatherproof",
+      "lockable": "Lockable",
+      "lighting": "Lighting",
+      "stabilizer": "Stabilizer",
+      "winch": "Winch",
+      "jockey_wheel": "Jockey wheel"
+    },
+    "standardDescription": {
+      "open": "This open trailer is perfect for transporting various loads. The open design makes loading and unloading easy and offers flexibility for different applications.",
+      "closed": "This enclosed trailer offers excellent protection for your cargo against weather conditions. Ideal for valuable or sensitive goods that need to stay dry.",
+      "car": "This car transporter is specially designed for safely transporting vehicles. With sturdy loading ramps and attachment points, your car is in good hands.",
+      "boat": "This boat trailer is perfect for safely transporting your boat. Equipped with a sturdy frame and adjustable supports for different boat types.",
+      "motorcycle": "This motorcycle trailer makes transporting your motorcycle safe and easy. Special attachment points ensure stability during transport.",
+      "bicycle": "This bicycle trailer is ideal for transporting multiple bikes. Compact design with secure attachment options.",
+      "horse": "This horse trailer provides comfort and safety for transporting your horse(s). Equipped with ventilation and non-slip flooring.",
+      "tipper": "This tipper trailer makes unloading bulk materials quick and efficient. Perfect for construction and garden projects.",
+      "flatbed": "This flatbed trailer offers maximum loading space and flexibility. Ideal for long or irregular loads.",
+      "refrigerated": "This refrigerated trailer keeps your temperature-sensitive cargo at the right temperature. Perfect for transporting food or medical products.",
+      "furniture": "This moving van is specially equipped for safely transporting furniture and household goods. With attachment points and protective lining.",
+      "market": "This market stall trailer is perfectly equipped for mobile sales. With fold-out sections and display options.",
+      "other": "This trailer is suitable for various applications. Contact us for specific possibilities and uses."
+    }
+  },
+  "owner": {
+    "title": "About the owner",
+    "responseRate": "Response rate",
+    "responseTime": "Response time",
+    "memberSince": "Member since",
+    "verifiedIdentity": "Verified identity",
+    "viewProfile": "View profile",
+    "contactOwner": "Contact owner",
+    "responseTimeValues": {
+      "within_hour": "Within an hour",
+      "within_day": "Within a day",
+      "within_week": "Within a week"
+    },
+    "defaultName": "Owner",
+    "joined": "Joined {{time}}",
+    "respondsInLessThanHour": "Usually responds in less than an hour",
+    "respondsInHours": "Usually responds in {{count}} hour",
+    "respondsInHours_plural": "Usually responds in {{count}} hours",
+    "respondsInDays": "Usually responds in {{count}} day",
+    "respondsInDays_plural": "Usually responds in {{count}} days",
+    "responseRateValue": "{{rate}}% response rate",
+    "viewReviews": "View reviews"
+  },
+  "location": {
+    "title": "Location",
+    "viewOnMap": "View on map"
+  },
+  "reviews": {
+    "title": "Reviews",
+    "noReviews": "No reviews yet",
+    "beFirstReview": "Be the first to review this trailer!",
+    "averageRating": "Average rating",
+    "totalReviews": "reviews",
+    "showMore": "Show more reviews",
+    "showAll": "Show all {{count}} reviews",
+    "helpful": "Helpful",
+    "reportReview": "Report review",
+    "recommendedPercentage": "{{percentage}}% of renters would recommend this trailer.",
+    "responseFromOwner": "Response from owner",
+    "categories": {
+      "cleanliness": "Cleanliness",
+      "maintenance": "Maintenance",
+      "valueForMoney": "Value for money",
+      "communication": "Communication",
+      "accuracy": "Accuracy"
+    }
+  },
+  "booking": {
+    "title": "Book this trailer",
+    "pricePerDay": "per day",
+    "pricePerWeek": "per week",
+    "pricePerMonth": "per month",
+    "selectDates": "Select dates",
+    "pickupDate": "Pickup date",
+    "returnDate": "Return date",
+    "duration": "Rental duration",
+    "days": "days",
+    "totalCost": "Total cost",
+    "securityDeposit": "Security deposit",
+    "deliveryOptions": "Delivery options",
+    "pickup": "Pickup",
+    "delivery": "Delivery",
+    "deliveryFee": "Delivery fee",
+    "maxDeliveryDistance": "Max delivery distance",
+    "minRentalDuration": "Min rental duration",
+    "maxRentalDuration": "Max rental duration",
+    "insurance": "Insurance",
+    "includedInPrice": "Included in price",
+    "checkAvailability": "Check availability",
+    "bookNow": "Book now",
+    "contactOwner": "Contact owner",
+    "notAvailable": "Not available",
+    "selectDateFirst": "Please select dates first",
+    "rentalDates": "Rental Dates",
+    "discounts": {
+      "title": "Discounts",
+      "perWeek": "Per week:",
+      "perMonth": "Per month:"
+    },
+    "dates": {
+      "select": "Select dates",
+      "loading": "Loading...",
+      "minDays": "Min: {{days}} days",
+      "maxDays": "Max: {{days}} days",
+      "apply": "Apply",
+      "selectEndDate": "End date"
+
+    },
+    "time": {
+      "pickup": "Pickup",
+      "return": "Return",
+      "selectTime": "Select time",
+      "noAvailability": "No availability for this day"
+    },
+    "delivery": {
+      "homeDelivery": "Home delivery",
+      "fee": "(+€{{fee}})",
+      "availableWithin": "Available within {{distance}} km",
+      "addressPlaceholder": "Enter full address"
+    },
+    "pricing": {
+      "perDay": "€{{price}} × {{days}} days",
+      "basePrice": "€{{price}}",
+      "deliveryCosts": "Delivery costs",
+      "deposit": "Deposit",
+      "serviceFee": "Service fee",
+      "depositTooltip": "The deposit will be refunded when the trailer is returned in original condition.",
+      "total": "Total"
+    },
+    "button": {
+      "reserve": "Reserve",
+      "loading": "Loading..."
+    },
+    "confirmation": {
+      "title": "Confirm your reservation",
+      "description": "Fill in your details to reserve the {{trailerTitle}} for {{days}} days."
+    },
+    "form": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone number",
+      "driversLicense": "Driver's license number",
+      "driversLicenseInfo": "Used to verify your identity and prevent fraud."
+    },
+    "terms": {
+      "agree": "I agree to the terms and conditions.",
+      "details": "Including the rental agreement and cancellation policy."
+    },
+    "submit": {
+      "toPayment": "To Payment"
+    },
+    "errors": {
+      "selectValidPeriod": "Select a valid period",
+      "minRentalDuration": "Minimum rental duration is {{days}} days",
+      "maxRentalDuration": "Maximum rental duration is {{days}} days",
+      "datesNotAvailable": "One or more selected dates are not available",
+      "datesBlocked": "One or more selected dates have been blocked by the owner",
+      "pickupTimeNotAvailable": "Selected pickup time is not available",
+      "returnTimeNotAvailable": "Selected return time is not available",
+      "deliveryAddressRequired": "Delivery address is required",
+      "firstNameRequired": "First name is required",
+      "lastNameRequired": "Last name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Enter a valid email address",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Enter a valid phone number",
+      "driversLicenseRequired": "Driver's license number is required",
+      "termsRequired": "You must agree to the terms and conditions"
+    }
+  },
+  "share": {
+    "title": "Share this trailer",
+    "shareThis": "Share this trailer",
+    "copyLink": "Copy",
+    "linkCopied": "Copied",
+    "shareOn": "Share on",
+    "shareText": "Check out this trailer: {{title}} for rent at €{{price}}/day",
+    "emailSubject": "Trailer Rental Recommendation"
+  },
+  "favorite": {
+    "add": "Add to favorites",
+    "remove": "Remove from favorites",
+    "loginRequired": "You must log in to add favorites"
+  },
+  "map": {
+    "loadingMap": "Loading map...",
+    "loadingLocationMap": "Loading location map...",
+    "approximateLocation": "Approximate location · Exact address after booking"
+  },
+  "quickMessage": {
+    "askQuestion": "Ask a question",
+    "title": "Ask the owner a question",
+    "description": "Have questions about {{trailerTitle}}? Ask the owner a quick question.",
+    "messageFormat": "Question about {{trailerTitle}} (ID: {{trailerId}}): {{message}}",
+    "checkingConversations": "Checking conversations...",
+    "errors": {
+      "enterMessage": "Please enter a message",
+      "somethingWentWrong": "Something went wrong. Please try again later."
+    },
+    "auth": {
+      "loginRequired": "You must be logged in to send a message to the owner.",
+      "loginButton": "Log in to ask a question"
+    },
+    "existingConversation": {
+      "pendingTitle": "You already have an ongoing conversation about this trailer",
+      "pendingDescription": "Wait for a reply from the owner before sending a new message.",
+      "goToButton": "Go to existing conversation",
+      "continuing": "You've communicated about this trailer before. Your new message will be added to the existing conversation."
+    },
+    "form": {
+      "placeholder": "Type your question here...",
+      "cancel": "Cancel",
+      "send": "Send",
+      "sending": "Sending..."
+    }
+  }
+}

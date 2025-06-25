@@ -1,0 +1,214 @@
+{
+  "types": {
+    "OPEN": {
+      "name": "Offener Anhänger",
+      "description": "Vielseitiger offener Anhänger, perfekt für Gartenarbeit, Umzüge und den Transport verschiedener Gegenstände",
+      "features": [
+        "Einfaches Be- und Entladen",
+        "Wetterbeständige Konstruktion",
+        "Verschiedene Größen verfügbar",
+        "Ideal für sperrige Gegenstände"
+      ]
+    },
+    "CLOSED": {
+      "name": "Geschlossener Anhänger",
+      "description": "Sicherer geschlossener Anhänger zum Schutz Ihrer wertvollen Gegenstände vor Wetter und Diebstahl",
+      "features": [
+        "Wetter- und diebstahlsicher",
+        "Perfekt für empfindliche Gegenstände",
+        "Abschließbar",
+        "Verschiedene Größen verfügbar"
+      ]
+    },
+    "PICKUP": {
+      "name": "Pickup-Anhänger",
+      "description": "Robuster Anhänger für schwere Lasten und den gewerblichen Einsatz",
+      "features": [
+        "Hohe Nutzlast",
+        "Verstärkte Konstruktion",
+        "Ideal für Baumaterialien",
+        "Professioneller Einsatz"
+      ]
+    },
+    "BOAT": {
+      "name": "Bootsanhänger",
+      "description": "Speziell entwickelter Anhänger für den sicheren Transport von Booten und Wassersportgeräten",
+      "features": [
+        "Marinespezifische Ausstattung",
+        "Korrosionsbeständig",
+        "Verstellbare Stützen",
+        "Bootslängen bis 8 Meter"
+      ]
+    },
+    "MOTORCYCLE": {
+      "name": "Motorradanhänger",
+      "description": "Spezialisierter Anhänger für den sicheren Transport von Motorrädern und ATVs",
+      "features": [
+        "Motorradspezifische Befestigung",
+        "Rampe für einfaches Beladen",
+        "Niedrige Ladehöhe",
+        "Sichere Verzurrpunkte"
+      ]
+    },
+    "CAR": {
+      "name": "Autoanhänger",
+      "description": "Professioneller Anhänger für den Transport von Fahrzeugen",
+      "features": [
+        "Hydraulische Rampe",
+        "Hohe Nutzlast",
+        "Professionelle Verzurrung",
+        "Geeignet für verschiedene Fahrzeugtypen"
+      ]
+    },
+    "FURNITURE": {
+      "name": "Möbelanhänger",
+      "description": "Speziell für Umzüge und Möbeltransport entwickelter Anhänger",
+      "features": [
+        "Möbelschutzpolsterung",
+        "Niedrige Ladekante",
+        "Große Ladefläche",
+        "Ideal für Umzüge"
+      ]
+    },
+    "LIVESTOCK": {
+      "name": "Viehanhänger",
+      "description": "Spezialisierter Anhänger für den sicheren und komfortablen Transport von Tieren",
+      "features": [
+        "Tierschutzgerechte Ausstattung",
+        "Belüftungssystem",
+        "Rutschfester Boden",
+        "Verschiedene Größen für verschiedene Tiere"
+      ]
+    },
+    "REFRIGERATED": {
+      "name": "Kühlanhänger",
+      "description": "Temperaturkontrollierter Anhänger für den Transport verderblicher Waren",
+      "features": [
+        "Aktive Kühlung",
+        "Temperaturüberwachung",
+        "Isolierte Wände",
+        "Ideal für Lebensmittel und Medikamente"
+      ]
+    },
+    "FLATBED": {
+      "name": "Plattformanhänger",
+      "description": "Niedriger Plattformanhänger für schwere Maschinen und Baugeräte",
+      "features": [
+        "Niedrige Ladehöhe",
+        "Hohe Nutzlast",
+        "Ausziehbare Rampen",
+        "Ideal für Baumaschinen"
+      ]
+    },
+    "OTHER": {
+      "name": "Sonderanhänger",
+      "description": "Spezialisierte Anhänger für besondere Transportanforderungen",
+      "features": [
+        "Kundenspezifische Lösungen",
+        "Vielseitige Einsatzmöglichkeiten",
+        "Flexible Konfiguration",
+        "Für besondere Anforderungen"
+      ]
+    }
+  },
+  "accessories": {
+    "SPARE_WHEEL": {
+      "name": "Ersatzrad",
+      "description": "Ersatzrad für Notfälle unterwegs"
+    },
+    "SPARE_TIRE": {
+      "name": "Ersatzreifen",
+      "description": "Zusätzlicher Reifen als Ersatz"
+    },
+    "TOOL_KIT": {
+      "name": "Werkzeugkasten",
+      "description": "Grundlegendes Werkzeug für Reparaturen"
+    },
+    "FIRST_AID_KIT": {
+      "name": "Erste-Hilfe-Kasten",
+      "description": "Notfallausrüstung für Unfälle"
+    },
+    "RAMPS": {
+      "name": "Rampen",
+      "description": "Beladungsrampen für einfaches Auf- und Abladen"
+    },
+    "TIE_DOWN_STRAPS": {
+      "name": "Zurrgurte",
+      "description": "Gurte zum sicheren Befestigen der Ladung"
+    },
+    "CARGO_NET": {
+      "name": "Ladungsnetz",
+      "description": "Netz zur Sicherung loser Gegenstände"
+    },
+    "TRAILER_LOCK": {
+      "name": "Anhängerschloss",
+      "description": "Sicherheitsschloss gegen Diebstahl"
+    },
+    "WINCH": {
+      "name": "Seilwinde",
+      "description": "Elektrische oder manuelle Winde zum Beladen"
+    },
+    "JACK": {
+      "name": "Wagenheber",
+      "description": "Hydraulischer Wagenheber für Reparaturen"
+    },
+    "WHEEL_CHOCKS": {
+      "name": "Unterlegkeile",
+      "description": "Keile zum Sichern des Anhängers"
+    },
+    "SAFETY_CHAINS": {
+      "name": "Sicherheitsketten",
+      "description": "Zusätzliche Sicherheitsketten"
+    },
+    "ELECTRICAL_ADAPTER": {
+      "name": "Elektroadapter",
+      "description": "Adapter für verschiedene Steckverbindungen"
+    },
+    "BRAKE_CONTROLLER": {
+      "name": "Bremsregler",
+      "description": "Elektronischer Bremsregler für das Zugfahrzeug"
+    },
+    "SIDE_MIRRORS": {
+      "name": "Außenspiegel",
+      "description": "Zusätzliche Spiegel für bessere Sicht"
+    },
+    "TRAILER_HITCH": {
+      "name": "Anhängerkupplung",
+      "description": "Kupplungssystem für verschiedene Fahrzeuge"
+    },
+    "GPS_TRACKER": {
+      "name": "GPS-Tracker",
+      "description": "Ortungsgerät für Diebstahlschutz"
+    },
+    "BACKUP_CAMERA": {
+      "name": "Rückfahrkamera",
+      "description": "Kamera für sicheres Rückwärtsfahren"
+    },
+    "LOADING_DOCK": {
+      "name": "Laderampe",
+      "description": "Verstellbare Rampe für einfaches Beladen"
+    },
+    "CORNER_PROTECTORS": {
+      "name": "Eckenschutz",
+      "description": "Schutz für empfindliche Ladung an den Ecken"
+    }
+  },
+  "general": {
+    "specifications": "Technische Daten",
+    "dimensions": "Abmessungen",
+    "weight": "Gewicht",
+    "capacity": "Ladekapazität",
+    "features": "Ausstattung",
+    "accessories": "Zubehör",
+    "available": "Verfügbar",
+    "notAvailable": "Nicht verfügbar",
+    "included": "Inklusive",
+    "optional": "Optional",
+    "length": "Länge",
+    "width": "Breite",
+    "height": "Höhe",
+    "maxLoad": "Max. Zuladung",
+    "emptyWeight": "Leergewicht",
+    "totalWeight": "Gesamtgewicht"
+  }
+}

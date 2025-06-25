@@ -1,0 +1,1067 @@
+{
+  "personalInfo": {
+    "title": "Persoonlijke informatie",
+    "editProfile": "Profiel bewerken",
+    "updateDetails": "Update je persoonlijke gegevens en contactinformatie",
+    "viewDetails": "Je persoonlijke gegevens en contactinformatie",
+    "incomplete": {
+      "title": "Profiel incompleet:",
+      "message": "Vul je profiel aan met telefoonnummer en adresgegevens om het meeste uit BuurBak te halen.",
+      "button": "Profiel aanvullen",
+      "welcome": {
+        "title": "Welkom bij BuurBak!",
+        "subtitle": "Laten we je profiel instellen",
+        "heading": "Fijn dat je er bent!",
+        "description": "BuurBak verbindt buren die aanhangers verhuren en huren. Laten we je profiel compleet maken zodat je direct kunt beginnen."
+      },
+      "fillDetails": "Vul je gegevens in",
+      "completeProfile": "Profiel aanvullen",
+      "almostThere": "We zijn er bijna!",
+      "fillMissingInfo": "Vul je ontbrekende gegevens aan",
+      "later": "Later",
+      "letsStart": "Laten we beginnen"
+    },
+    "form": {
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "email": "Email",
+      "emailReadonly": "E-mailadres kan niet worden gewijzigd",
+      "phone": "Telefoonnummer",
+      "phoneNotAdded": "Geen telefoonnummer toegevoegd",
+      "phoneRequired": "Nodig voor contact over verhuur en veiligheid",
+      "address": "Adres",
+      "addressPlaceholder": "Straat en huisnummer",
+      "city": "Plaats",
+      "cityPlaceholder": "bijv. Amsterdam",
+      "postalCode": "Postcode",
+      "postalCodePlaceholder": "bijv. 1234 AB",
+      "country": "Land",
+      "defaultCountry": "Nederland",
+      "saving": "Opslaan...",
+      "save": "Opslaan",
+      "cancel": "Annuleren",
+      "back": "Terug",
+      "updateError": "Fout bij het bijwerken van het profiel",
+      "updateSuccess": "Profiel succesvol bijgewerkt! Welkom bij BuurBak!",
+      "profilePicture": {
+        "uploadSuccess": "Profielfoto gewijzigd",
+        "updateSuccess": "Je profielfoto is succesvol bijgewerkt",
+        "uploadFailed": "Upload mislukt",
+        "uploadError": "Er is een probleem opgetreden bij het uploaden van je profielfoto",
+        "fileTooBig": "Bestand te groot",
+        "fileSizeLimit": "De afbeelding moet kleiner zijn dan 5MB",
+        "invalidFileType": "Ongeldig bestandstype",
+        "allowedFileTypes": "Upload een JPEG, PNG of WebP afbeelding"
+      }
+    },
+    "addressInfo": "Adresgegevens"
+  },
+  "sidebar": {
+    "memberSince": "Lid sinds",
+    "menu": "Menu",
+    "forLessors": "Voor verhuurders",
+    "tabs": {
+      "renter": {
+        "profile": "Mijn gegevens",
+        "rentals": "Mijn Huurovereenkomsten",
+        "favorites": "Favorieten",
+        "reviews": "Beoordelingen",
+        "settings": "Instellingen"
+      },
+      "lessor": {
+        "dashboard": "Dashboard",
+        "rentals": "Boekingen",
+        "calendar": "Kalender",
+        "listings": "Mijn Aanhangers",
+        "reviews": "Reviews"
+      }
+    },
+    "mode": {
+      "renter": "Huurder",
+      "lessor": "Verhuurder"
+    }
+  },
+  "paymentMethod": {
+    "title": "Betaal informatie",
+    "subtitle": {
+      "lessor": "Beheer jouw betaal & uitbetaal methodes gemakkelijk vanuit je account, maak het huren en verhuren van aanhangers nog eenvoudiger.",
+      "renter": "Beheer je betaalmethoden voor het huren van aanhangers"
+    },
+    "error": "Er is een fout opgetreden bij het laden van betaalmethoden",
+    "loading": "Betaalsysteem wordt geladen...",
+    "methods": {
+      "noMethods": "Geen betaalmethode toegevoegd",
+      "noMethodsDescription": "Voeg een betaalmethode toe om snel aanhangers te kunnen huren",
+      "addMethod": "Betaalmethode toevoegen",
+      "manage": "Beheer betaalmethoden",
+      "defaultBadge": "Standaard",
+      "setAsDefault": "Als standaard",
+      "removeTooltip": "Verwijder betaalmethode",
+      "expires": "Verloopt",
+      "removeSuccess": "Betaalmethode verwijderd",
+      "removeError": "Er is een fout opgetreden bij het verwijderen van de betaalmethode",
+      "setDefaultSuccess": "Standaard betaalmethode ingesteld",
+      "setDefaultError": "Er is een fout opgetreden bij het instellen van de standaard betaalmethode",
+      "addSuccess": "Betaalmethode toegevoegd"
+    },
+    "lessor": {
+      "payoutTitle": "Verhuurder uitbetaling",
+      "payoutDescription": "Koppel je bankrekening om betalingen te ontvangen voor je aanhangers",
+      "connected": "Je uitbetaalaccount is gekoppeld",
+      "connectButton": "Koppel met Stripe Connect",
+      "connectToast": "Dit zou je naar de Stripe Connect onboarding flow leiden"
+    },
+    "security": "Beveiligde betalingen via Stripe",
+    "addDialog": {
+      "title": "Betaalmethode toevoegen",
+      "description": "Voeg een nieuwe kaart of betaalmethode toe voor je huurreserveringen",
+      "cancel": "Annuleren",
+      "processing": "Bezig met verwerken...",
+      "addMethod": "Betaalmethode toevoegen",
+      "systemLoading": "Betaalsysteem wordt geladen..."
+    },
+    "errors": {
+      "notLoaded": "Betaalsysteem is nog niet volledig geladen. Probeer het opnieuw.",
+      "formNotLoaded": "Betaalformulier is niet correct geladen. Probeer het venster opnieuw te openen.",
+      "invalidDetails": "Ongeldige betaalgegevens",
+      "addFailed": "Betaalmethode toevoegen mislukt",
+      "generalError": "Er is een fout opgetreden bij het toevoegen van de betaalmethode"
+    }
+  },
+  "licenseVerification": {
+    "title": "Rijbewijs verificatie",
+    "subtitle": {
+      "verified": "Je rijbewijs is geverifieerd",
+      "unverified": "Verifieer je rijbewijs om aanhangers te kunnen huren"
+    },
+    "verified": "Geverifieerd",
+    "verificationId": "Verificatie ID:",
+    "categories": {
+      "AM": {
+        "label": "AM",
+        "description": "Bromfietsen, snorfietsen en brommobielen"
+      },
+      "A1": {
+        "label": "A1",
+        "description": "Lichte motorfietsen (125 cc, 11 kW)"
+      },
+      "A2": {
+        "label": "A2",
+        "description": "Middelzware motorfietsen (35 kW)"
+      },
+      "A": {
+        "label": "A",
+        "description": "Zware motorfietsen"
+      },
+      "B": {
+        "label": "B",
+        "description": "Personenauto's"
+      },
+      "BE": {
+        "label": "BE",
+        "description": "Auto met aanhangwagen (gewicht > 750 kg)"
+      },
+      "C1": {
+        "label": "C1",
+        "description": "Lichte vrachtwagens (3500-7500 kg)"
+      },
+      "C": {
+        "label": "C",
+        "description": "Vrachtwagens (> 3500 kg)"
+      },
+      "CE": {
+        "label": "CE",
+        "description": "Vrachtwagen met aanhangwagen"
+      },
+      "D1": {
+        "label": "D1",
+        "description": "Kleine bussen (max. 16 passagiers)"
+      },
+      "D": {
+        "label": "D",
+        "description": "Bussen"
+      },
+      "T": {
+        "label": "T",
+        "description": "Tractor"
+      }
+    },
+    "expiryDate": "Vervaldatum",
+    "unknown": "Onbekend",
+    "verifiedOn": "Geverifieerd op",
+    "edit": "Bewerken",
+    "unverified": {
+      "title": "Niet geverifieerd",
+      "description": "Je moet je rijbewijs verifiëren om aanhangers te kunnen huren.",
+      "button": "Verifieer rijbewijs"
+    },
+    "dialog": {
+      "title": {
+        "new": "Rijbewijs verificatie",
+        "edit": "Rijbewijs bijwerken"
+      },
+      "step1": {
+        "new": "Voer je rijbewijsgegevens in",
+        "edit": "Werk je rijbewijsgegevens bij"
+      },
+      "step2": "Selecteer de categorieën op je rijbewijs",
+      "step3": "Controleer je gegevens",
+      "step4": "Bevestig je verificatie",
+      "licenseNumber": "Rijbewijsnummer",
+      "licenseNumberPlaceholder": "Bijv. 12345AB12",
+      "licenseNumberRequired": "Rijbewijsnummer is verplicht",
+      "licenseNumberInvalid": "Ongeldig rijbewijsnummer formaat",
+      "licenseNumberSecurity": "Je rijbewijsnummer wordt veilig opgeslagen met encryptie",
+      "country": "Land van uitgifte",
+      "countrySelect": "Selecteer een land",
+      "expiryDate": "Vervaldatum",
+      "verificationMechanism": "Controlemechanisme",
+      "verificationDescription": "We controleren je rijbewijsgegevens op echtheid en geldigheid. We slaan de volgende gegevens op:",
+      "encryptedHash": "Versleutelde hash van je rijbewijsnummer",
+      "countryOfIssue": "Land van uitgifte:",
+      "expiryDateLabel": "Vervaldatum:",
+      "notFilled": "Niet ingevuld",
+      "categoriesLabel": "Categorieën:",
+      "noCategories": "Geen categorieën geselecteerd",
+      "termsAgreement": "Ik ga akkoord met de verwerking van mijn rijbewijsgegevens zoals hierboven beschreven voor verificatiedoeleinden.",
+      "termsRequired": "Je moet akkoord gaan met de voorwaarden",
+      "processing": "Verwerken...",
+      "verify": "Verifiëren",
+      "update": "Bijwerken",
+      "processingTitle": "Verificatie wordt verwerkt",
+      "processingDescription": "We verwerken je rijbewijsgegevens. Dit kan enkele seconden duren.",
+      "success": {
+        "new": "Rijbewijs succesvol geverifieerd",
+        "update": "Rijbewijs gegevens succesvol bijgewerkt"
+      },
+      "error": "Verificatie mislukt. Probeer het opnieuw.",
+      "cancel": "Annuleren",
+      "next": "Volgende"
+    },
+    "countries": {
+      "NL": "Nederland",
+      "DE": "Duitsland",
+      "BE": "België",
+      "FR": "Frankrijk",
+      "ES": "Spanje",
+      "IT": "Italië",
+      "GB": "Verenigd Koninkrijk",
+      "AT": "Oostenrijk",
+      "CH": "Zwitserland",
+      "DK": "Denemarken",
+      "SE": "Zweden",
+      "NO": "Noorwegen",
+      "PL": "Polen"
+    }
+  },
+  "trailerManagement": {
+    "title": "Mijn aanhangers",
+    "description": "Beheer je aanhangers en track prestaties",
+    "tabs": {
+      "all": "Alle aanhangers",
+      "active": "Actief",
+      "deactivated": "Gedeactiveerd",
+      "draft": "Concepten"
+    },
+    "status": {
+      "active": "Actief",
+      "deactivated": "Gedeactiveerd",
+      "draft": "Concept"
+    },
+    "loading": "Aanhangers laden...",
+    "error": {
+      "title": "Fout bij het laden",
+      "tryAgain": "Opnieuw proberen"
+    },
+    "empty": {
+      "title": "Geen geplaatste trailers",
+      "description": "Je hebt nog geen aanhangers toegevoegd. Begin met verdienen door je eerste aanhanger te plaatsen.",
+      "button": "Start met verhuren"
+    },
+    "emptyFilter": {
+      "title": "Geen aanhangers gevonden",
+      "description": "Er zijn geen aanhangers in deze categorie.",
+      "button": "Toon alle aanhangers"
+    },
+    "deleteDialog": {
+      "title": "Trailer verwijderen",
+      "confirmation": "Weet je zeker dat je de trailer \"{{title}}\" wilt verwijderen?",
+      "warning": "Deze actie kan niet ongedaan worden gemaakt. Als de trailer verhuurd is geweest, raden we aan om de trailer op inactief te zetten in plaats van te verwijderen.",
+      "cancel": "Annuleren",
+      "delete": "Verwijderen",
+      "deleting": "Verwijderen..."
+    },
+    "deactivateDialog": {
+      "title": "Aanhanger deactiveren?",
+      "confirmation": "Weet je zeker dat je deze aanhanger tijdelijk wilt deactiveren? Deze zal niet meer zichtbaar zijn voor verhuur totdat je hem weer activeert.",
+      "activeRentalsWarning": "Let op: Actieve reserveringen",
+      "activeRentalsMessage": "Deze aanhanger heeft actieve reserveringen. Bestaande reserveringen blijven actief.",
+      "cancel": "Annuleren",
+      "deactivate": "Deactiveren"
+    },
+    "card": {
+      "generalTrailer": "Algemene aanhanger",
+      "rental": "verhuring",
+      "rentals": "verhuringen",
+      "active": "Actief",
+      "incompleteWarning": "Advertentie incompleet",
+      "completeDraft": "Concept voltooien",
+      "completeListing": "Advertentie voltooien",
+      "editListing": "Advertentie aanpassen",
+      "viewListing": "Bekijk advertentie",
+      "deleteListing": "Verwijder advertentie"
+    }
+  },
+  "rentalHistory": {
+    "title": "Mijn huurgeschiedenis",
+    "description": "Bekijk en beheer je aanhanger verhuringen",
+    "updating": "Bijwerken...",
+    "tabs": {
+      "upcoming": "Aankomend",
+      "active": "Actief",
+      "past": "Afgerond"
+    },
+    "emptyStates": {
+      "upcoming": {
+        "title": "Geen aankomende huur",
+        "message": "Je hebt nog geen aankomende aanhangers gehuurd.",
+        "action": "Zoek aanhanger"
+      },
+      "active": {
+        "title": "Geen actieve huur",
+        "message": "Je hebt momenteel geen aanhangers in gebruik."
+      },
+      "past": {
+        "title": "Geen huurgeschiedenis",
+        "message": "Je hebt nog geen aanhangers gehuurd in het verleden.",
+        "action": "Huur je eerste aanhanger"
+      }
+    },
+    "error": {
+      "title": "Fout bij het laden",
+      "tryAgain": "Opnieuw proberen"
+    },
+    "rentalDetails": {
+      "period": "Huurperiode",
+      "lessor": "Verhuurder",
+      "startingIn": "Begint over {{days}} dagen",
+      "lateReturnWarning": "Te laat inleveren kan extra kosten met zich meebrengen",
+      "actions": {
+        "cancel": "Annuleren",
+        "details": "Details",
+        "review": "Beoordeel",
+        "reportDamage": "Meld schade",
+        "extend": "Verlengen"
+      }
+    },
+    "status": {
+      "PENDING": "In afwachting",
+      "CONFIRMED": "Bevestigd",
+      "ACTIVE": "Actief",
+      "CANCELLED": "Geannuleerd",
+      "COMPLETED": "Voltooid",
+      "LATE_RETURN": "Verlate teruggave",
+      "DISPUTED": "In geschil"
+    }
+  },
+  "favorites": {
+    "title": "Mijn Favorieten",
+    "description": "Aanhangers die zijn toegevoegd aan je favorieten.",
+    "empty": {
+      "title": "Geen Favorieten",
+      "description": "Je hebt nog geen aanhangers opgeslagen als favoriet.",
+      "button": "Bekijk Aanhangers"
+    },
+    "location": "Locatie",
+    "availability": "Beschikbaarheid",
+    "dailyAvailable": "Dagelijks te huur",
+    "actions": {
+      "remove": "Verwijderen",
+      "view": "Bekijken"
+    },
+    "badge": "Favoriet",
+    "perDay": "/dag",
+    "showing": "{{visible}} van {{total}} favorieten weergegeven"
+  },
+  "security": {
+    "title": "Account Beveiliging",
+    "description": "Beheer je accountbeveiliging en verificatie-instellingen",
+    "changePassword": {
+      "title": "Wachtwoord wijzigen",
+      "description": "Update je wachtwoord regelmatig om je account veilig te houden",
+      "currentPassword": "Huidig wachtwoord",
+      "newPassword": "Nieuw wachtwoord",
+      "passwordRequirements": "Wachtwoord moet minstens 8 tekens lang zijn en een cijfer en speciaal teken bevatten",
+      "confirmPassword": "Bevestig nieuw wachtwoord",
+      "cancel": "Annuleren",
+      "update": "Wachtwoord bijwerken"
+    },
+    "twoFactor": {
+      "title": "Tweefactorauthenticatie",
+      "description": "Voeg een extra beveiligingslaag toe aan je account",
+      "sms": {
+        "title": "SMS-authenticatie",
+        "description": "Ontvang een code via SMS om je identiteit te verifiëren"
+      },
+      "app": {
+        "title": "Authenticator-app",
+        "description": "Gebruik een authenticator-app om verificatiecodes te genereren"
+      },
+      "info": "Tweefactorauthenticatie voegt een extra beveiligingslaag toe aan je account door meer dan alleen een wachtwoord te vereisen om in te loggen."
+    },
+    "loginHistory": {
+      "title": "Inloggeschiedenis",
+      "description": "Bekijk recente accountactiviteit",
+      "current": "Huidig",
+      "viewFull": "Bekijk volledige inloggeschiedenis"
+    },
+    "dangerZone": {
+      "title": "Gevarenzone",
+      "description": "Verwijder je account en alle bijbehorende gegevens permanent",
+      "warning": "Als je je account verwijdert, is er geen weg terug. Wees zeker van je zaak.",
+      "delete": "Account verwijderen"
+    }
+  },
+  "lessorDashboard": {
+    "title": "Verhuurders dashboard",
+    "description": "Beheer je geplaatste aanhangers en reserveringen.",
+    "loading": "Dashboard gegevens laden...",
+    "error": {
+      "title": "Fout bij het laden van het dashboard",
+      "message": "Er is een fout opgetreden: {{message}}",
+      "tryAgain": "Opnieuw proberen"
+    },
+    "trailerOverview": {
+      "title": "Trailer overzicht",
+      "subtitle": "Totaal aantal trailers"
+    },
+    "avgDailyPrice": {
+      "title": "Gem. dagprijs",
+      "subtitle": "Per dag"
+    },
+    "rentalStats": {
+      "title": "Verhuur statistieken",
+      "subtitle": "Totaal aantal verhuringen"
+    },
+    "acceptanceRate": {
+      "title": "Acceptatie graad",
+      "subtitle": "% geaccepteerde huurverzoeken"
+    },
+    "responseRate": {
+      "title": "Response rate",
+      "subtitle": "Boven de 95% = top verhuurder"
+    },
+    "responseTime": {
+      "title": "Response tijd",
+      "subtitle": "Gem. antwoord tijd"
+    },
+    "monthlyRevenue": {
+      "title": "Maandelijkse omzet",
+      "subtitle": "t.o.v. vorige maand ({{amount}})"
+    },
+    "utilizationRate": {
+      "title": "Trailer bezettingsgraad",
+      "subtitle": "Gem. over laatste 30 dagen"
+    },
+    "averageRating": {
+      "title": "Gem. beoordeling",
+      "subtitle": "Gem. ontvangen reviews"
+    },
+    "topPerformingTrailers": {
+      "title": "Top presterende aanhangers",
+      "rentals": "verhuringen",
+      "noData": "Geen data beschikbaar"
+    },
+    "mostViewedTrailers": {
+      "title": "Meest bekeken aanhangers",
+      "clicksFavorites": "kliks • favorieten",
+      "noData": "Geen data beschikbaar"
+    },
+    "upcomingRentals": {
+      "title": "Aankomende verhuringen",
+      "renter": "Huurder: {{name}}",
+      "noRentals": "Geen aankomende verhuringen",
+      "status": {
+        "pending": "In afwachting",
+        "active": "Actief"
+      }
+    }
+  },
+  "lessorCalendar": {
+    "title": "Verhuur kalender",
+    "description": "Beheer beschikbaarheid en bekijk reserveringen",
+    "loading": "Kalender gegevens laden...",
+    "error": {
+      "title": "Fout bij laden",
+      "message": "Er is een fout opgetreden",
+      "tryAgain": "Probeer opnieuw"
+    },
+    "tabs": {
+      "calendar": "Kalender",
+      "availability": "Instellingen"
+    },
+    "trailerSelection": {
+      "title": "Selecteer een aanhanger",
+      "description": "Kies een aanhanger om de beschikbaarheid te bekijken en te beheren"
+    },
+    "calendar": {
+      "title": "Kalender voor {{trailerName}}",
+      "blockDates": "Datums blokkeren",
+      "unblockDates": "Datums deblokkeren",
+      "cancel": "Annuleren",
+      "blockDay": "{{count}} dag blokkeren",
+      "blockDays": "{{count}} dagen blokkeren",
+      "unblockDay": "{{count}} dag deblokkeren",
+      "unblockDays": "{{count}} dagen deblokkeren",
+      "noTrailerSelected": {
+        "title": "Geen aanhanger geselecteerd",
+        "description": "Selecteer hierboven een aanhanger om de kalender te bekijken en te beheren"
+      },
+      "legend": {
+        "title": "Legenda:",
+        "available": "Beschikbaar",
+        "unavailable": "Niet beschikbaar",
+        "blocked": "Geblokkeerd",
+        "booked": "Geboekt",
+        "today": "Vandaag"
+      },
+      "dayStatus": {
+        "unavailable": "Niet beschikbaar",
+        "blocked": "Geblokkeerd"
+      },
+      "rental": {
+        "more": "+{{count}} meer"
+      }
+    },
+    "availability": {
+      "applyTo": "Toepassen op:",
+      "allTrailers": "Alle aanhangers",
+      "description": "Stel hier je standaard beschikbaarheid in. Huurders kunnen alleen boeken op de dagen en tijden die je hier instelt.",
+      "warning": {
+        "title": "Let op:",
+        "message": "Als je dagen onbeschikbaar maakt waarop al reserveringen zijn, blijven deze reserveringen bestaan. Je moet eventuele reserveringen handmatig annuleren."
+      },
+      "saveError": "Er is een fout opgetreden bij het opslaan",
+      "quickSettings": {
+        "title": "Snelle instellingen",
+        "everyDay": {
+          "label": "Elke dag",
+          "description": "Ma t/m Zo"
+        },
+        "weekdays": {
+          "label": "Doordeweeks",
+          "description": "Ma t/m Vr"
+        },
+        "weekend": {
+          "label": "Weekend",
+          "description": "Za & Zo"
+        },
+        "clearAll": {
+          "label": "Alles wissen",
+          "description": "Reset alles"
+        }
+      },
+      "daysAvailability": {
+        "title": "Beschikbaarheid per dag",
+        "editTimes": "Wijzig tijden",
+        "noTimesSet": "Geen tijden ingesteld",
+        "notAvailable": "Niet beschikbaar op deze dag"
+      },
+      "saveButton": {
+        "saving": "Opslaan...",
+        "save": "Wijzigingen opslaan",
+        "noChanges": "Geen wijzigingen om op te slaan"
+      },
+      "timeEditor": {
+        "title": "Tijden wijzigen voor {{day}}",
+        "quickSelect": "Snelle selectie",
+        "presets": {
+          "workDay": {
+            "label": "Werkdag",
+            "description": "9:00 - 17:00"
+          },
+          "allDay": {
+            "label": "Hele dag",
+            "description": "8:00 - 20:00"
+          },
+          "morning": {
+            "label": "Ochtend",
+            "description": "8:00 - 12:00"
+          },
+          "afternoon": {
+            "label": "Middag",
+            "description": "12:00 - 17:00"
+          },
+          "evening": {
+            "label": "Avond",
+            "description": "17:00 - 22:00"
+          }
+        },
+        "customTimes": "Aangepaste tijden",
+        "startTime": "Starttijd",
+        "endTime": "Eindtijd",
+        "addTimeSlot": "+ Tijdslot toevoegen",
+        "cancel": "Annuleren",
+        "save": "Tijden opslaan"
+      },
+      "days": {
+        "MONDAY": "Maandag",
+        "TUESDAY": "Dinsdag",
+        "WEDNESDAY": "Woensdag",
+        "THURSDAY": "Donderdag",
+        "FRIDAY": "Vrijdag",
+        "SATURDAY": "Zaterdag",
+        "SUNDAY": "Zondag"
+      },
+      "shortDays": {
+        "MONDAY": "Ma",
+        "TUESDAY": "Di",
+        "WEDNESDAY": "Wo",
+        "THURSDAY": "Do",
+        "FRIDAY": "Vr",
+        "SATURDAY": "Za",
+        "SUNDAY": "Zo"
+      }
+    }
+  },
+  "lessorHistory": {
+    "title": "Beheer Verhuringen",
+    "description": "Beheer reserveringen voor jouw aanhangers",
+    "loading": "Laden...",
+    "error": {
+      "title": "Fout bij het laden van verhuringen",
+      "tryAgain": "Opnieuw proberen",
+      "retrying": "Opnieuw proberen..."
+    },
+    "tabs": {
+      "upcoming": "Aankomend",
+      "active": "Actief",
+      "past": "Afgerond"
+    },
+    "rentalInfo": {
+      "rentedTo": "Verhuurd aan",
+      "rentalPeriod": "Huurperiode",
+      "lateReturnWarning": "Te laat inleveren kan extra kosten met zich meebrengen"
+    },
+    "buttons": {
+      "viewDetails": "Bekijk details",
+      "manageRental": "Beheer verhuring",
+      "reviewRental": "Review verhuring",
+      "refresh": "Vernieuwen"
+    },
+    "emptyStates": {
+      "upcoming": {
+        "title": "Geen aankomende verhuringen",
+        "message": "Er staan momenteel geen verhuringen gepland voor je aanhanger."
+      },
+      "active": {
+        "title": "Geen actieve verhuringen",
+        "message": "Op dit moment worden geen van je aanhangers gehuurd."
+      },
+      "past": {
+        "title": "Geen huurgeschiedenis",
+        "message": "Er zijn nog geen afgeronde verhuringen van je aanhangers."
+      }
+    },
+    "status": {
+      "PENDING": "In afwachting",
+      "CONFIRMED": "Bevestigd",
+      "ACTIVE": "Actief",
+      "CANCELLED": "Geannuleerd",
+      "COMPLETED": "Voltooid",
+      "LATE_RETURN": "Verlate teruggave",
+      "DISPUTED": "In geschil"
+    }
+  },
+  "reviews": {
+    "lessor": {
+      "title": "Ontvangen reviews",
+      "description": "Bekijk wat huurders over jouw aanhangers zeggen",
+      "avgRating": "{{rating}} gemiddelde rating"
+    },
+    "user": {
+      "title": "Geplaatste reviews",
+      "description": "Reviews die jij hebt achtergelaten over gehuurde aanhangers"
+    },
+    "loading": "Reviews laden...",
+    "error": {
+      "title": "Fout bij het laden van reviews",
+      "tryAgain": "Opnieuw proberen"
+    },
+    "tabs": {
+      "all": "Alle recensies",
+      "positive": "Positief",
+      "improvement": "Verbeterpunten"
+    },
+    "filters": {
+      "showAll": "Toon alles"
+    },
+    "emptyStates": {
+      "all": {
+        "lessor": {
+          "title": "Geen recensies",
+          "message": "Je hebt nog geen recensies ontvangen voor je aanhangers."
+        },
+        "user": {
+          "title": "Geen recensies",
+          "message": "Je hebt nog geen recensies achtergelaten voor gehuurde aanhangers."
+        }
+      },
+      "positive": {
+        "lessor": {
+          "title": "Geen positieve recensies",
+          "message": "Je hebt nog geen positieve recensies ontvangen voor je aanhangers."
+        },
+        "user": {
+          "title": "Geen positieve recensies",
+          "message": "Je hebt nog geen positieve recensies achtergelaten."
+        }
+      },
+      "improvement": {
+        "lessor": {
+          "title": "Geen verbeterpunten",
+          "message": "Je hebt geen recensies ontvangen met verbeterpunten."
+        },
+        "user": {
+          "title": "Geen verbeterpunten",
+          "message": "Je hebt geen recensies achtergelaten met verbeterpunten."
+        }
+      }
+    },
+    "review": {
+      "anonymous": "Anoniem",
+      "writeReview": "Schrijf een recensie",
+      "dates": {
+        "posted": "Geplaatst op {{date}}",
+        "month": "{{month}}"
+      }
+    },
+    "response": {
+      "title": "Antwoord van de eigenaar",
+      "date": "Beantwoord op {{date}}"
+    },
+    "actions": {
+      "respond": "Reageren",
+      "editResponse": "Wijzig antwoord",
+      "editReview": "Wijzig review"
+    },
+    "dialogs": {
+      "response": {
+        "title": "Reageer op review",
+        "editTitle": "Wijzig je antwoord",
+        "description": "Schrijf een antwoord op deze review, deze wordt publiekelijk getoond.",
+        "editDescription": "Wijzig jouw antwoord op deze gegeven review.",
+        "reviewLabel": "Review",
+        "responseLabel": "Jouw antwoord",
+        "responsePlaceholder": "Schrijf je antwoord...",
+        "buttons": {
+          "cancel": "Annuleren",
+          "respond": "Beantwoorden",
+          "update": "Wijzig antwoord",
+          "saving": "Opslaan..."
+        }
+      },
+      "edit": {
+        "title": "Wijzig review",
+        "description": "Update je review voor \"{{trailerTitle}}\".",
+        "rating": "Rating",
+        "titleLabel": "Titel (optioneel)",
+        "titlePlaceholder": "Vat je ervaring samen",
+        "reviewLabel": "Review",
+        "reviewPlaceholder": "Deel je ervaring...",
+        "buttons": {
+          "cancel": "Annuleren",
+          "update": "Wijzig review",
+          "saving": "Opslaan..."
+        }
+      }
+    }
+  },
+  "settings": {
+    "dialog": {
+      "title": "Instellingen",
+      "description": "Beheer je account instellingen en voorkeuren",
+      "backButton": "Terug"
+    },
+    "sections": {
+      "account": "Account",
+      "lessorSettings": "Verhuurders instellingen",
+      "notifications": "Notificaties",
+      "security": "Beveiliging",
+      "billing": "Facturering"
+    },
+    "logout": "Uitloggen",
+    "account": {
+      "password": {
+        "title": "Wachtwoord",
+        "description": "Houd je account veilig met een sterk wachtwoord",
+        "changeButton": "Wachtwoord wijzigen",
+        "dialog": {
+          "title": "Wachtwoord wijzigen",
+          "description": "Kies een sterk wachtwoord van minimaal 8 karakters",
+          "currentPassword": "Huidig wachtwoord",
+          "newPassword": "Nieuw wachtwoord",
+          "confirmPassword": "Bevestig wachtwoord",
+          "passwordMismatch": "Wachtwoorden komen niet overeen",
+          "passwordTooShort": "Wachtwoord moet minimaal 8 karakters lang zijn",
+          "cancel": "Annuleren",
+          "change": "Wijzigen"
+        },
+        "success": "Wachtwoord succesvol gewijzigd"
+      },
+      "accountManagement": {
+        "title": "Account beheer",
+        "description": "Tijdelijk deactiveren of permanent verwijderen",
+        "deactivateButton": "Account deactiveren",
+        "deleteButton": "Account verwijderen",
+        "deactivateDialog": {
+          "title": "Account deactiveren?",
+          "description": "Je account wordt tijdelijk uitgeschakeld. Je kunt op elk moment weer inloggen om je account te reactiveren.",
+          "cancel": "Annuleren",
+          "deactivate": "Deactiveren"
+        },
+        "deleteDialog": {
+          "title": "Account permanent verwijderen?",
+          "description": "Deze actie kan niet ongedaan worden gemaakt. Al je gegevens worden permanent verwijderd.",
+          "confirmationLabel": "Typ je e-mailadres om te bevestigen:",
+          "cancel": "Annuleren",
+          "delete": "Verwijderen",
+          "deleting": "Verwijderen..."
+        }
+      }
+    },
+    "lessorSettings": {
+      "autoApproval": {
+        "title": "Automatische goedkeuring",
+        "description": "Accepteer boekingen automatisch van betrouwbare huurders",
+        "toggle": "Automatisch goedkeuren",
+        "toggleDescription": "Boekingen worden direct bevestigd als ze aan je criteria voldoen",
+        "minRating": {
+          "toggle": "Minimale beoordeling vereisen",
+          "toggleDescription": "Accepteer alleen huurders met een minimale beoordeling",
+          "label": "Minimale score",
+          "star": "ster"
+        },
+        "minRentals": {
+          "label": "Minimaal aantal eerdere verhuren",
+          "options": {
+            "none": "Geen minimum",
+            "one": "1 verhuur",
+            "three": "3 verhuren",
+            "five": "5 verhuren",
+            "ten": "10 verhuren"
+          }
+        },
+        "verifiedOnly": {
+          "label": "Alleen geverifieerde gebruikers",
+          "description": "Alleen gebruikers met een geverifieerd rijbewijs"
+        }
+      },
+      "rentalTerms": {
+        "title": "Verhuurvoorwaarden",
+        "description": "Standaard instellingen voor nieuwe aanhangers",
+        "minDuration": {
+          "label": "Minimale huurduur",
+          "options": {
+            "oneDay": "1 dag",
+            "twoDays": "2 dagen",
+            "threeDays": "3 dagen",
+            "oneWeek": "1 week"
+          }
+        },
+        "maxDuration": {
+          "label": "Maximale huurduur",
+          "options": {
+            "oneWeek": "1 week",
+            "twoWeeks": "2 weken",
+            "oneMonth": "1 maand",
+            "twoMonths": "2 maanden",
+            "threeMonths": "3 maanden"
+          }
+        },
+        "securityDeposit": {
+          "label": "Borgpercentage",
+          "description": "Percentage van de totale huurprijs als borg"
+        }
+      },
+      "cancellationPolicy": {
+        "title": "Annuleringsbeleid",
+        "description": "Bepaal wanneer huurders kunnen annuleren",
+        "policies": {
+          "flexible": {
+            "label": "Flexibel",
+            "description": "Gratis annuleren tot 24 uur voor ophalen"
+          },
+          "moderate": {
+            "label": "Gematigd",
+            "description": "100% terugbetaling bij annulering binnen 72 uur"
+          },
+          "strict": {
+            "label": "Strikt",
+            "description": "Geen terugbetaling binnen 7 dagen"
+          },
+          "custom": {
+            "label": "Aangepast",
+            "description": "Maak je eigen beleid",
+            "placeholder": "Beschrijf je annuleringsbeleid..."
+          }
+        }
+      },
+      "saveButton": {
+        "saving": "Opslaan...",
+        "save": "Instellingen opslaan",
+        "noChanges": "Geen wijzigingen om op te slaan"
+      }
+    },
+    "notifications": {
+      "loading": "Instellingen laden...",
+      "emailNotifications": {
+        "disabled": {
+          "title": "E-mailnotificaties zijn uitgeschakeld",
+          "description": "Je ontvangt geen e-mails van ons totdat je dit weer inschakelt"
+        }
+      },
+      "categories": {
+        "bookings": {
+          "title": "Boekingen",
+          "description": "Updates over je verhuren en reserveringen",
+          "settings": {
+            "booking_request": {
+              "label": "Nieuwe boekingsaanvragen",
+              "description": "Wanneer iemand je aanhanger wil huren"
+            },
+            "booking_confirmed": {
+              "label": "Boekingsbevestigingen",
+              "description": "Wanneer een boeking is bevestigd"
+            },
+            "booking_cancelled": {
+              "label": "Annuleringen",
+              "description": "Wanneer een boeking wordt geannuleerd"
+            },
+            "booking_modified": {
+              "label": "Wijzigingen",
+              "description": "Wanneer boekingsdetails worden aangepast"
+            }
+          }
+        },
+        "payments": {
+          "title": "Betalingen",
+          "description": "Financiële transacties en uitbetalingen",
+          "settings": {
+            "payment_received": {
+              "label": "Betaling ontvangen",
+              "description": "Wanneer je een betaling hebt ontvangen"
+            },
+            "payout_processed": {
+              "label": "Uitbetaling verwerkt",
+              "description": "Wanneer geld naar je rekening is overgemaakt"
+            },
+            "payment_failed": {
+              "label": "Mislukte betalingen",
+              "description": "Wanneer een betaling niet is gelukt"
+            }
+          }
+        },
+        "messages": {
+          "title": "Berichten",
+          "description": "Communicatie met huurders en verhuurders",
+          "settings": {
+            "new_message": {
+              "label": "Nieuwe berichten",
+              "description": "Wanneer je een nieuw bericht ontvangt"
+            },
+            "unread_reminder": {
+              "label": "Ongelezen berichten herinnering",
+              "description": "Dagelijkse herinnering voor ongelezen berichten"
+            }
+          }
+        },
+        "reminders": {
+          "title": "Herinneringen",
+          "description": "Belangrijke data en acties",
+          "settings": {
+            "pickup_reminder": {
+              "label": "Ophaalherinnering",
+              "description": "24 uur voor het ophalen van een aanhanger"
+            },
+            "return_reminder": {
+              "label": "Retourherinnering",
+              "description": "24 uur voor het inleveren van een aanhanger"
+            },
+            "review_reminder": {
+              "label": "Beoordeling achterlaten",
+              "description": "Herinnering om een review achter te laten"
+            }
+          }
+        },
+        "marketing": {
+          "title": "Aanbiedingen & Nieuws",
+          "description": "Updates over nieuwe functies en aanbiedingen",
+          "settings": {
+            "promotions": {
+              "label": "Speciale aanbiedingen",
+              "description": "Kortingen en promoties"
+            },
+            "newsletter": {
+              "label": "Nieuwsbrief",
+              "description": "Maandelijkse updates en tips"
+            },
+            "new_features": {
+              "label": "Nieuwe functies",
+              "description": "Wanneer we nieuwe features lanceren"
+            }
+          }
+        }
+      },
+      "saveButton": {
+        "saving": "Opslaan...",
+        "save": "Instellingen opslaan",
+        "noChanges": "Geen wijzigingen om op te slaan"
+      }
+    },
+    "security": {
+      "twoFactor": {
+        "title": "Tweestapsverificatie",
+        "description": "Extra beveiliging voor je account",
+        "authApp": {
+          "label": "Authenticatie-app gebruiken",
+          "description": "Vereist een code bij elke nieuwe inlog"
+        }
+      },
+      "loginAlerts": {
+        "title": "Meldingen",
+        "description": "Waarschuwingen bij account activiteit",
+        "newLogin": {
+          "label": "E-mail bij nieuwe inlog",
+          "description": "Melding wanneer vanaf een nieuw apparaat wordt ingelogd"
+        }
+      },
+      "devices": {
+        "title": "Apparaten",
+        "description": "{{count}} actieve sessies",
+        "current": "huidig",
+        "removeButton": "Verwijderen",
+        "removeDialog": {
+          "title": "Apparaat verwijderen?",
+          "description": "Dit apparaat wordt uitgelogd en moet opnieuw inloggen.",
+          "cancel": "Annuleren",
+          "remove": "Verwijderen"
+        }
+      }
+    },
+    "billing": {
+      "paymentMethods": {
+        "title": "Betaalmethoden",
+        "description": "Beheer je kaarten voor betalingen en ontvang verhuurinkomsten"
+      },
+      "transactions": {
+        "title": "Transactiegeschiedenis",
+        "emptyState": "Er zijn nog geen transacties om weer te geven",
+        "status": {
+          "completed": "Voltooid",
+          "pending": "In behandeling"
+        }
+      }
+    }
+  }
+}

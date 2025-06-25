@@ -1,0 +1,50 @@
+{
+  "checkReservation": {
+    "title": "Bestätigen Sie Ihre Buchung",
+    "personalInfo": {
+      "title": "Persönliche Daten",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "driversLicense": "Führerscheinnummer",
+      "notProvided": "Nicht angegeben"
+    },
+    "messageToLessor": {
+      "title": "Nachricht an den Vermieter senden",
+      "description": "Haben Sie noch eine Frage oder Anmerkung zu diesem Anhänger? Senden Sie direkt eine Nachricht an den Vermieter!",
+      "placeholder": "Nachricht"
+    },
+    "paymentMethod": {
+      "title": "Zahlungsmethode",
+      "description": "Wählen Sie eine sichere Zahlungsmethode für Ihre Buchung"
+    },
+    "priceBreakdown": {
+      "title": "Preisübersicht",
+      "rentalPeriod": "Mietdauer",
+      "pickup": "Abholung",
+      "return": "Rückgabe",
+      "price": "Preis",
+      "days": "Tage",
+      "serviceFee": "Servicegebühr (5%)",
+      "deliveryCost": "Lieferkosten",
+      "securityDeposit": "Kaution (rückerstattbar)",
+      "total": "Gesamt"
+    },
+    "actions": {
+      "goBack": "Zurück",
+      "changeRentalPeriod": "Mietdauer ändern",
+      "backToTrailer": "Zurück zum Anhänger"
+    },
+    "errors": {
+      "wrongBookingData": "Falsche Buchungsdaten gefunden. Bitte beginnen Sie von vorn.",
+      "noBookingData": "Keine Buchungsdaten gefunden. Bitte beginnen Sie von vorn.",
+      "loadingError": "Beim Laden Ihrer Buchungsdaten ist ein Problem aufgetreten.",
+      "datesUnavailable": "Diese Termine sind nicht mehr verfügbar. Wählen Sie einen anderen Zeitraum.",
+      "genericError": "Ein Fehler ist aufgetreten.",
+      "paymentError": "Beim Erstellen der Zahlung ist ein Problem aufgetreten.",
+      "unknownPeriod": "Unbekannter Zeitraum",
+      "noImageAvailable": "Kein Bild verfügbar"
+    }
+  }
+}

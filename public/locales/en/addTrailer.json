@@ -1,0 +1,219 @@
+{
+  "title": "Add Trailer",
+  "description": "Enter your trailer details to start renting it out.",
+  "errors": {
+    "requiredFields": "Please fill in all required fields to continue",
+    "acceptTerms": "You must agree to the terms and conditions",
+    "defaultError": "An error occurred",
+    "submissionError": "An error occurred while listing the trailer"
+  },
+  "sections": {
+    "type": {
+      "title": "Trailer Type",
+      "description": "Select the type of trailer you want to rent out. This helps renters find the right trailer.",
+      "customType": "Enter the trailer type",
+      "customTypePlaceholder": "E.g., flatbed trailer"
+    },
+    "details": {
+      "title": "Dimensions",
+      "description": "Enter the dimensions so renters know if the trailer fits their needs.",
+      "length": "Length (cm)",
+      "width": "Width (cm)",
+      "height": "Height (cm)",
+      "weight": "Weight (kg)",
+      "capacity": "Max. load (kg)"
+    },
+    "location": {
+      "title": "Location",
+      "description": "Where can renters pick up your trailer?",
+      "search": "Search for an address",
+      "searchPlaceholder": "Start typing to search...",
+      "address": "Address",
+      "addressPlaceholder": "Street and number",
+      "postalCode": "Postal code",
+      "postalCodePlaceholder": "1234 AB",
+      "city": "City",
+      "cityPlaceholder": "Amsterdam",
+      "privacy": "The full address is only shown to renters after booking confirmation. Search results only display your city or postal code.",
+      "locationSelected": "Location selected",
+      "searchYourLocation": "Search your location",
+      "searchInstruction": "Type an address to automatically fill the map, or use your current location.",
+      "currentLocation": "Current location",
+      "otherLocation": "Other location",
+      "adjustAddressNote": "Adjust the address details below if needed.",
+      "mapLoading": "Map is loading...",
+      "addressDetails": "Address details",
+      "addressDetailsNote": "This information has been automatically filled based on the map, but can be adjusted if necessary.",
+      "trailerLocation": "Trailer location",
+      "currentLocationTitle": "Current location",
+      "geolocationNotSupported": "Geolocation is not supported by your browser",
+      "geolocationError": "An error occurred while retrieving your location. Check if location access is enabled in your browser."
+    },
+    "availability": {
+      "title": "Availability",
+      "description": "Set when your trailer is available for rental.",
+      "days": "Available days",
+      "timeSlots": "Time slots",
+      "addTimeSlot": "Add time slot",
+      "from": "From",
+      "to": "To",
+      "dayLabels": {
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat",
+        "sunday": "Sun"
+      },
+      "dayNames": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "everyDayAvailable": "Available every day",
+      "daysAvailable": "days available",
+      "quickSettings": "Quick settings",
+      "quickActions": {
+        "everyday": "Every day 9-5",
+        "weekdays": "Weekdays 9-5",
+        "weekend": "Weekend",
+        "clearAll": "Clear all"
+      },
+      "quickActionsDesc": {
+        "everyday": "Every day 9:00-17:00",
+        "weekdays": "Mon-Fri 9:00-17:00",
+        "weekend": "Sat-Sun 10:00-18:00",
+        "clearAll": "Turn off everything"
+      },
+      "availabilityPerDay": "Availability per day",
+      "editTimes": "Edit times",
+      "noTimesSet": "No times set",
+      "notAvailableThisDay": "Not available this day",
+      "saveAvailability": "Save availability",
+      "saveAndContinue": "Save and continue",
+      "selectAtLeastOneDay": "Select at least one day to continue",
+      "timeEditor": {
+        "title": "Times for",
+        "quickSelection": "Quick selection",
+        "customTimes": "Custom times",
+        "startTime": "Start time",
+        "endTime": "End time",
+        "selectTime": "Select time",
+        "addTimeSlot": "Add another time slot",
+        "cancel": "Cancel",
+        "saveTimes": "Save times",
+        "presets": {
+          "workDay": "Work day",
+          "allDay": "All day",
+          "morning": "Morning",
+          "afternoon": "Afternoon",
+          "evening": "Evening"
+        }
+      }
+    },
+    "pricing": {
+      "title": "Pricing",
+      "description": "Set your rental prices.",
+      "pricePerDay": "Price per day (€)",
+      "securityDeposit": "Security deposit (€)",
+      "securityDepositDescription": "Optional security deposit that renters pay upfront and get back after returning the trailer undamaged.",
+      "perDay": "day",
+      "goodPrice": "Great price for this type of trailer",
+      "yourEarnings": "Your earnings per day:",
+      "afterServiceFee": "After 15% service fee (insurance, payments & platform)",
+      "savePricing": "Save pricing"
+    },
+    "accessories": {
+      "title": "Accessories",
+      "description": "What accessories can you offer with your trailer?",
+      "customAccessory": "Custom accessory",
+      "customAccessoryPlaceholder": "E.g., tie-down straps",
+      "price": "Price (€)",
+      "addCustom": "Add custom accessory",
+      "accessorySingular": "accessory",
+      "accessoryPlural": "accessories",
+      "addedToTrailer": "Added to your trailer",
+      "addToTrailer": "Add this to your trailer",
+      "addCustomTitle": "Add custom accessory",
+      "addCustomDescription": "Do you have a unique accessory that's not in the list?",
+      "pricePlaceholder": "Price per day (optional)",
+      "cancel": "Cancel",
+      "add": "Add",
+      "saveAccessories": "Save accessories",
+      "noAccessories": "No accessories to add"
+    },
+    "photos": {
+      "title": "Photos",
+      "description": "Upload at least 3 photos of your trailer. Good photos increase rental chances.",
+      "dropzone": "Drag your photos here or click to select photos",
+      "uploadedPhotos": "Uploaded photos",
+      "uploading": "Uploading...",
+      "required": "You must upload at least 3 photos to continue.",
+      "progress": "photos uploaded"
+    },
+    "extra": {
+      "title": "Extra Information",
+      "description": "Add extra details about your trailer to increase rentals.",
+      "license": {
+        "title": "Driver's License Requirements",
+        "description": "Specify if this trailer requires a special driver's license.",
+        "required": "This trailer requires a special driver's license",
+        "type": "Required license type",
+        "none": "No special license",
+        "b": "B license",
+        "be": "BE license",
+        "bplus": "B+ license"
+      },
+      "delivery": {
+        "title": "Delivery Options",
+        "description": "Offer to deliver the trailer to the renter's location for an additional fee.",
+        "offer": "Offer home delivery service",
+        "fee": "Delivery fee (€)",
+        "freeDelivery": "Leave empty for free delivery",
+        "maxDistance": "Maximum delivery distance (km)"
+      },
+      "insurance": {
+        "title": "Insurance",
+        "included": "Insurance is included in the rental price"
+      },
+      "duration": {
+        "title": "Rental Duration",
+        "description": "Set minimum and maximum rental durations.",
+        "minimum": "Minimum (days)",
+        "maximum": "Maximum (days)"
+      },
+      "cancellation": {
+        "title": "Cancellation Policy",
+        "select": "Select your cancellation policy",
+        "flexible": "Flexible (Full refund 24h before pickup)",
+        "moderate": "Moderate (Full refund 3 days before pickup)",
+        "strict": "Strict (50% refund 7 days before pickup)"
+      },
+      "instructions": {
+        "title": "Usage Instructions",
+        "description": "Provide detailed instructions to help renters use your trailer properly.",
+        "placeholder": "Provide any special instructions for using this trailer..."
+      },
+      "continue": "Continue"
+    }
+  },
+  "common": {
+    "saveAndContinue": "Save and continue",
+    "saving": "Saving...",
+    "saveAsConcept": "Save as draft"
+  },
+  "termsSubmit": {
+    "agreeText": "I agree to the",
+    "termsLink": "terms and conditions",
+    "andText": "and the",
+    "privacyLink": "privacy policy",
+    "submitButton": "List trailer",
+    "submitting": "Listing trailer...",
+    "formIncomplete": "Please complete at least the required sections to list your trailer"
+  }
+}

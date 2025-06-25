@@ -1,0 +1,143 @@
+// app/api/user/profile/essential/route.ts
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getToken } from "next-auth/jwt";
+import { UserStatsService } from "@/services/user-stats-updater";
+
+export async function GET(request: Request) {
+  try {
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET
+    });
+    
+    if (!token || !token.email) {
+      return NextResponse.json(
+        { error: "You must be logged in to access this endpoint" },
+        { status: 401 }
+      );
+    }
+    
+    // Fetch user data with reduced database queries
+    const user = await prisma.user.findUnique({
+      where: { email: token.email },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        address: true,
+        city: true,
+        postalCode: true,
+        country: true,
+        profilePicture: true,
+        bio: true,
+        companyName: true,
+        kvkNumber: true,
+        vatNumber: true,
+        responseRate: true,
+        responseTime: true,
+        isVerified: true,
+        emailNotifications: true,
+        pushNotifications: true,
+        smsNotifications: true,
+        languagePreference: true,
+        lastLogin: true,
+        role: true,
+        memberSince: true,
+        // Include stats directly
+        stats: {
+          select: {
+            totalRentals: true,
+            totalIncome: true,
+            totalSpent: true,
+            cancelledRentals: true,
+            completedRentals: true,
+            averageRating: true,
+            responseRate: true,
+            responseTime: true,
+            acceptanceRate: true,
+            listingsCount: true,
+            favoritesCount: true,
+            writtenReviewsCount: true,
+            receivedReviewsCount: true,
+            unreadNotifications: true,
+            lastUpdated: true,
+          }
+        }
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+    
+    // Get recent notifications directly
+    const notifications = await prisma.notification.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'desc' },
+      take: 5, // Only fetch latest 5 notifications for initial display
+      select: {
+        id: true,
+        message: true,
+        read: true,
+        type: true,
+        createdAt: true,
+      },
+    });
+
+    // Check if stats need updating (over 1 hour old or missing)
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    if (!user.stats || user.stats.lastUpdated < oneHourAgo) {
+      // Schedule stats update in the background without waiting for it
+      UserStatsService.scheduleUpdate(user.id);
+    }
+
+    // Use the stats from the user object or provide defaults
+    const stats = user.stats || {
+      totalRentals: 0,
+      totalIncome: 0,
+      totalSpent: 0,
+      cancelledRentals: 0,
+      completedRentals: 0,
+      averageRating: null,
+      responseRate: null,
+      responseTime: null,
+      acceptanceRate: null,
+      listingsCount: 0,
+      favoritesCount: 0,
+      writtenReviewsCount: 0,
+      receivedReviewsCount: 0,
+      unreadNotifications: 0,
+    };
+
+    // Extract user stats for the response
+    const { stats: _, ...userWithoutStats } = user;
+
+    // Combine essential data
+    const essentialProfileData = {
+      user: userWithoutStats,
+      stats,
+      notifications,
+      counts: {
+        rentals: stats.totalRentals,
+        reviews: stats.writtenReviewsCount + stats.receivedReviewsCount, // Combined reviews count
+        favorites: stats.favoritesCount,
+        listings: stats.listingsCount,
+        unreadNotifications: stats.unreadNotifications
+      }
+    };
+
+    return NextResponse.json(essentialProfileData);
+  } catch (error) {
+    console.error("Get essential profile data error:", error);
+    return NextResponse.json(
+      { error: "An error occurred while fetching essential profile data" },
+      { status: 500 }
+    );
+  }
+}

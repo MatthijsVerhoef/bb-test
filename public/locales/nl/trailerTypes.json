@@ -1,0 +1,336 @@
+{
+  "types": {
+    "OPEN": {
+      "name": "Open aanhanger",
+      "description": "Open aanhangers beschikken over een open laadvloer zonder zij- of achterwanden. Dit maakt ze bijzonder veelzijdig voor het vervoeren van grote, onregelmatige of zware ladingen zoals tuinmaterialen, bouwafval of meubels. Ze zijn ideaal voor korte transporten in binnenstedelijke omgevingen, maar vereisen extra aandacht voor het vastzetten van de lading.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Open laadbak</strong>: ideaal voor grote en onregelmatig gevormde voorwerpen",
+          "<strong>Weersinvloeden</strong>: lading is blootgesteld aan regen en wind",
+          "<strong>Veiligheid</strong>: controleer bandenspanning en verlichting regelmatig",
+          "<strong>Rijbewijs</strong>: meestal volstaat rijbewijs B"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Let op de maximaal toegestane massa (MTM)",
+          "Verdeel het gewicht gelijkmatig en let op correcte kogeldruk",
+          "Houd extra afstand tijdens het rijden"
+        ]
+      },
+      "featuresList": [
+        "Neerklapbare zijwanden voor eenvoudig laden",
+        "Multifunctioneel inzetbaar",
+        "Gebruik een afdekzeil bij slecht weer"
+      ]
+    },
+    "CLOSED": {
+      "name": "Gesloten aanhanger",
+      "description": "Gesloten aanhangers bieden een volledig afgeschermd laadcompartiment dat optimale bescherming biedt tegen weersinvloeden en ongewenste inkijk. Ze zijn zeer geschikt voor het vervoer van waardevolle, kwetsbare of breekbare ladingen zoals elektronica en meubels.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Bescherming</strong>: dichte opbouw voorkomt schade door weer en wind",
+          "<strong>Veilig afsluitbaar</strong>: vaak voorzien van sloten",
+          "<strong>Ventilatie</strong>: controleer ventilatie om vocht te voorkomen",
+          "<strong>Hoogte</strong>: let op hoogtebeperkingen bij parkeergarages"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Controleer afdichtingen en sluitwerk regelmatig",
+          "Zorg voor gelijkmatige gewichtsverdeling",
+          "Houd rekening met langere remweg bij volledige belading"
+        ]
+      },
+      "featuresList": [
+        "Waterdichte afdichting en afsluitbare deuren",
+        "Ideaal voor waardevolle en breekbare ladingen",
+        "Bescherming tegen weersinvloeden"
+      ]
+    },
+    "PICKUP": {
+      "name": "Autotransporter",
+      "description": "Pickup-aanhangers zijn speciaal ontworpen voor het vervoeren van voertuigen en zware ladingen. Met geïntegreerde oprijplaten en verstelbare wielstops zorgen ze voor een veilige, stabiele lading.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Oprijplaten</strong>: eenvoudig opladen van rollende lading",
+          "<strong>Verstelbare wielstops</strong>: voorkomt verschuiven",
+          "<strong>Gewichtsverdeling</strong>: verdeel gelijkmatig over assen",
+          "<strong>Remsysteem</strong>: geremde uitvoering bij zware lading"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Controleer bevestigingspunten voor vertrek",
+          "Let op juiste kogeldruk",
+          "Langere remafstand en bochtenradius"
+        ]
+      },
+      "featuresList": [
+        "Verstelbare wielstops en stevige oprijplaten",
+        "Robuuste constructie voor veilig transport",
+        "Geschikt voor diverse voertuigtypes"
+      ]
+    },
+    "BOAT": {
+      "name": "Boottrailer",
+      "description": "Bootaanhangers zijn ontworpen voor het veilig en gemakkelijk vervoeren van boten. Met een kantelbare constructie, verstelbare steunpunten en een geïntegreerde lier is het laden en lossen bij een helling eenvoudig.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Kantelbaar frame</strong>: vergemakkelijkt te water laten",
+          "<strong>Verstelbare steunen</strong>: past verschillende bootvormen",
+          "<strong>Geïntegreerde lier</strong>: eenvoudig op- en afhalen",
+          "<strong>Corrosiebestendig</strong>: spoel af na zout water"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Check bootafmetingen en gewicht binnen limieten",
+          "Controleer lierkabel, assen en verlichting",
+          "Verdeel gewicht in boot voor stabiliteit"
+        ]
+      },
+      "featuresList": [
+        "Kantelbare constructie en geïntegreerde lier",
+        "Corrosiebestendig materiaal",
+        "Verstelbare steunpunten voor verschillende boten"
+      ]
+    },
+    "MOTORCYCLE": {
+      "name": "Motorfiets aanhanger",
+      "description": "Motorfietsaanhangers zijn compact en ontworpen om motorfietsen of scooters veilig te kunnen vervoeren. Met geïntegreerde wielklemmen, een antislip vloer en een laag zwaartepunt worden schokken tot een minimum beperkt.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Wielklemmen</strong>: fixeer het voorwiel voor stabiliteit",
+          "<strong>Antislip vloer</strong>: voorkomt wegglijden bij vocht",
+          "<strong>Laag zwaartepunt</strong>: zorgt voor stabiel rijgedrag",
+          "<strong>Spanbanden</strong>: gebruik stevige banden voor fixatie"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Controleer of motor stevig en recht staat",
+          "Voorkom beweging bij hobbels",
+          "Langere remweg en bredere bochten"
+        ]
+      },
+      "featuresList": [
+        "Integrale wielklemmen en antislip vloer",
+        "Laag zwaartepunt voor stabiliteit",
+        "Geschikt voor motorfietsen en scooters"
+      ]
+    },
+    "CAR": {
+      "name": "Autotransporter",
+      "description": "Autotrailers zijn geavanceerd ontworpen voor het veilig en stabiel transporteren van personenauto's, bedrijfswagens of andere voertuigen. Ze zijn uitgerust met een hydraulisch kantelsysteem, stevige oprijplaten en meerdere bevestigingspunten.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Hydraulisch kantelbaar</strong>: vergemakkelijkt oprijden",
+          "<strong>Stevige oprijplaten</strong>: stabiel laden en lossen",
+          "<strong>Vastzetten</strong>: gebruik sjorogen en spanbanden",
+          "<strong>Systemen</strong>: controleer hydrauliek en remmen"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Let op totaalgewicht en maximaal toegestane massa",
+          "Verdeel last voor juiste kogeldruk",
+          "Voorzichtig rijden, vooral bij afdalingen"
+        ]
+      },
+      "featuresList": [
+        "Hydraulisch kantel-systeem",
+        "Meerdere bevestigingspunten",
+        "Stevige oprijplaten voor veilig laden"
+      ]
+    },
+    "FURNITURE": {
+      "name": "Meubeltransporter",
+      "description": "Meubeltransportaanhangers bieden een ruim laadoppervlak dat speciaal is ingericht voor het veilig vervoeren van grote en zware meubelstukken. De interne bevestigingspunten zorgen voor extra bescherming tijdens transport.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Ruim laadvolume</strong>: ideaal voor kasten, banken en bedden",
+          "<strong>Bevestigingsrails</strong>: spanbanden voorkomen verschuiven",
+          "<strong>Bescherming</strong>: gebruik dekens en noppenfolie",
+          "<strong>Laadklep</strong>: check hoogte van laadvloer"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Gelijkmatige gewichtsverdeling en kogeldruk",
+          "Let op extra hoogte of lengte",
+          "Controleer spanbanden en bevestigingsogen"
+        ]
+      },
+      "featuresList": [
+        "Ruim laadoppervlak en interne bevestigingspunten",
+        "Flexibele inrichting voor diverse meubelstukken",
+        "Extra bescherming voor kwetsbare lading"
+      ]
+    },
+    "LIVESTOCK": {
+      "name": "Paardentrailer",
+      "description": "Veetrailers zijn ontworpen met het welzijn en de veiligheid van dieren als hoogste prioriteit. Ze beschikken over ruime stallen, uitstekende ventilatie en een antislip vloer voor comfort en veiligheid.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Ruime stallen</strong>: voldoende bewegingsruimte",
+          "<strong>Ventilatie</strong>: voorkom oververhitting",
+          "<strong>Antislip vloer</strong>: verhoogt comfort en veiligheid",
+          "<strong>Reiniging</strong>: onderhoud hygiëne en gezondheid"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Regelmatige pauzes bij langere ritten",
+          "Controleer op beschadigingen of losse delen",
+          "Veterinaire documenten bij grensoverschrijdend vervoer"
+        ]
+      },
+      "featuresList": [
+        "Ruime stallen en goede ventilatie",
+        "Antislip vloer voor stabiliteit",
+        "Ontworpen voor dierenwelzijn"
+      ]
+    },
+    "REFRIGERATED": {
+      "name": "Koeltrailer",
+      "description": "Refrigerated trailers (koelwagens) zijn speciaal ontwikkeld voor het vervoer van temperatuurgevoelige goederen zoals voedsel, medicijnen en bloemen. Ze beschikken over een actief koelsysteem en hoogwaardige isolatie.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Actief koelsysteem</strong>: constante temperatuur",
+          "<strong>Hoogwaardige isolatie</strong>: beperkt temperatuurverlies",
+          "<strong>Condensbeheer</strong>: voorkom vocht en schimmel",
+          "<strong>Hygiëne</strong>: grondig reinigen na gebruik"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Monitor temperatuur regelmatig tijdens transport",
+          "Controleer stroomvoorziening (230V of 12V)",
+          "Let op houdbaarheid en regelgeving"
+        ]
+      },
+      "featuresList": [
+        "Actief koelsysteem en hoogwaardige isolatie",
+        "Constante temperatuurbeheersing",
+        "Geschikt voor temperatuurgevoelige goederen"
+      ]
+    },
+    "FLATBED": {
+      "name": "Flatbed aanhanger",
+      "description": "Flatbed-aanhangers hebben een volledig open en vlak laadoppervlak, waardoor ze bij uitstek geschikt zijn voor het vervoeren van lange, zware of onregelmatige goederen zoals bouwmaterialen, buizen of hout.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Volledig vlakke laadvloer</strong>: veel bewegingsruimte",
+          "<strong>Weinig beperkingen</strong>: voor uitstekende ladingen",
+          "<strong>Geen zijwanden</strong>: gebruik spanbanden en kettingen",
+          "<strong>Laadgemak</strong>: heftrucks kunnen eenvoudig laden"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Verdeel gewicht gelijkmatig en let op draagkracht",
+          "Check bevestiging regelmatig tijdens ritten",
+          "Let op windgevoeligheid door vlakke lading"
+        ]
+      },
+      "featuresList": [
+        "Volledig open en vlak laadoppervlak",
+        "Maximale flexibiliteit in het laden",
+        "Geschikt voor lange en zware objecten"
+      ]
+    },
+    "OTHER": {
+      "name": "Overig",
+      "description": "Speciale of op maat gemaakte aanhangers vallen buiten de standaardcategorieën en zijn ontworpen voor unieke transportbehoeften. Ze kunnen beschikken over specifieke bevestigingssystemen en extra voorzieningen.",
+      "features": {
+        "title": "Kenmerken & tips:",
+        "items": [
+          "<strong>Maatwerk</strong>: elk exemplaar kan sterk verschillen",
+          "<strong>Specifieke uitrusting</strong>: gereedschapskisten, hydrauliek",
+          "<strong>Gewichtsverdeling</strong>: kan afwijkend zijn",
+          "<strong>Veiligheid</strong>: vraag eigenaar om instructies"
+        ]
+      },
+      "general": {
+        "title": "Algemene informatie:",
+        "items": [
+          "Controleer speciale voorzieningen en werking",
+          "Zorg voor goede verzekering en vergunningen",
+          "Test eerst leeg of licht beladen"
+        ]
+      },
+      "featuresList": [
+        "Specifieke bevestigingssystemen en maatwerk",
+        "Extra voorzieningen voor unieke transportbehoeften",
+        "Raadpleeg eigenaar voor specifieke kenmerken"
+      ]
+    }
+  },
+  "accessories": {
+    "disselSlot": {
+      "name": "Disselslot",
+      "description": "Een slot dat op de dissel wordt geplaatst om diefstal te voorkomen."
+    },
+    "oprijplaten": {
+      "name": "Oprijplaten",
+      "description": "Platen om de aanhanger op te rijden voor gemakkelijker laden en lossen."
+    },
+    "adapter7to13": {
+      "name": "7 naar 13 polige adapter",
+      "description": "Adapter voor aansluiting van 7-polige stekker op 13-polige aansluiting."
+    },
+    "adapter13to7": {
+      "name": "13 naar 7 polige adapter",
+      "description": "Adapter voor aansluiting van 13-polige stekker op 7-polige aansluiting."
+    },
+    "afdekZeil": {
+      "name": "Afdek zeil",
+      "description": "Zeil om lading te beschermen tegen regen, wind en andere weersomstandigheden."
+    },
+    "afdekNet": {
+      "name": "Afdek net",
+      "description": "Net om te voorkomen dat lading tijdens transport van de aanhanger valt."
+    },
+    "pionnen": {
+      "name": "Pionnen",
+      "description": "Verkeerspionnen voor markering en veiligheid tijdens laden/lossen."
+    },
+    "kruiwagen": {
+      "name": "Kruiwagen",
+      "description": "Kruiwagen voor handmatig transport van materialen."
+    },
+    "langeLadingBord": {
+      "name": "Lange lading bord",
+      "description": "Waarschuwingsbord voor transporten met uitstekende lading."
+    }
+  },
+  "categories": {
+    "open": "Open",
+    "closed": "Gesloten",
+    "specialized": "Gespecialiseerd",
+    "vehicle_transport": "Voertuig Transport",
+    "recreational": "Recreatief",
+    "commercial": "Commercieel"
+  }
+}

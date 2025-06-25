@@ -1,0 +1,76 @@
+{
+  "locale": "nl",
+  "header": {
+    "home": "Home",
+    "trailers": "Aanbod",
+    "addTrailer": "Aanhanger plaatsen",
+    "profile": "Profiel",
+    "chat": "Berichten",
+    "login": "Inloggen",
+    "logout": "Uitloggen",
+    "blogs": "Blogs",
+    "contact": "Contact",
+    "register": "Aanmelden",
+    "rentOut": "Ik wil verhuren",
+    "favorites": "Favorieten",
+    "myRentals": "Mijn huurovereenkomsten",
+    "myTrailers": "Mijn aanhangers",
+    "howItWorks": "Hoe het werkt",
+    "faq": "Veelgestelde vragen",
+    "help": "Help"
+  },
+  "footer": {
+    "about": "Over ons",
+    "howItWorks": "Hoe werkt het",
+    "contact": "Contact",
+    "terms": "Voorwaarden",
+    "privacy": "Privacy",
+    "sitemap": "Sitemap"
+  },
+  "feedback": {
+    "triggerButton": "Geef ons feedback!",
+    "title": "Feedback geven",
+    "description": "Help ons ons platform te verbeteren door de onderstaande vragen te beantwoorden.",
+    "successMessage": "Bedankt voor je feedback! We waarderen je input.",
+    "ratingLabel": "Hoe beoordeel je ons platform?",
+    "improvementsLabel": "Welke verbeteringen zou je graag willen zien?",
+    "improvementsHint": "Denk hierbij aan dingen die je hebt gemist tijdens het gebruik van ons platform, dingen die je graag anders zou zien en wat je maar kan bedenken!",
+    "improvementsPlaceholder": "Schrijf wat jij graag anders zou zien/mist...",
+    "recommendLabel": "Zou je nog maals bij ons platform huren/verhuren?",
+    "yes": "Ja",
+    "no": "Nee",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "submitButton": "Feedback verzenden",
+    "error": {
+      "missingFields": "Het lijkt er op dat niet alle velden zijn ingevuld!",
+      "submissionFailed": "Er ging iets mis bij het versturen van je feedback"
+    }
+  },
+  "language": {
+    "select": "Selecteer taal"
+  },
+  "general": {
+    "loading": "Laden...",
+    "error": "Er is iets misgegaan",
+    "tryAgain": "Probeer opnieuw",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "close": "Sluiten",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "sort": "Sorteren",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "yes": "Ja",
+    "no": "Nee",
+    "confirm": "Bevestigen",
+    "viewMore": "Meer bekijken",
+    "viewLess": "Minder bekijken",
+    "showAll": "Alles tonen",
+    "noResults": "Geen resultaten gevonden",
+    "done": "Klaar"
+  }
+}

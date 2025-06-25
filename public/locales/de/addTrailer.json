@@ -1,0 +1,219 @@
+{
+  "title": "Anhänger hinzufügen",
+  "description": "Geben Sie die Daten Ihres Anhängers ein, um ihn zu vermieten.",
+  "errors": {
+    "requiredFields": "Bitte füllen Sie alle Pflichtfelder aus, um fortzufahren",
+    "acceptTerms": "Sie müssen den Bedingungen zustimmen",
+    "defaultError": "Ein Fehler ist aufgetreten",
+    "submissionError": "Beim Einstellen des Anhängers ist ein Fehler aufgetreten"
+  },
+  "sections": {
+    "type": {
+      "title": "Anhängertyp",
+      "description": "Wählen Sie den Typ des Anhängers, den Sie vermieten möchten. Dies hilft Mietern, den richtigen Anhänger zu finden.",
+      "customType": "Geben Sie den Anhängertyp ein",
+      "customTypePlaceholder": "Z.B. Planenanhänger"
+    },
+    "details": {
+      "title": "Abmessungen",
+      "description": "Geben Sie die Abmessungen ein, damit Mieter wissen, ob der Anhänger ihren Bedürfnissen entspricht.",
+      "length": "Länge (cm)",
+      "width": "Breite (cm)",
+      "height": "Höhe (cm)",
+      "weight": "Gewicht (kg)",
+      "capacity": "Max. Last (kg)"
+    },
+    "location": {
+      "title": "Standort",
+      "description": "Wo können Mieter Ihren Anhänger abholen?",
+      "search": "Adresse suchen",
+      "searchPlaceholder": "Beginnen Sie mit der Eingabe...",
+      "address": "Adresse",
+      "addressPlaceholder": "Straße und Hausnummer",
+      "postalCode": "Postleitzahl",
+      "postalCodePlaceholder": "1234 AB",
+      "city": "Stadt",
+      "cityPlaceholder": "Amsterdam",
+      "privacy": "Die vollständige Adresse wird den Mietern erst nach der Buchungsbestätigung angezeigt. In den Suchergebnissen wird nur Ihre Stadt oder Postleitzahl angezeigt.",
+      "locationSelected": "Standort ausgewählt",
+      "searchYourLocation": "Suchen Sie Ihren Standort",
+      "searchInstruction": "Geben Sie eine Adresse ein, um die Karte automatisch zu füllen, oder verwenden Sie Ihren aktuellen Standort.",
+      "currentLocation": "Aktueller Standort",
+      "otherLocation": "Anderer Standort",
+      "adjustAddressNote": "Passen Sie die Adressdaten unten bei Bedarf an.",
+      "mapLoading": "Karte wird geladen...",
+      "addressDetails": "Adressdaten",
+      "addressDetailsNote": "Diese Informationen wurden automatisch basierend auf der Karte ausgefüllt, können aber bei Bedarf angepasst werden.",
+      "trailerLocation": "Anhänger-Standort",
+      "currentLocationTitle": "Aktueller Standort",
+      "geolocationNotSupported": "Geolokalisierung wird von Ihrem Browser nicht unterstützt",
+      "geolocationError": "Beim Abrufen Ihres Standorts ist ein Fehler aufgetreten. Prüfen Sie, ob der Standortzugriff in Ihrem Browser aktiviert ist."
+    },
+    "availability": {
+      "title": "Verfügbarkeit",
+      "description": "Legen Sie fest, wann Ihr Anhänger zur Miete verfügbar ist.",
+      "days": "Verfügbare Tage",
+      "timeSlots": "Zeitslots",
+      "addTimeSlot": "Zeitslot hinzufügen",
+      "from": "Von",
+      "to": "Bis",
+      "dayLabels": {
+        "monday": "Mo",
+        "tuesday": "Di",
+        "wednesday": "Mi",
+        "thursday": "Do",
+        "friday": "Fr",
+        "saturday": "Sa",
+        "sunday": "So"
+      },
+      "dayNames": {
+        "monday": "Montag",
+        "tuesday": "Dienstag",
+        "wednesday": "Mittwoch",
+        "thursday": "Donnerstag",
+        "friday": "Freitag",
+        "saturday": "Samstag",
+        "sunday": "Sonntag"
+      },
+      "everyDayAvailable": "Jeden Tag verfügbar",
+      "daysAvailable": "Tage verfügbar",
+      "quickSettings": "Schnelle Einstellungen",
+      "quickActions": {
+        "everyday": "Jeden Tag 9-17",
+        "weekdays": "Werktage 9-17",
+        "weekend": "Wochenende",
+        "clearAll": "Alles löschen"
+      },
+      "quickActionsDesc": {
+        "everyday": "Jeden Tag 9:00-17:00",
+        "weekdays": "Mo-Fr 9:00-17:00",
+        "weekend": "Sa-So 10:00-18:00",
+        "clearAll": "Alles ausschalten"
+      },
+      "availabilityPerDay": "Verfügbarkeit pro Tag",
+      "editTimes": "Zeiten bearbeiten",
+      "noTimesSet": "Keine Zeiten eingestellt",
+      "notAvailableThisDay": "An diesem Tag nicht verfügbar",
+      "saveAvailability": "Verfügbarkeit speichern",
+      "saveAndContinue": "Speichern und fortfahren",
+      "selectAtLeastOneDay": "Wählen Sie mindestens einen Tag, um fortzufahren",
+      "timeEditor": {
+        "title": "Zeiten für",
+        "quickSelection": "Schnellauswahl",
+        "customTimes": "Benutzerdefinierte Zeiten",
+        "startTime": "Startzeit",
+        "endTime": "Endzeit",
+        "selectTime": "Zeit auswählen",
+        "addTimeSlot": "Weiteren Zeitslot hinzufügen",
+        "cancel": "Abbrechen",
+        "saveTimes": "Zeiten speichern",
+        "presets": {
+          "workDay": "Arbeitstag",
+          "allDay": "Ganzer Tag",
+          "morning": "Morgen",
+          "afternoon": "Nachmittag",
+          "evening": "Abend"
+        }
+      }
+    },
+    "pricing": {
+      "title": "Preise",
+      "description": "Legen Sie Ihre Mietpreise fest.",
+      "pricePerDay": "Preis pro Tag (€)",
+      "securityDeposit": "Kaution (€)",
+      "securityDepositDescription": "Optionale Kaution, die Mieter im Voraus zahlen und bei unbeschädigter Rückgabe des Anhängers zurückerhalten.",
+      "perDay": "Tag",
+      "goodPrice": "Guter Preis für diesen Anhängertyp",
+      "yourEarnings": "Ihr Verdienst pro Tag:",
+      "afterServiceFee": "Nach 15% Servicegebühr (Versicherung, Zahlungen & Plattform)",
+      "savePricing": "Preise speichern"
+    },
+    "accessories": {
+      "title": "Zubehör",
+      "description": "Welches Zubehör können Sie mit Ihrem Anhänger anbieten?",
+      "customAccessory": "Individuelles Zubehör",
+      "customAccessoryPlaceholder": "Z.B. Spanngurte",
+      "price": "Preis (€)",
+      "addCustom": "Individuelles Zubehör hinzufügen",
+      "accessorySingular": "Zubehör",
+      "accessoryPlural": "Zubehörteile",
+      "addedToTrailer": "Zu Ihrem Anhänger hinzugefügt",
+      "addToTrailer": "Fügen Sie dies zu Ihrem Anhänger hinzu",
+      "addCustomTitle": "Individuelles Zubehör hinzufügen",
+      "addCustomDescription": "Haben Sie ein einzigartiges Zubehör, das nicht in der Liste steht?",
+      "pricePlaceholder": "Preis pro Tag (optional)",
+      "cancel": "Abbrechen",
+      "add": "Hinzufügen",
+      "saveAccessories": "Zubehör speichern",
+      "noAccessories": "Kein Zubehör hinzufügen"
+    },
+    "photos": {
+      "title": "Fotos",
+      "description": "Laden Sie mindestens 3 Fotos Ihres Anhängers hoch. Gute Fotos erhöhen die Mietchancen.",
+      "dropzone": "Ziehen Sie Ihre Fotos hierher oder klicken Sie, um Fotos auszuwählen",
+      "uploadedPhotos": "Hochgeladene Fotos",
+      "uploading": "Hochladen...",
+      "required": "Sie müssen mindestens 3 Fotos hochladen, um fortzufahren.",
+      "progress": "Fotos hochgeladen"
+    },
+    "extra": {
+      "title": "Zusätzliche Informationen",
+      "description": "Fügen Sie zusätzliche Details zu Ihrem Anhänger hinzu, um die Vermietungschancen zu erhöhen.",
+      "license": {
+        "title": "Führerscheinanforderungen",
+        "description": "Geben Sie an, ob für diesen Anhänger ein spezieller Führerschein erforderlich ist.",
+        "required": "Für diesen Anhänger ist ein spezieller Führerschein erforderlich",
+        "type": "Erforderlicher Führerscheintyp",
+        "none": "Kein spezieller Führerschein",
+        "b": "B Führerschein",
+        "be": "BE Führerschein",
+        "bplus": "B+ Führerschein"
+      },
+      "delivery": {
+        "title": "Lieferoptionen",
+        "description": "Bieten Sie an, den Anhänger gegen eine zusätzliche Gebühr zum Standort des Mieters zu liefern.",
+        "offer": "Lieferservice anbieten",
+        "fee": "Liefergebühr (€)",
+        "freeDelivery": "Leer lassen für kostenlose Lieferung",
+        "maxDistance": "Maximale Lieferentfernung (km)"
+      },
+      "insurance": {
+        "title": "Versicherung",
+        "included": "Versicherung ist im Mietpreis enthalten"
+      },
+      "duration": {
+        "title": "Mietdauer",
+        "description": "Legen Sie minimale und maximale Mietdauer fest.",
+        "minimum": "Minimum (Tage)",
+        "maximum": "Maximum (Tage)"
+      },
+      "cancellation": {
+        "title": "Stornierungsrichtlinie",
+        "select": "Wählen Sie Ihre Stornierungsrichtlinie",
+        "flexible": "Flexibel (Vollständige Rückerstattung 24h vor Abholung)",
+        "moderate": "Moderat (Vollständige Rückerstattung 3 Tage vor Abholung)",
+        "strict": "Streng (50% Rückerstattung 7 Tage vor Abholung)"
+      },
+      "instructions": {
+        "title": "Gebrauchsanweisungen",
+        "description": "Geben Sie detaillierte Anweisungen, um Mietern bei der ordnungsgemäßen Nutzung Ihres Anhängers zu helfen.",
+        "placeholder": "Geben Sie spezielle Anweisungen für die Verwendung dieses Anhängers an..."
+      },
+      "continue": "Fortfahren"
+    }
+  },
+  "common": {
+    "saveAndContinue": "Speichern und fortfahren",
+    "saving": "Speichern...",
+    "saveAsConcept": "Als Entwurf speichern"
+  },
+  "termsSubmit": {
+    "agreeText": "Ich stimme den",
+    "termsLink": "Allgemeinen Geschäftsbedingungen",
+    "andText": "und der",
+    "privacyLink": "Datenschutzrichtlinie",
+    "submitButton": "Anhänger einstellen",
+    "submitting": "Anhänger wird eingestellt...",
+    "formIncomplete": "Bitte füllen Sie mindestens die erforderlichen Abschnitte aus, um Ihren Anhänger einzustellen"
+  }
+}

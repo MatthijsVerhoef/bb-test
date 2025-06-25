@@ -1,0 +1,1067 @@
+{
+  "personalInfo": {
+    "title": "Personal Information",
+    "editProfile": "Edit Profile",
+    "updateDetails": "Update your personal details and contact information",
+    "viewDetails": "Your personal details and contact information",
+    "incomplete": {
+      "title": "Profile incomplete:",
+      "message": "Complete your profile with phone number and address details to get the most out of BuurBak.",
+      "button": "Complete Profile",
+      "welcome": {
+        "title": "Welcome to BuurBak!",
+        "subtitle": "Let's set up your profile",
+        "heading": "Glad you're here!",
+        "description": "BuurBak connects neighbors who rent and lease trailers. Let's complete your profile so you can get started right away."
+      },
+      "fillDetails": "Fill in your details",
+      "completeProfile": "Complete Profile",
+      "almostThere": "We're almost there!",
+      "fillMissingInfo": "Fill in your missing information",
+      "later": "Later",
+      "letsStart": "Let's get started"
+    },
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "emailReadonly": "Email address cannot be changed",
+      "phone": "Phone Number",
+      "phoneNotAdded": "No phone number added",
+      "phoneRequired": "Required for contact about rentals and safety",
+      "address": "Address",
+      "addressPlaceholder": "Street and house number",
+      "city": "City",
+      "cityPlaceholder": "e.g. Amsterdam",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "e.g. 1234 AB",
+      "country": "Country",
+      "defaultCountry": "Netherlands",
+      "saving": "Saving...",
+      "save": "Save",
+      "cancel": "Cancel",
+      "back": "Back",
+      "updateError": "Failed to update profile",
+      "updateSuccess": "Profile successfully updated! Welcome to BuurBak!",
+      "profilePicture": {
+        "uploadSuccess": "Profile picture changed",
+        "updateSuccess": "Your profile picture has been successfully updated",
+        "uploadFailed": "Upload failed",
+        "uploadError": "There was a problem uploading your profile picture",
+        "fileTooBig": "File too large",
+        "fileSizeLimit": "The image must be less than 5MB",
+        "invalidFileType": "Invalid file type",
+        "allowedFileTypes": "Please upload a JPEG, PNG, or WebP image"
+      }
+    },
+    "addressInfo": "Address Information"
+  },
+  "sidebar": {
+    "memberSince": "Member since",
+    "menu": "Menu",
+    "forLessors": "For lessors",
+    "tabs": {
+      "renter": {
+        "profile": "My Information",
+        "rentals": "My Rental Agreements",
+        "favorites": "Favorites",
+        "reviews": "Reviews",
+        "settings": "Settings"
+      },
+      "lessor": {
+        "dashboard": "Dashboard",
+        "rentals": "Bookings",
+        "calendar": "Calendar",
+        "listings": "My Trailers",
+        "reviews": "Reviews"
+      }
+    },
+    "mode": {
+      "renter": "Renter",
+      "lessor": "Lessor"
+    }
+  },
+  "paymentMethod": {
+    "title": "Payment Information",
+    "subtitle": {
+      "lessor": "Easily manage your payment & payout methods from your account, making renting and leasing trailers even easier.",
+      "renter": "Manage your payment methods for renting trailers"
+    },
+    "error": "An error occurred while loading payment methods",
+    "loading": "Loading payment system...",
+    "methods": {
+      "noMethods": "No payment method added",
+      "noMethodsDescription": "Add a payment method to quickly rent trailers",
+      "addMethod": "Add payment method",
+      "manage": "Manage payment methods",
+      "defaultBadge": "Default",
+      "setAsDefault": "Set as default",
+      "removeTooltip": "Remove payment method",
+      "expires": "Expires",
+      "removeSuccess": "Payment method removed",
+      "removeError": "An error occurred while removing the payment method",
+      "setDefaultSuccess": "Default payment method set",
+      "setDefaultError": "An error occurred while setting the default payment method",
+      "addSuccess": "Payment method added"
+    },
+    "lessor": {
+      "payoutTitle": "Lessor payout",
+      "payoutDescription": "Connect your bank account to receive payments for your trailers",
+      "connected": "Your payout account is connected",
+      "connectButton": "Connect with Stripe Connect",
+      "connectToast": "This would take you to the Stripe Connect onboarding flow"
+    },
+    "security": "Secure payments via Stripe",
+    "addDialog": {
+      "title": "Add payment method",
+      "description": "Add a new card or payment method for your rental reservations",
+      "cancel": "Cancel",
+      "processing": "Processing...",
+      "addMethod": "Add payment method",
+      "systemLoading": "Loading payment system..."
+    },
+    "errors": {
+      "notLoaded": "Payment system is not fully loaded. Please try again.",
+      "formNotLoaded": "Payment form is not correctly loaded. Please try reopening the window.",
+      "invalidDetails": "Invalid payment details",
+      "addFailed": "Failed to add payment method",
+      "generalError": "An error occurred while adding the payment method"
+    }
+  },
+  "licenseVerification": {
+    "title": "Driver's License Verification",
+    "subtitle": {
+      "verified": "Your driver's license is verified",
+      "unverified": "Verify your driver's license to be able to rent trailers"
+    },
+    "verified": "Verified",
+    "verificationId": "Verification ID:",
+    "categories": {
+      "AM": {
+        "label": "AM",
+        "description": "Mopeds, light mopeds and microcars"
+      },
+      "A1": {
+        "label": "A1",
+        "description": "Light motorcycles (125 cc, 11 kW)"
+      },
+      "A2": {
+        "label": "A2",
+        "description": "Medium motorcycles (35 kW)"
+      },
+      "A": {
+        "label": "A",
+        "description": "Heavy motorcycles"
+      },
+      "B": {
+        "label": "B",
+        "description": "Cars"
+      },
+      "BE": {
+        "label": "BE",
+        "description": "Car with trailer (weight > 750 kg)"
+      },
+      "C1": {
+        "label": "C1",
+        "description": "Light trucks (3500-7500 kg)"
+      },
+      "C": {
+        "label": "C",
+        "description": "Trucks (> 3500 kg)"
+      },
+      "CE": {
+        "label": "CE",
+        "description": "Truck with trailer"
+      },
+      "D1": {
+        "label": "D1",
+        "description": "Small buses (max. 16 passengers)"
+      },
+      "D": {
+        "label": "D",
+        "description": "Buses"
+      },
+      "T": {
+        "label": "T",
+        "description": "Tractor"
+      }
+    },
+    "expiryDate": "Expiry Date",
+    "unknown": "Unknown",
+    "verifiedOn": "Verified on",
+    "edit": "Edit",
+    "unverified": {
+      "title": "Not verified",
+      "description": "You need to verify your driver's license to be able to rent trailers.",
+      "button": "Verify driver's license"
+    },
+    "dialog": {
+      "title": {
+        "new": "Driver's License Verification",
+        "edit": "Update Driver's License"
+      },
+      "step1": {
+        "new": "Enter your driver's license details",
+        "edit": "Update your driver's license details"
+      },
+      "step2": "Select the categories on your driver's license",
+      "step3": "Check your details",
+      "step4": "Confirm your verification",
+      "licenseNumber": "License Number",
+      "licenseNumberPlaceholder": "e.g. 12345AB12",
+      "licenseNumberRequired": "License number is required",
+      "licenseNumberInvalid": "Invalid license number format",
+      "licenseNumberSecurity": "Your license number is securely stored with encryption",
+      "country": "Country of issue",
+      "countrySelect": "Select a country",
+      "expiryDate": "Expiry Date",
+      "verificationMechanism": "Verification Mechanism",
+      "verificationDescription": "We check your driver's license details for authenticity and validity. We store the following data:",
+      "encryptedHash": "Encrypted hash of your license number",
+      "countryOfIssue": "Country of issue:",
+      "expiryDateLabel": "Expiry date:",
+      "notFilled": "Not filled in",
+      "categoriesLabel": "Categories:",
+      "noCategories": "No categories selected",
+      "termsAgreement": "I agree to the processing of my driver's license data as described above for verification purposes.",
+      "termsRequired": "You must agree to the terms",
+      "processing": "Processing...",
+      "verify": "Verify",
+      "update": "Update",
+      "processingTitle": "Verification is being processed",
+      "processingDescription": "We are processing your driver's license details. This may take a few seconds.",
+      "success": {
+        "new": "Driver's license successfully verified",
+        "update": "Driver's license details successfully updated"
+      },
+      "error": "Verification failed. Please try again.",
+      "cancel": "Cancel",
+      "next": "Next"
+    },
+    "countries": {
+      "NL": "Netherlands",
+      "DE": "Germany",
+      "BE": "Belgium",
+      "FR": "France",
+      "ES": "Spain",
+      "IT": "Italy",
+      "GB": "United Kingdom",
+      "AT": "Austria",
+      "CH": "Switzerland",
+      "DK": "Denmark",
+      "SE": "Sweden",
+      "NO": "Norway",
+      "PL": "Poland"
+    }
+  },
+  "trailerManagement": {
+    "title": "My Trailers",
+    "description": "Manage your trailers and track performance",
+    "tabs": {
+      "all": "All trailers",
+      "active": "Active",
+      "deactivated": "Deactivated",
+      "draft": "Drafts"
+    },
+    "status": {
+      "active": "Active",
+      "deactivated": "Deactivated",
+      "draft": "Draft"
+    },
+    "loading": "Loading trailers...",
+    "error": {
+      "title": "Error loading",
+      "tryAgain": "Try again"
+    },
+    "empty": {
+      "title": "No trailers listed",
+      "description": "You haven't added any trailers yet. Start earning by listing your first trailer.",
+      "button": "Start renting"
+    },
+    "emptyFilter": {
+      "title": "No trailers found",
+      "description": "There are no trailers in this category.",
+      "button": "Show all trailers"
+    },
+    "deleteDialog": {
+      "title": "Delete trailer",
+      "confirmation": "Are you sure you want to delete the trailer \"{{title}}\"?",
+      "warning": "This action cannot be undone. If the trailer has been rented out before, we recommend deactivating it instead of deleting it.",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    },
+    "deactivateDialog": {
+      "title": "Deactivate trailer?",
+      "confirmation": "Are you sure you want to temporarily deactivate this trailer? It will no longer be visible for rental until you activate it again.",
+      "activeRentalsWarning": "Warning: Active reservations",
+      "activeRentalsMessage": "This trailer has active reservations. Existing reservations will remain active.",
+      "cancel": "Cancel",
+      "deactivate": "Deactivate"
+    },
+    "card": {
+      "generalTrailer": "General trailer",
+      "rental": "rental",
+      "rentals": "rentals",
+      "active": "Active",
+      "incompleteWarning": "Incomplete listing",
+      "completeDraft": "Complete draft",
+      "completeListing": "Complete listing",
+      "editListing": "Edit listing",
+      "viewListing": "View listing",
+      "deleteListing": "Delete listing"
+    }
+  },
+  "rentalHistory": {
+    "title": "My Rental History",
+    "description": "View and manage your trailer rentals",
+    "updating": "Updating...",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "active": "Active",
+      "past": "Completed"
+    },
+    "emptyStates": {
+      "upcoming": {
+        "title": "No upcoming rentals",
+        "message": "You haven't rented any trailers for upcoming dates.",
+        "action": "Find a trailer"
+      },
+      "active": {
+        "title": "No active rentals",
+        "message": "You don't have any trailers in use at the moment."
+      },
+      "past": {
+        "title": "No rental history",
+        "message": "You haven't rented any trailers in the past.",
+        "action": "Rent your first trailer"
+      }
+    },
+    "error": {
+      "title": "Error loading",
+      "tryAgain": "Try again"
+    },
+    "rentalDetails": {
+      "period": "Rental period",
+      "lessor": "Lessor",
+      "startingIn": "Starting in {{days}} days",
+      "lateReturnWarning": "Late return may incur additional charges",
+      "actions": {
+        "cancel": "Cancel",
+        "details": "Details",
+        "review": "Review",
+        "reportDamage": "Report damage",
+        "extend": "Extend"
+      }
+    },
+    "status": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "ACTIVE": "Active",
+      "CANCELLED": "Cancelled",
+      "COMPLETED": "Completed",
+      "LATE_RETURN": "Late return",
+      "DISPUTED": "Disputed"
+    }
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "description": "Trailers that have been added to your favorites.",
+    "empty": {
+      "title": "No Favorites",
+      "description": "You haven't saved any trailers as favorites yet.",
+      "button": "Browse Trailers"
+    },
+    "location": "Location",
+    "availability": "Availability",
+    "dailyAvailable": "Available daily",
+    "actions": {
+      "remove": "Remove",
+      "view": "View"
+    },
+    "badge": "Favorite",
+    "perDay": "/day",
+    "showing": "Showing {{visible}} of {{total}} favorites"
+  },
+  "security": {
+    "title": "Account Security",
+    "description": "Manage your account security and authentication settings",
+    "changePassword": {
+      "title": "Change Password",
+      "description": "Update your password regularly to keep your account secure",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "passwordRequirements": "Password must be at least 8 characters long and include a number and special character",
+      "confirmPassword": "Confirm New Password",
+      "cancel": "Cancel",
+      "update": "Update Password"
+    },
+    "twoFactor": {
+      "title": "Two-Factor Authentication",
+      "description": "Add an extra layer of security to your account",
+      "sms": {
+        "title": "Text Message Authentication",
+        "description": "Receive a code via SMS to verify your identity"
+      },
+      "app": {
+        "title": "Authenticator App",
+        "description": "Use an authenticator app to generate verification codes"
+      },
+      "info": "Two-factor authentication adds an additional layer of security to your account by requiring more than just a password to sign in."
+    },
+    "loginHistory": {
+      "title": "Login History",
+      "description": "Review recent account activity",
+      "current": "Current",
+      "viewFull": "View Full Login History"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "Permanently delete your account and all associated data",
+      "warning": "Once you delete your account, there is no going back. Please be certain.",
+      "delete": "Delete Account"
+    }
+  },
+  "lessorDashboard": {
+    "title": "Lessor Dashboard",
+    "description": "Manage your listed trailers and reservations.",
+    "loading": "Loading dashboard data...",
+    "error": {
+      "title": "Error loading dashboard",
+      "message": "An error occurred: {{message}}",
+      "tryAgain": "Try again"
+    },
+    "trailerOverview": {
+      "title": "Trailer overview",
+      "subtitle": "Total number of trailers"
+    },
+    "avgDailyPrice": {
+      "title": "Avg. daily price",
+      "subtitle": "Per day"
+    },
+    "rentalStats": {
+      "title": "Rental statistics",
+      "subtitle": "Total number of rentals"
+    },
+    "acceptanceRate": {
+      "title": "Acceptance rate",
+      "subtitle": "% accepted rental requests"
+    },
+    "responseRate": {
+      "title": "Response rate",
+      "subtitle": "Above 95% = top lessor"
+    },
+    "responseTime": {
+      "title": "Response time",
+      "subtitle": "Avg. response time"
+    },
+    "monthlyRevenue": {
+      "title": "Monthly revenue",
+      "subtitle": "vs. previous month ({{amount}})"
+    },
+    "utilizationRate": {
+      "title": "Trailer utilization rate",
+      "subtitle": "Avg. over last 30 days"
+    },
+    "averageRating": {
+      "title": "Avg. rating",
+      "subtitle": "Avg. received reviews"
+    },
+    "topPerformingTrailers": {
+      "title": "Top performing trailers",
+      "rentals": "rentals",
+      "noData": "No data available"
+    },
+    "mostViewedTrailers": {
+      "title": "Most viewed trailers",
+      "clicksFavorites": "clicks • favorites",
+      "noData": "No data available"
+    },
+    "upcomingRentals": {
+      "title": "Upcoming rentals",
+      "renter": "Renter: {{name}}",
+      "noRentals": "No upcoming rentals",
+      "status": {
+        "pending": "Pending",
+        "active": "Active"
+      }
+    }
+  },
+  "lessorCalendar": {
+    "title": "Rental Calendar",
+    "description": "Manage availability and view reservations",
+    "loading": "Loading calendar data...",
+    "error": {
+      "title": "Error loading",
+      "message": "An error occurred",
+      "tryAgain": "Try again"
+    },
+    "tabs": {
+      "calendar": "Calendar",
+      "availability": "Settings"
+    },
+    "trailerSelection": {
+      "title": "Select a Trailer",
+      "description": "Choose a trailer to view and manage its availability"
+    },
+    "calendar": {
+      "title": "Calendar for {{trailerName}}",
+      "blockDates": "Block Dates",
+      "unblockDates": "Unblock Dates",
+      "cancel": "Cancel",
+      "blockDay": "Block {{count}} Day",
+      "blockDays": "Block {{count}} Days",
+      "unblockDay": "Unblock {{count}} Day",
+      "unblockDays": "Unblock {{count}} Days",
+      "noTrailerSelected": {
+        "title": "No trailer selected",
+        "description": "Please select a trailer above to view and manage its calendar"
+      },
+      "legend": {
+        "title": "Legend:",
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "blocked": "Blocked",
+        "booked": "Booked",
+        "today": "Today"
+      },
+      "dayStatus": {
+        "unavailable": "Unavailable",
+        "blocked": "Blocked"
+      },
+      "rental": {
+        "more": "+{{count}} more"
+      }
+    },
+    "availability": {
+      "applyTo": "Apply to:",
+      "allTrailers": "All trailers",
+      "description": "Set your default availability here. Renters can only book on days and times you set here.",
+      "warning": {
+        "title": "Note:",
+        "message": "If you make days unavailable that already have reservations, these reservations will remain. You must manually cancel any reservations."
+      },
+      "saveError": "An error occurred while saving",
+      "quickSettings": {
+        "title": "Quick settings",
+        "everyDay": {
+          "label": "Every day",
+          "description": "Mon to Sun"
+        },
+        "weekdays": {
+          "label": "Weekdays",
+          "description": "Mon to Fri"
+        },
+        "weekend": {
+          "label": "Weekend",
+          "description": "Sat & Sun"
+        },
+        "clearAll": {
+          "label": "Clear all",
+          "description": "Reset all"
+        }
+      },
+      "daysAvailability": {
+        "title": "Availability by day",
+        "editTimes": "Edit times",
+        "noTimesSet": "No times set",
+        "notAvailable": "Not available on this day"
+      },
+      "saveButton": {
+        "saving": "Saving...",
+        "save": "Save changes",
+        "noChanges": "No changes to save"
+      },
+      "timeEditor": {
+        "title": "Edit times for {{day}}",
+        "quickSelect": "Quick selection",
+        "presets": {
+          "workDay": {
+            "label": "Work day",
+            "description": "9:00 - 17:00"
+          },
+          "allDay": {
+            "label": "All day",
+            "description": "8:00 - 20:00"
+          },
+          "morning": {
+            "label": "Morning",
+            "description": "8:00 - 12:00"
+          },
+          "afternoon": {
+            "label": "Afternoon",
+            "description": "12:00 - 17:00"
+          },
+          "evening": {
+            "label": "Evening",
+            "description": "17:00 - 22:00"
+          }
+        },
+        "customTimes": "Custom times",
+        "startTime": "Start time",
+        "endTime": "End time",
+        "addTimeSlot": "+ Add time slot",
+        "cancel": "Cancel",
+        "save": "Save times"
+      },
+      "days": {
+        "MONDAY": "Monday",
+        "TUESDAY": "Tuesday",
+        "WEDNESDAY": "Wednesday",
+        "THURSDAY": "Thursday",
+        "FRIDAY": "Friday",
+        "SATURDAY": "Saturday",
+        "SUNDAY": "Sunday"
+      },
+      "shortDays": {
+        "MONDAY": "Mon",
+        "TUESDAY": "Tue",
+        "WEDNESDAY": "Wed",
+        "THURSDAY": "Thu",
+        "FRIDAY": "Fri",
+        "SATURDAY": "Sat",
+        "SUNDAY": "Sun"
+      }
+    }
+  },
+  "lessorHistory": {
+    "title": "Manage Rentals",
+    "description": "Manage reservations for your trailers",
+    "loading": "Loading...",
+    "error": {
+      "title": "Error loading rentals",
+      "tryAgain": "Try again",
+      "retrying": "Retrying..."
+    },
+    "tabs": {
+      "upcoming": "Upcoming",
+      "active": "Active",
+      "past": "Completed"
+    },
+    "rentalInfo": {
+      "rentedTo": "Rented to",
+      "rentalPeriod": "Rental period",
+      "lateReturnWarning": "Late return may incur additional fees"
+    },
+    "buttons": {
+      "viewDetails": "View details",
+      "manageRental": "Manage rental",
+      "reviewRental": "Review rental",
+      "refresh": "Refresh"
+    },
+    "emptyStates": {
+      "upcoming": {
+        "title": "No upcoming rentals",
+        "message": "There are currently no scheduled rentals for your trailer."
+      },
+      "active": {
+        "title": "No active rentals",
+        "message": "None of your trailers are currently being rented."
+      },
+      "past": {
+        "title": "No rental history",
+        "message": "There are no completed rentals of your trailers yet."
+      }
+    },
+    "status": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "ACTIVE": "Active",
+      "CANCELLED": "Cancelled",
+      "COMPLETED": "Completed",
+      "LATE_RETURN": "Late return",
+      "DISPUTED": "Disputed"
+    }
+  },
+  "reviews": {
+    "lessor": {
+      "title": "Received Reviews",
+      "description": "See what renters are saying about your trailers",
+      "avgRating": "{{rating}} average rating"
+    },
+    "user": {
+      "title": "Submitted Reviews",
+      "description": "Reviews you've left for trailers you've rented"
+    },
+    "loading": "Loading reviews...",
+    "error": {
+      "title": "Error loading reviews",
+      "tryAgain": "Try again"
+    },
+    "tabs": {
+      "all": "All reviews",
+      "positive": "Positive",
+      "improvement": "Needs improvement"
+    },
+    "filters": {
+      "showAll": "Show all"
+    },
+    "emptyStates": {
+      "all": {
+        "lessor": {
+          "title": "No reviews",
+          "message": "You haven't received any reviews for your trailers yet."
+        },
+        "user": {
+          "title": "No reviews",
+          "message": "You haven't left any reviews for trailers you've rented."
+        }
+      },
+      "positive": {
+        "lessor": {
+          "title": "No positive reviews",
+          "message": "You haven't received any positive reviews for your trailers yet."
+        },
+        "user": {
+          "title": "No positive reviews",
+          "message": "You haven't left any positive reviews yet."
+        }
+      },
+      "improvement": {
+        "lessor": {
+          "title": "No improvement points",
+          "message": "You haven't received any reviews with improvement points."
+        },
+        "user": {
+          "title": "No improvement points",
+          "message": "You haven't left any reviews with improvement points."
+        }
+      }
+    },
+    "review": {
+      "anonymous": "Anonymous",
+      "writeReview": "Write a review",
+      "dates": {
+        "posted": "Posted on {{date}}",
+        "month": "{{month}}"
+      }
+    },
+    "response": {
+      "title": "Owner's response",
+      "date": "Responded on {{date}}"
+    },
+    "actions": {
+      "respond": "Respond",
+      "editResponse": "Edit response",
+      "editReview": "Edit review"
+    },
+    "dialogs": {
+      "response": {
+        "title": "Respond to review",
+        "editTitle": "Edit your response",
+        "description": "Write a response to this review, it will be publicly visible.",
+        "editDescription": "Edit your response to this review.",
+        "reviewLabel": "Review",
+        "responseLabel": "Your response",
+        "responsePlaceholder": "Write your response...",
+        "buttons": {
+          "cancel": "Cancel",
+          "respond": "Respond",
+          "update": "Update response",
+          "saving": "Saving..."
+        }
+      },
+      "edit": {
+        "title": "Edit review",
+        "description": "Update your review for \"{{trailerTitle}}\".",
+        "rating": "Rating",
+        "titleLabel": "Title (optional)",
+        "titlePlaceholder": "Summarize your experience",
+        "reviewLabel": "Review",
+        "reviewPlaceholder": "Share your experience...",
+        "buttons": {
+          "cancel": "Cancel",
+          "update": "Update review",
+          "saving": "Saving..."
+        }
+      }
+    }
+  },
+  "settings": {
+    "dialog": {
+      "title": "Settings",
+      "description": "Manage your account settings and preferences",
+      "backButton": "Back"
+    },
+    "sections": {
+      "account": "Account",
+      "lessorSettings": "Lessor Settings",
+      "notifications": "Notifications",
+      "security": "Security",
+      "billing": "Billing"
+    },
+    "logout": "Logout",
+    "account": {
+      "password": {
+        "title": "Password",
+        "description": "Keep your account secure with a strong password",
+        "changeButton": "Change password",
+        "dialog": {
+          "title": "Change password",
+          "description": "Choose a strong password of at least 8 characters",
+          "currentPassword": "Current password",
+          "newPassword": "New password",
+          "confirmPassword": "Confirm password",
+          "passwordMismatch": "Passwords do not match",
+          "passwordTooShort": "Password must be at least 8 characters long",
+          "cancel": "Cancel",
+          "change": "Change"
+        },
+        "success": "Password successfully changed"
+      },
+      "accountManagement": {
+        "title": "Account management",
+        "description": "Temporarily deactivate or permanently delete",
+        "deactivateButton": "Deactivate account",
+        "deleteButton": "Delete account",
+        "deactivateDialog": {
+          "title": "Deactivate account?",
+          "description": "Your account will be temporarily disabled. You can log back in at any time to reactivate your account.",
+          "cancel": "Cancel",
+          "deactivate": "Deactivate"
+        },
+        "deleteDialog": {
+          "title": "Permanently delete account?",
+          "description": "This action cannot be undone. All your data will be permanently deleted.",
+          "confirmationLabel": "Type your email to confirm:",
+          "cancel": "Cancel",
+          "delete": "Delete",
+          "deleting": "Deleting..."
+        }
+      }
+    },
+    "lessorSettings": {
+      "autoApproval": {
+        "title": "Automatic approval",
+        "description": "Automatically accept bookings from reliable renters",
+        "toggle": "Automatic approval",
+        "toggleDescription": "Bookings will be directly confirmed if they meet your criteria",
+        "minRating": {
+          "toggle": "Require minimum rating",
+          "toggleDescription": "Only accept renters with a minimum rating",
+          "label": "Minimum score",
+          "star": "star"
+        },
+        "minRentals": {
+          "label": "Minimum number of previous rentals",
+          "options": {
+            "none": "No minimum",
+            "one": "1 rental",
+            "three": "3 rentals",
+            "five": "5 rentals",
+            "ten": "10 rentals"
+          }
+        },
+        "verifiedOnly": {
+          "label": "Verified users only",
+          "description": "Only users with a verified driver's license"
+        }
+      },
+      "rentalTerms": {
+        "title": "Rental terms",
+        "description": "Default settings for new trailers",
+        "minDuration": {
+          "label": "Minimum rental duration",
+          "options": {
+            "oneDay": "1 day",
+            "twoDays": "2 days",
+            "threeDays": "3 days",
+            "oneWeek": "1 week"
+          }
+        },
+        "maxDuration": {
+          "label": "Maximum rental duration",
+          "options": {
+            "oneWeek": "1 week",
+            "twoWeeks": "2 weeks",
+            "oneMonth": "1 month",
+            "twoMonths": "2 months",
+            "threeMonths": "3 months"
+          }
+        },
+        "securityDeposit": {
+          "label": "Security deposit percentage",
+          "description": "Percentage of the total rental price as deposit"
+        }
+      },
+      "cancellationPolicy": {
+        "title": "Cancellation policy",
+        "description": "Determine when renters can cancel",
+        "policies": {
+          "flexible": {
+            "label": "Flexible",
+            "description": "Free cancellation up to 24 hours before pickup"
+          },
+          "moderate": {
+            "label": "Moderate",
+            "description": "100% refund for cancellation within 72 hours"
+          },
+          "strict": {
+            "label": "Strict",
+            "description": "No refund within 7 days"
+          },
+          "custom": {
+            "label": "Custom",
+            "description": "Create your own policy",
+            "placeholder": "Describe your cancellation policy..."
+          }
+        }
+      },
+      "saveButton": {
+        "saving": "Saving...",
+        "save": "Save settings",
+        "noChanges": "No changes to save"
+      }
+    },
+    "notifications": {
+      "loading": "Loading settings...",
+      "emailNotifications": {
+        "disabled": {
+          "title": "Email notifications are disabled",
+          "description": "You won't receive any emails from us until you enable this again"
+        }
+      },
+      "categories": {
+        "bookings": {
+          "title": "Bookings",
+          "description": "Updates about your rentals and reservations",
+          "settings": {
+            "booking_request": {
+              "label": "New booking requests",
+              "description": "When someone wants to rent your trailer"
+            },
+            "booking_confirmed": {
+              "label": "Booking confirmations",
+              "description": "When a booking is confirmed"
+            },
+            "booking_cancelled": {
+              "label": "Cancellations",
+              "description": "When a booking is cancelled"
+            },
+            "booking_modified": {
+              "label": "Modifications",
+              "description": "When booking details are modified"
+            }
+          }
+        },
+        "payments": {
+          "title": "Payments",
+          "description": "Financial transactions and payouts",
+          "settings": {
+            "payment_received": {
+              "label": "Payment received",
+              "description": "When you have received a payment"
+            },
+            "payout_processed": {
+              "label": "Payout processed",
+              "description": "When money has been transferred to your account"
+            },
+            "payment_failed": {
+              "label": "Failed payments",
+              "description": "When a payment has failed"
+            }
+          }
+        },
+        "messages": {
+          "title": "Messages",
+          "description": "Communication with renters and lessors",
+          "settings": {
+            "new_message": {
+              "label": "New messages",
+              "description": "When you receive a new message"
+            },
+            "unread_reminder": {
+              "label": "Unread messages reminder",
+              "description": "Daily reminder for unread messages"
+            }
+          }
+        },
+        "reminders": {
+          "title": "Reminders",
+          "description": "Important dates and actions",
+          "settings": {
+            "pickup_reminder": {
+              "label": "Pickup reminder",
+              "description": "24 hours before picking up a trailer"
+            },
+            "return_reminder": {
+              "label": "Return reminder",
+              "description": "24 hours before returning a trailer"
+            },
+            "review_reminder": {
+              "label": "Leave a review",
+              "description": "Reminder to leave a review"
+            }
+          }
+        },
+        "marketing": {
+          "title": "Offers & News",
+          "description": "Updates about new features and offers",
+          "settings": {
+            "promotions": {
+              "label": "Special offers",
+              "description": "Discounts and promotions"
+            },
+            "newsletter": {
+              "label": "Newsletter",
+              "description": "Monthly updates and tips"
+            },
+            "new_features": {
+              "label": "New features",
+              "description": "When we launch new features"
+            }
+          }
+        }
+      },
+      "saveButton": {
+        "saving": "Saving...",
+        "save": "Save settings",
+        "noChanges": "No changes to save"
+      }
+    },
+    "security": {
+      "twoFactor": {
+        "title": "Two-factor authentication",
+        "description": "Extra security for your account",
+        "authApp": {
+          "label": "Use authentication app",
+          "description": "Requires a code with every new login"
+        }
+      },
+      "loginAlerts": {
+        "title": "Notifications",
+        "description": "Alerts for account activity",
+        "newLogin": {
+          "label": "Email on new login",
+          "description": "Notification when logging in from a new device"
+        }
+      },
+      "devices": {
+        "title": "Devices",
+        "description": "{{count}} active sessions",
+        "current": "current",
+        "removeButton": "Remove",
+        "removeDialog": {
+          "title": "Remove device?",
+          "description": "This device will be logged out and will need to log in again.",
+          "cancel": "Cancel",
+          "remove": "Remove"
+        }
+      }
+    },
+    "billing": {
+      "paymentMethods": {
+        "title": "Payment methods",
+        "description": "Manage your cards for payments and receive rental income"
+      },
+      "transactions": {
+        "title": "Transaction history",
+        "emptyState": "There are no transactions to display yet",
+        "status": {
+          "completed": "Completed",
+          "pending": "Pending"
+        }
+      }
+    }
+  }
+}

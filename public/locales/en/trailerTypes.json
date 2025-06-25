@@ -1,0 +1,336 @@
+{
+  "types": {
+    "OPEN": {
+      "name": "Open trailer",
+      "description": "Open trailers feature an open loading floor without side or rear walls. This makes them particularly versatile for transporting large, irregular or heavy loads such as garden materials, construction waste or furniture. They are ideal for short transports in urban environments, but require extra attention for securing the load.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Open loading bed</strong>: ideal for large and irregularly shaped objects",
+          "<strong>Weather influences</strong>: load is exposed to rain and wind",
+          "<strong>Safety</strong>: check tire pressure and lighting regularly",
+          "<strong>Driver's license</strong>: usually a B license is sufficient"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Pay attention to the maximum permitted mass (MPM)",
+          "Distribute weight evenly and pay attention to correct ball weight",
+          "Keep extra distance while driving"
+        ]
+      },
+      "featuresList": [
+        "Foldable side walls for easy loading",
+        "Multi-functional use",
+        "Use a tarp in bad weather"
+      ]
+    },
+    "CLOSED": {
+      "name": "Enclosed trailer",
+      "description": "Enclosed trailers offer a fully shielded loading compartment that provides optimal protection against weather conditions and unwanted visibility. They are very suitable for transporting valuable, vulnerable or fragile loads such as electronics and furniture.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Protection</strong>: sealed construction prevents damage from weather and wind",
+          "<strong>Securely lockable</strong>: often equipped with locks",
+          "<strong>Ventilation</strong>: check ventilation to prevent moisture",
+          "<strong>Height</strong>: pay attention to height restrictions in parking garages"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Check seals and locking mechanism regularly",
+          "Ensure even weight distribution",
+          "Account for longer braking distance when fully loaded"
+        ]
+      },
+      "featuresList": [
+        "Waterproof sealing and lockable doors",
+        "Ideal for valuable and fragile loads",
+        "Protection against weather conditions"
+      ]
+    },
+    "PICKUP": {
+      "name": "Car transporter",
+      "description": "Pickup trailers are specially designed for transporting vehicles and heavy loads. With integrated loading ramps and adjustable wheel stops, they ensure safe, stable loading.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Loading ramps</strong>: easy loading of rolling cargo",
+          "<strong>Adjustable wheel stops</strong>: prevents shifting",
+          "<strong>Weight distribution</strong>: distribute evenly over axles",
+          "<strong>Brake system</strong>: braked version for heavy loads"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Check attachment points before departure",
+          "Pay attention to correct ball weight",
+          "Longer braking distance and turning radius"
+        ]
+      },
+      "featuresList": [
+        "Adjustable wheel stops and sturdy loading ramps",
+        "Robust construction for safe transport",
+        "Suitable for various vehicle types"
+      ]
+    },
+    "BOAT": {
+      "name": "Boat trailer",
+      "description": "Boat trailers are designed for safe and easy transportation of boats. With a tilting construction, adjustable support points and an integrated winch, loading and unloading at a ramp is simple.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Tilting frame</strong>: facilitates launching",
+          "<strong>Adjustable supports</strong>: fits different boat shapes",
+          "<strong>Integrated winch</strong>: easy loading and unloading",
+          "<strong>Corrosion resistant</strong>: rinse after salt water use"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Check that boat dimensions and weight are within limits",
+          "Check winch cable, axles and lighting",
+          "Distribute weight in boat for stability"
+        ]
+      },
+      "featuresList": [
+        "Tilting construction and integrated winch",
+        "Corrosion-resistant material",
+        "Adjustable support points for different boats"
+      ]
+    },
+    "MOTORCYCLE": {
+      "name": "Motorcycle trailer",
+      "description": "Motorcycle trailers are compact and designed to safely transport motorcycles or scooters. With integrated wheel clamps, a non-slip floor and a low center of gravity, shocks are minimized.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Wheel clamps</strong>: secure the front wheel for stability",
+          "<strong>Non-slip floor</strong>: prevents sliding in wet conditions",
+          "<strong>Low center of gravity</strong>: ensures stable driving behavior",
+          "<strong>Tie-down straps</strong>: use sturdy straps for fixation"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Check that motorcycle is secure and straight",
+          "Prevent movement over bumps",
+          "Longer braking distance and wider turns"
+        ]
+      },
+      "featuresList": [
+        "Integral wheel clamps and non-slip floor",
+        "Low center of gravity for stability",
+        "Suitable for motorcycles and scooters"
+      ]
+    },
+    "CAR": {
+      "name": "Car transporter",
+      "description": "Car trailers are advanced designed for safe and stable transportation of passenger cars, commercial vehicles or other vehicles. They are equipped with a hydraulic tilting system, sturdy loading ramps and multiple attachment points.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Hydraulically tilting</strong>: facilitates loading",
+          "<strong>Sturdy loading ramps</strong>: stable loading and unloading",
+          "<strong>Securing</strong>: use tie-down points and straps",
+          "<strong>Systems</strong>: check hydraulics and brakes"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Pay attention to total weight and maximum permitted mass",
+          "Distribute load for correct ball weight",
+          "Drive carefully, especially on descents"
+        ]
+      },
+      "featuresList": [
+        "Hydraulic tilting system",
+        "Multiple attachment points",
+        "Sturdy loading ramps for safe loading"
+      ]
+    },
+    "FURNITURE": {
+      "name": "Furniture transporter",
+      "description": "Furniture transport trailers offer a spacious loading area specially designed for safely transporting large and heavy furniture pieces. Internal attachment points provide extra protection during transport.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Spacious loading volume</strong>: ideal for cabinets, sofas and beds",
+          "<strong>Attachment rails</strong>: tie-down straps prevent shifting",
+          "<strong>Protection</strong>: use blankets and bubble wrap",
+          "<strong>Loading ramp</strong>: check height of loading floor"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Even weight distribution and ball weight",
+          "Pay attention to extra height or length",
+          "Check tie-down straps and attachment points"
+        ]
+      },
+      "featuresList": [
+        "Spacious loading area and internal attachment points",
+        "Flexible setup for various furniture pieces",
+        "Extra protection for fragile loads"
+      ]
+    },
+    "LIVESTOCK": {
+      "name": "Horse trailer",
+      "description": "Livestock trailers are designed with animal welfare and safety as the highest priority. They feature spacious stalls, excellent ventilation and a non-slip floor for comfort and safety.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Spacious stalls</strong>: sufficient room for movement",
+          "<strong>Ventilation</strong>: prevent overheating",
+          "<strong>Non-slip floor</strong>: increases comfort and safety",
+          "<strong>Cleaning</strong>: maintain hygiene and health"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Regular breaks on longer journeys",
+          "Check for damage or loose parts",
+          "Veterinary documents for cross-border transport"
+        ]
+      },
+      "featuresList": [
+        "Spacious stalls and good ventilation",
+        "Non-slip floor for stability",
+        "Designed for animal welfare"
+      ]
+    },
+    "REFRIGERATED": {
+      "name": "Refrigerated trailer",
+      "description": "Refrigerated trailers are specially developed for transporting temperature-sensitive goods such as food, medicines and flowers. They feature an active cooling system and high-quality insulation.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Active cooling system</strong>: constant temperature",
+          "<strong>High-quality insulation</strong>: limits temperature loss",
+          "<strong>Condensation management</strong>: prevent moisture and mold",
+          "<strong>Hygiene</strong>: thorough cleaning after use"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Monitor temperature regularly during transport",
+          "Check power supply (230V or 12V)",
+          "Pay attention to shelf life and regulations"
+        ]
+      },
+      "featuresList": [
+        "Active cooling system and high-quality insulation",
+        "Constant temperature control",
+        "Suitable for temperature-sensitive goods"
+      ]
+    },
+    "FLATBED": {
+      "name": "Flatbed trailer",
+      "description": "Flatbed trailers have a completely open and flat loading surface, making them excellently suited for transporting long, heavy or irregular goods such as construction materials, pipes or wood.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Completely flat loading floor</strong>: lots of room for movement",
+          "<strong>Few restrictions</strong>: for protruding loads",
+          "<strong>No side walls</strong>: use tie-down straps and chains",
+          "<strong>Loading ease</strong>: forklifts can easily load"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Distribute weight evenly and pay attention to load capacity",
+          "Check securing regularly during journeys",
+          "Pay attention to wind sensitivity from flat loads"
+        ]
+      },
+      "featuresList": [
+        "Completely open and flat loading surface",
+        "Maximum flexibility in loading",
+        "Suitable for long and heavy objects"
+      ]
+    },
+    "OTHER": {
+      "name": "Other",
+      "description": "Special or custom-made trailers fall outside the standard categories and are designed for unique transport needs. They may feature specific attachment systems and extra facilities.",
+      "features": {
+        "title": "Features & tips:",
+        "items": [
+          "<strong>Custom work</strong>: each specimen can vary greatly",
+          "<strong>Specific equipment</strong>: tool boxes, hydraulics",
+          "<strong>Weight distribution</strong>: may be different",
+          "<strong>Safety</strong>: ask owner for instructions"
+        ]
+      },
+      "general": {
+        "title": "General information:",
+        "items": [
+          "Check special facilities and operation",
+          "Ensure good insurance and permits",
+          "Test first empty or lightly loaded"
+        ]
+      },
+      "featuresList": [
+        "Specific attachment systems and custom work",
+        "Extra facilities for unique transport needs",
+        "Consult owner for specific characteristics"
+      ]
+    }
+  },
+  "accessories": {
+    "disselSlot": {
+      "name": "Hitch lock",
+      "description": "A lock that is placed on the hitch to prevent theft."
+    },
+    "oprijplaten": {
+      "name": "Loading ramps",
+      "description": "Ramps to drive the trailer onto for easier loading and unloading."
+    },
+    "adapter7to13": {
+      "name": "7 to 13 pin adapter",
+      "description": "Adapter for connecting 7-pin plug to 13-pin connection."
+    },
+    "adapter13to7": {
+      "name": "13 to 7 pin adapter",
+      "description": "Adapter for connecting 13-pin plug to 7-pin connection."
+    },
+    "afdekZeil": {
+      "name": "Cover tarp",
+      "description": "Tarp to protect load against rain, wind and other weather conditions."
+    },
+    "afdekNet": {
+      "name": "Cover net",
+      "description": "Net to prevent load from falling off the trailer during transport."
+    },
+    "pionnen": {
+      "name": "Traffic cones",
+      "description": "Traffic cones for marking and safety during loading/unloading."
+    },
+    "kruiwagen": {
+      "name": "Wheelbarrow",
+      "description": "Wheelbarrow for manual transport of materials."
+    },
+    "langeLadingBord": {
+      "name": "Long load sign",
+      "description": "Warning sign for transports with protruding load."
+    }
+  },
+  "categories": {
+    "open": "Open",
+    "closed": "Closed",
+    "specialized": "Specialized",
+    "vehicle_transport": "Vehicle Transport",
+    "recreational": "Recreational",
+    "commercial": "Commercial"
+  }
+}

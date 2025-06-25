@@ -1,0 +1,206 @@
+{
+  "hero": {
+    "title": "Miete einen Anhänger in deiner Nähe",
+    "subtitle": "Finde den perfekten Anhänger für deine Arbeit bei Privatpersonen in der Nähe",
+    "searchPlaceholder": "Anhänger suchen",
+    "addDates": "Datum hinzufügen",
+    "searchButton": "Suchen"
+  },
+  "features": {
+    "secure": {
+      "title": "Sicher & versichert",
+      "description": "Alle Anhänger sind gegen Schäden versichert"
+    },
+    "local": {
+      "title": "Lokal & in der Nähe",
+      "description": "Finde Anhänger in deiner unmittelbaren Umgebung"
+    },
+    "affordable": {
+      "title": "Erschwinglich",
+      "description": "Spare Geld durch direkte Miete von Privatpersonen"
+    }
+  },
+  "categories": {
+    "title": "Beliebte Kategorien",
+    "open": "Offener Anhänger",
+    "closed": "Geschlossener Anhänger",
+    "car": "Autotransporter",
+    "boat": "Bootsanhänger",
+    "motorcycle": "Motorradanhänger",
+    "horse": "Pferdeanhänger"
+  },
+  "howItWorks": {
+    "title": "Wie funktioniert es?",
+    "step1": {
+      "title": "Suchen und finden",
+      "description": "Finde den perfekten Anhänger in deiner Nähe"
+    },
+    "step2": {
+      "title": "Online buchen",
+      "description": "Sicher und einfach online reservieren"
+    },
+    "step3": {
+      "title": "Abholen und nutzen",
+      "description": "Hole den Anhänger ab und nutze ihn für deine Arbeit"
+    }
+  },
+  "filters": {
+    "title": "Filter",
+    "category": "Kategorie",
+    "priceRange": "Preisspanne",
+    "minPrice": "Mindestpreis",
+    "maxPrice": "Höchstpreis",
+    "dimensions": "Abmessungen",
+    "length": "Länge",
+    "width": "Breite",
+    "height": "Höhe",
+    "features": "Eigenschaften",
+    "clearFilters": "Filter löschen",
+    "applyFilters": "Filter anwenden"
+  },
+  "trailerCard": {
+    "perDay": "/ Tag",
+    "available": "Verfügbar",
+    "unavailable": "Nicht verfügbar",
+    "viewDetails": "Details anzeigen",
+    "rating": "Bewertung",
+    "noRatings": "Noch keine Bewertungen",
+    "removeFromFavorites": "Aus Favoriten entfernen",
+    "addToFavorites": "Zu Favoriten hinzufügen"
+  },
+  "quickSearch": {
+    "rentTrailerIn": "Anhänger mieten in",
+    "searchLocation": "Standort suchen",
+    "addDates": "Daten hinzufügen",
+    "wherePlaceholder": "Wo möchten Sie einen Anhänger mieten?",
+    "searching": "Suche...",
+    "noLocationsFound": "Keine Standorte gefunden",
+    "pickup": "Abholen",
+    "return": "Zurückbringen",
+    "search": "Anhänger suchen"
+  },
+  "filters": {
+    "title": "Filter",
+    "clearAll": "Alle Filter löschen",
+    "pricePerDay": "Preis pro Tag",
+    "trailerSize": "Anhängergröße",
+    "trailerType": "Anhängertyp",
+    "accessories": "Zubehör",
+    "license": "Führerschein",
+    "dimensions": "Abmessungen",
+    "availability": "Verfügbarkeit",
+    "deliveryOptions": "Lieferoptionen",
+    "homeDelivery": "Heimlieferung Verfügbar",
+    "insurance": "Versicherung Inklusive",
+    "rentalDuration": "Mietdauer (Tage)",
+    "minDuration": "Minimum",
+    "maxDuration": "Maximum",
+    "sizeOptions": {
+      "small": "Klein",
+      "medium": "Mittel",
+      "large": "Groß"
+    },
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "more": "mehr",
+    "licenseOptions": {
+      "none": "Kein Führerschein erforderlich",
+      "B": "BE Führerschein",
+      "BE": "B+ Führerschein"
+    },
+    "dimensionLabels": {
+      "length": "Länge",
+      "width": "Breite",
+      "height": "Höhe",
+      "weight": "Gewicht",
+      "capacity": "Ladekapazität",
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "dateRange": {
+      "selectDates": "Daten auswählen",
+      "clearDates": "Daten löschen"
+    },
+    "mobileDrawer": {
+      "filters": "Filter",
+      "apply": "Filter anwenden",
+      "reset": "Zurücksetzen"
+    }
+  },
+  "sortBy": {
+    "label": "Sortieren nach",
+    "options": {
+      "default": "Standard",
+      "priceLowToHigh": "Preis: niedrig bis hoch",
+      "priceHighToLow": "Preis: hoch bis niedrig",
+      "rating": "Bewertung",
+      "distance": "Entfernung"
+    }
+  },
+  "activeFilters": {
+    "none": "0 Aktive Filter",
+    "single": "1 Aktiver Filter",
+    "multiple": "Aktive Filter"
+  },
+  "cityTitle": {
+    "rentTrailerIn": "Anhänger mieten in"
+  },
+  "cta": {
+    "title": "Deinen Anhänger vermieten?",
+    "description": "Verdiene zusätzliches Geld, indem du deinen Anhänger vermietest, wenn du ihn nicht benutzt",
+    "button": "Mit Vermieten beginnen"
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "subtitle": "Alles, was du über das Mieten und Vermieten von Anhängern wissen musst",
+    "items": {
+      "howItWorks": {
+        "title": "Wie funktioniert das Vermieten über unsere Plattform?",
+        "content": [
+          "Unser Peer-to-Peer-Vermietservice ist super einfach:",
+          "- Erstelle kostenlos ein Konto",
+          "- Füge deinen Anhänger mit klaren Fotos und Beschreibung hinzu",
+          "- Lege deinen eigenen Mietpreis und Verfügbarkeit fest",
+          "- Erhalte Anfragen und vermiete deinen Anhänger an andere Nutzer",
+          "- Verdiene zusätzliches Einkommen mit deinem ungenutzten Anhänger"
+        ]
+      },
+      "safety": {
+        "title": "Sicherheit & Versicherung",
+        "content": [
+          "Sicherheit steht bei uns an erster Stelle:",
+          "- Obligatorische Identifizierung aller Nutzer",
+          "- Integriertes Bewertungs- und Rezensionssystem",
+          "- Optionale Zusatzversicherung für Vermieter",
+          "- Transparente Kommunikation zwischen Vermieter und Mieter",
+          "- Garantierte Zahlung über unsere Plattform"
+        ]
+      },
+      "benefits": {
+        "title": "Vorteile für Vermieter",
+        "content": [
+          "Warum über unsere Plattform vermieten?",
+          "- Verdiene Geld mit deinem ungenutzten Anhänger",
+          "- Volle Kontrolle über deine Mietbedingungen",
+          "- Flexible Verfügbarkeit einstellen",
+          "- Neue Leute kennenlernen und der Community helfen",
+          "- Unterstützender Kundendienst bei Fragen"
+        ]
+      },
+      "howToRent": {
+        "title": "Wie miete ich einen Anhänger?",
+        "content": [
+          "Einen Anhänger zu mieten ist einfach:",
+          "- Suche nach Standort oder Anhängertyp",
+          "- Vergleiche Preise und lies Bewertungen",
+          "- Buche direkt über unsere Plattform",
+          "- Hole den Anhänger beim Vermieter ab",
+          "- Nutze ihn für dein Projekt und gib ihn zurück"
+        ]
+      }
+    },
+    "moreQuestions": "Weitere Fragen? Kontaktiere uns gerne!",
+    "contact": "Kontakt",
+    "howItWorksLink": "Wie es funktioniert"
+  }
+}

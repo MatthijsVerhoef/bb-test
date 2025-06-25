@@ -1,0 +1,207 @@
+{
+  "hero": {
+    "title": "Rent a trailer in your area",
+    "subtitle": "Find the perfect trailer for your job from locals nearby",
+    "searchPlaceholder": "Search for a trailer",
+    "addDates": "Add dates",
+    "searchButton": "Search"
+  },
+  "features": {
+    "secure": {
+      "title": "Safe & insured",
+      "description": "All trailers are insured for damage"
+    },
+    "local": {
+      "title": "Local & nearby",
+      "description": "Find trailers in your immediate area"
+    },
+    "affordable": {
+      "title": "Affordable",
+      "description": "Save money by renting directly from individuals"
+    }
+  },
+  "categories": {
+    "title": "Popular categories",
+    "open": "Open trailer",
+    "closed": "Closed trailer",
+    "car": "Car transporter",
+    "boat": "Boat trailer",
+    "motorcycle": "Motorcycle trailer",
+    "horse": "Horse trailer"
+  },
+  "howItWorks": {
+    "title": "How does it work?",
+    "step1": {
+      "title": "Search and find",
+      "description": "Find the perfect trailer in your area"
+    },
+    "step2": {
+      "title": "Book online",
+      "description": "Reserve safely and easily online"
+    },
+    "step3": {
+      "title": "Pick up and use",
+      "description": "Pick up the trailer and use it for your job"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "category": "Category",
+    "priceRange": "Price range",
+    "minPrice": "Minimum price",
+    "maxPrice": "Maximum price",
+    "dimensions": "Dimensions",
+    "length": "Length",
+    "width": "Width",
+    "height": "Height",
+    "features": "Features",
+    "clearFilters": "Clear filters",
+    "applyFilters": "Apply filters"
+  },
+  "trailerCard": {
+    "perDay": "/ day",
+    "available": "Available",
+    "unavailable": "Not available",
+    "viewDetails": "View details",
+    "rating": "Rating",
+    "noRatings": "No ratings yet",
+    "removeFromFavorites": "Remove from favorites",
+    "addToFavorites": "Add to favorites"
+  },
+  "quickSearch": {
+    "rentTrailerIn": "Rent your trailer in",
+    "searchLocation": "Search location",
+    "addDates": "Add dates",
+    "wherePlaceholder": "Where do you want to rent a trailer?",
+    "searching": "Searching...",
+    "noLocationsFound": "No locations found",
+    "pickup": "Pick up",
+    "return": "Return",
+    "search": "Search for a trailer"
+  },
+  "filters": {
+    "title": "Filters",
+    "clearAll": "Clear all filters",
+    "pricePerDay": "Price per day",
+    "trailerSize": "Trailer Size",
+    "trailerType": "Trailer type",
+    "accessories": "Accessories",
+    "license": "License",
+    "dimensions": "Dimensions",
+    "availability": "Availability",
+    "deliveryOptions": "Delivery Options",
+    "homeDelivery": "Home Delivery Available",
+    "extraFeatures": "Extra Features",
+    "insurance": "Insurance Included",
+    "rentalDuration": "Rental Duration (days)",
+    "minDuration": "Minimum",
+    "maxDuration": "Maximum",
+    "sizeOptions": {
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    },
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "more": "more",
+    "licenseOptions": {
+      "none": "No License Required",
+      "B": "BE License",
+      "BE": "B+ License"
+    },
+    "dimensionLabels": {
+      "length": "Length",
+      "width": "Width",
+      "height": "Height",
+      "weight": "Weight",
+      "capacity": "Capacity",
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "dateRange": {
+      "selectDates": "Select dates",
+      "clearDates": "Clear dates"
+    },
+    "mobileDrawer": {
+      "filters": "Filters",
+      "apply": "Apply filters",
+      "reset": "Reset"
+    }
+  },
+  "sortBy": {
+    "label": "Sort by",
+    "options": {
+      "default": "Default",
+      "priceLowToHigh": "Price: low to high",
+      "priceHighToLow": "Price: high to low",
+      "rating": "Rating",
+      "distance": "Distance"
+    }
+  },
+  "activeFilters": {
+    "none": "0 Active filters",
+    "single": "1 Active filter",
+    "multiple": "Active filters"
+  },
+  "cityTitle": {
+    "rentTrailerIn": "Rent a trailer in"
+  },
+  "cta": {
+    "title": "Rent out your trailer?",
+    "description": "Earn extra money by renting out your trailer when you're not using it",
+    "button": "Start renting"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about renting and renting out trailers",
+    "items": {
+      "howItWorks": {
+        "title": "How does renting through our platform work?",
+        "content": [
+          "Our peer-to-peer rental service is super easy:",
+          "- Create a free account",
+          "- Add your trailer with clear photos and description",
+          "- Set your own rental price and availability",
+          "- Receive requests and rent your trailer to other users",
+          "- Earn extra income with your idle trailer"
+        ]
+      },
+      "safety": {
+        "title": "Safety & Insurance",
+        "content": [
+          "Safety is our priority:",
+          "- Mandatory identification of all users",
+          "- Integrated rating and review system",
+          "- Optional additional insurance for renters",
+          "- Transparent communication between renter and rentee",
+          "- Guaranteed payment through our platform"
+        ]
+      },
+      "benefits": {
+        "title": "Benefits for Renters",
+        "content": [
+          "Why rent through our platform?",
+          "- Earn money with your idle trailer",
+          "- Full control over your rental terms",
+          "- Set flexible availability",
+          "- Meet new people and help the community",
+          "- Supportive customer service for questions"
+        ]
+      },
+      "howToRent": {
+        "title": "How do I rent a trailer?",
+        "content": [
+          "Renting a trailer is simple:",
+          "- Search by location or trailer type",
+          "- Compare prices and read reviews",
+          "- Book directly through our platform",
+          "- Pick up the trailer from the owner",
+          "- Use it for your project and return it"
+        ]
+      }
+    },
+    "moreQuestions": "More questions? Feel free to contact us!",
+    "contact": "Contact",
+    "howItWorksLink": "How it works"
+  }
+}

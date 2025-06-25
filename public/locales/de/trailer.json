@@ -1,0 +1,273 @@
+{
+  "backToListing": "Zurück zur Übersicht",
+  "reportAd": "Diese Anzeige melden",
+  "accessories": "Zubehör",
+  "perDay": "pro Tag",
+  "included": "Inklusive",
+  "reviews": "Bewertungen",
+  "reserve": "Reservieren",
+  "gallery": {
+    "showAll": "Alle Fotos anzeigen",
+    "photos": "Fotos",
+    "noImages": "Keine Bilder verfügbar",
+    "noMoreImages": "Keine weiteren Bilder",
+    "dialog": "Anhänger Dialog"
+  },
+  "specs": {
+    "title": "Spezifikationen",
+    "type": "Typ",
+    "category": "Kategorie",
+    "manufacturer": "Hersteller",
+    "model": "Modell",
+    "year": "Baujahr",
+    "dimensions": "Abmessungen",
+    "length": "Länge",
+    "width": "Breite",
+    "height": "Höhe",
+    "weight": "Gewicht",
+    "capacity": "Ladekapazität",
+    "axles": "Achsen",
+    "brakes": "Bremsen",
+    "maxSpeed": "Höchstgeschwindigkeit",
+    "towBallWeight": "Stützlast",
+    "vinNumber": "FIN-Nummer",
+    "lastMaintenance": "Letzte Wartung",
+    "details": "Details",
+    "unknown": "Unbekannt",
+    "singleAxle": "Einzelachse",
+    "tandemAxle": "Tandemachse",
+    "tripleAxle": "Dreifachachse",
+    "hydraulic": "Hydraulisch",
+    "overrun": "Auflaufbremse",
+    "electric": "Elektrisch",
+    "none": "Keine"
+  },
+  "description": {
+    "title": "Beschreibung",
+    "features": "Eigenschaften",
+    "detailedSpecs": "Detaillierte Spezifikationen",
+    "featuresList": {
+      "foldable": "Klappbar",
+      "tilt": "Kippbar",
+      "ramps": "Mit Rampen",
+      "spare_wheel": "Reserverad",
+      "weatherproof": "Wetterfest",
+      "lockable": "Abschließbar",
+      "lighting": "Beleuchtung",
+      "stabilizer": "Stabilisator",
+      "winch": "Seilwinde",
+      "jockey_wheel": "Stützrad"
+    },
+    "standardDescription": {
+      "open": "Dieser offene Anhänger ist perfekt für den Transport verschiedener Ladungen. Das offene Design macht das Be- und Entladen einfach und bietet Flexibilität für verschiedene Anwendungen.",
+      "closed": "Dieser geschlossene Anhänger bietet ausgezeichneten Schutz für Ihre Ladung gegen Witterungseinflüsse. Ideal für wertvolle oder empfindliche Güter, die trocken bleiben müssen.",
+      "car": "Dieser Autotransporter ist speziell für den sicheren Transport von Fahrzeugen konzipiert. Mit stabilen Auffahrrampen und Befestigungspunkten ist Ihr Auto in guten Händen.",
+      "boat": "Dieser Bootsanhänger ist perfekt für den sicheren Transport Ihres Bootes. Ausgestattet mit einem stabilen Rahmen und verstellbaren Stützen für verschiedene Bootstypen.",
+      "motorcycle": "Dieser Motorradanhänger macht den Transport Ihres Motorrads sicher und einfach. Spezielle Befestigungspunkte sorgen für Stabilität während des Transports.",
+      "bicycle": "Dieser Fahrradanhänger ist ideal für den Transport mehrerer Fahrräder. Kompaktes Design mit sicheren Befestigungsmöglichkeiten.",
+      "horse": "Dieser Pferdeanhänger bietet Komfort und Sicherheit für den Transport Ihrer Pferde. Ausgestattet mit Belüftung und rutschfestem Boden.",
+      "tipper": "Dieser Kippanhänger macht das Entladen von Schüttgut schnell und effizient. Perfekt für Bau- und Gartenprojekte.",
+      "flatbed": "Dieser Pritschenanhänger bietet maximalen Laderaum und Flexibilität. Ideal für lange oder unregelmäßige Ladungen.",
+      "refrigerated": "Dieser Kühlanhänger hält Ihre temperatursensible Ladung auf der richtigen Temperatur. Perfekt für den Transport von Lebensmitteln oder medizinischen Produkten.",
+      "furniture": "Dieser Möbelwagen ist speziell für den sicheren Transport von Möbeln und Hausrat ausgestattet. Mit Befestigungspunkten und schützender Auskleidung.",
+      "market": "Dieser Marktwagen ist perfekt für den mobilen Verkauf ausgestattet. Mit ausklappbaren Teilen und Präsentationsmöglichkeiten.",
+      "other": "Dieser Anhänger ist für verschiedene Anwendungen geeignet. Kontaktieren Sie uns für spezifische Möglichkeiten und Verwendungszwecke."
+    }
+  },
+  "owner": {
+    "title": "Über den Vermieter",
+    "responseRate": "Antwortrate",
+    "responseTime": "Antwortzeit",
+    "memberSince": "Mitglied seit",
+    "verifiedIdentity": "Verifizierte Identität",
+    "viewProfile": "Profil anzeigen",
+    "contactOwner": "Vermieter kontaktieren",
+    "responseTimeValues": {
+      "within_hour": "Innerhalb einer Stunde",
+      "within_day": "Innerhalb eines Tages",
+      "within_week": "Innerhalb einer Woche"
+    },
+    "defaultName": "Eigentümer",
+    "joined": "Mitglied {{time}}",
+    "respondsInLessThanHour": "Antwortet normalerweise innerhalb einer Stunde",
+    "respondsInHours": "Antwortet normalerweise innerhalb von {{count}} Stunde",
+    "respondsInHours_plural": "Antwortet normalerweise innerhalb von {{count}} Stunden",
+    "respondsInDays": "Antwortet normalerweise innerhalb von {{count}} Tag",
+    "respondsInDays_plural": "Antwortet normalerweise innerhalb von {{count}} Tagen",
+    "responseRateValue": "{{rate}}% Antwortrate",
+    "viewReviews": "Bewertungen anzeigen"
+  },
+  "location": {
+    "title": "Standort",
+    "viewOnMap": "Auf Karte anzeigen"
+  },
+  "reviews": {
+    "title": "Bewertungen",
+    "noReviews": "Noch keine Bewertungen",
+    "beFirstReview": "Seien Sie der Erste, der diesen Anhänger bewertet!",
+    "averageRating": "Durchschnittliche Bewertung",
+    "totalReviews": "Bewertungen",
+    "showMore": "Mehr Bewertungen anzeigen",
+    "showAll": "Alle {{count}} Bewertungen anzeigen",
+    "helpful": "Hilfreich",
+    "reportReview": "Bewertung melden",
+    "recommendedPercentage": "{{percentage}}% der Mieter würden diesen Anhänger empfehlen.",
+    "responseFromOwner": "Antwort vom Eigentümer",
+    "categories": {
+      "cleanliness": "Sauberkeit",
+      "maintenance": "Wartung",
+      "valueForMoney": "Preis-Leistung",
+      "communication": "Kommunikation",
+      "accuracy": "Genauigkeit"
+    }
+  },
+  "booking": {
+    "title": "Diesen Anhänger buchen",
+    "pricePerDay": "pro Tag",
+    "pricePerWeek": "pro Woche",
+    "pricePerMonth": "pro Monat",
+    "selectDates": "Daten auswählen",
+    "pickupDate": "Abholdatum",
+    "returnDate": "Rückgabedatum",
+    "duration": "Mietdauer",
+    "days": "Tage",
+    "totalCost": "Gesamtkosten",
+    "securityDeposit": "Kaution",
+    "deliveryOptions": "Lieferoptionen",
+    "pickup": "Abholung",
+    "delivery": "Lieferung",
+    "deliveryFee": "Liefergebühr",
+    "maxDeliveryDistance": "Max. Lieferentfernung",
+    "minRentalDuration": "Min. Mietdauer",
+    "maxRentalDuration": "Max. Mietdauer",
+    "insurance": "Versicherung",
+    "includedInPrice": "Im Preis inbegriffen",
+    "checkAvailability": "Verfügbarkeit prüfen",
+    "bookNow": "Jetzt buchen",
+    "contactOwner": "Vermieter kontaktieren",
+    "notAvailable": "Nicht verfügbar",
+    "selectDateFirst": "Bitte wählen Sie zuerst Daten aus",
+    "rentalDates": "Mietdaten",
+    "discounts": {
+      "title": "Rabatte",
+      "perWeek": "Pro Woche:",
+      "perMonth": "Pro Monat:"
+    },
+    "dates": {
+      "select": "Daten auswählen",
+      "loading": "Laden...",
+      "minDays": "Min: {{days}} Tage",
+      "maxDays": "Max: {{days}} Tage",
+      "apply": "Anwenden",
+      "selectEndDate": "End-Datum"
+    },
+    "time": {
+      "pickup": "Abholung",
+      "return": "Rückgabe",
+      "selectTime": "Zeit wählen",
+      "noAvailability": "Keine Verfügbarkeit für diesen Tag"
+    },
+    "delivery": {
+      "homeDelivery": "Hauslieferung",
+      "fee": "(+€{{fee}})",
+      "availableWithin": "Verfügbar innerhalb {{distance}} km",
+      "addressPlaceholder": "Vollständige Adresse eingeben"
+    },
+    "pricing": {
+      "perDay": "€{{price}} × {{days}} Tage",
+      "basePrice": "€{{price}}",
+      "deliveryCosts": "Lieferkosten",
+      "serviceFee": "Servicegebühren",
+      "deposit": "Kaution",
+      "depositTooltip": "Die Kaution wird bei Rückgabe des Anhängers im Originalzustand zurückerstattet.",
+      "total": "Gesamt"
+    },
+    "button": {
+      "reserve": "Reservieren",
+      "loading": "Laden..."
+    },
+    "confirmation": {
+      "title": "Bestätigen Sie Ihre Reservierung",
+      "description": "Geben Sie Ihre Daten ein, um den {{trailerTitle}} für {{days}} Tage zu reservieren."
+    },
+    "form": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "phone": "Telefonnummer",
+      "driversLicense": "Führerscheinnummer",
+      "driversLicenseInfo": "Wird verwendet, um Ihre Identität zu überprüfen und Betrug zu verhindern."
+    },
+    "terms": {
+      "agree": "Ich stimme den Geschäftsbedingungen zu.",
+      "details": "Einschließlich Mietvertrag und Stornierungsbedingungen."
+    },
+    "submit": {
+      "toPayment": "Zur Zahlung"
+    },
+    "errors": {
+      "selectValidPeriod": "Wählen Sie einen gültigen Zeitraum",
+      "minRentalDuration": "Mindestmietdauer beträgt {{days}} Tage",
+      "maxRentalDuration": "Maximale Mietdauer beträgt {{days}} Tage",
+      "datesNotAvailable": "Ein oder mehrere ausgewählte Daten sind nicht verfügbar",
+      "datesBlocked": "Ein oder mehrere ausgewählte Daten wurden vom Eigentümer blockiert",
+      "pickupTimeNotAvailable": "Gewählte Abholzeit ist nicht verfügbar",
+      "returnTimeNotAvailable": "Gewählte Rückgabezeit ist nicht verfügbar",
+      "deliveryAddressRequired": "Lieferadresse ist erforderlich",
+      "firstNameRequired": "Vorname ist erforderlich",
+      "lastNameRequired": "Nachname ist erforderlich",
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Geben Sie eine gültige E-Mail-Adresse ein",
+      "phoneRequired": "Telefonnummer ist erforderlich",
+      "phoneInvalid": "Geben Sie eine gültige Telefonnummer ein",
+      "driversLicenseRequired": "Führerscheinnummer ist erforderlich",
+      "termsRequired": "Sie müssen den Geschäftsbedingungen zustimmen"
+    }
+  },
+  "share": {
+    "title": "Diesen Anhänger teilen",
+    "shareThis": "Diesen Anhänger teilen",
+    "copyLink": "Kopieren",
+    "linkCopied": "Kopiert",
+    "shareOn": "Teilen auf",
+    "shareText": "Schauen Sie sich diesen Anhänger an: {{title}} zu vermieten für €{{price}}/Tag",
+    "emailSubject": "Anhängervermietung Empfehlung"
+  },
+  "favorite": {
+    "add": "Zu Favoriten hinzufügen",
+    "remove": "Aus Favoriten entfernen",
+    "loginRequired": "Sie müssen sich anmelden, um Favoriten hinzuzufügen"
+  },
+  "map": {
+    "loadingMap": "Karte wird geladen...",
+    "loadingLocationMap": "Standortkarte wird geladen...",
+    "approximateLocation": "Ungefährer Standort · Genaue Adresse nach Buchung"
+  },
+  "quickMessage": {
+    "askQuestion": "Eine Frage stellen",
+    "title": "Dem Eigentümer eine Frage stellen",
+    "description": "Haben Sie Fragen zu {{trailerTitle}}? Stellen Sie dem Eigentümer eine kurze Frage.",
+    "messageFormat": "Frage zu {{trailerTitle}} (ID: {{trailerId}}): {{message}}",
+    "checkingConversations": "Gespräche überprüfen...",
+    "errors": {
+      "enterMessage": "Bitte geben Sie eine Nachricht ein",
+      "somethingWentWrong": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+    },
+    "auth": {
+      "loginRequired": "Sie müssen angemeldet sein, um dem Eigentümer eine Nachricht zu senden.",
+      "loginButton": "Anmelden, um eine Frage zu stellen"
+    },
+    "existingConversation": {
+      "pendingTitle": "Sie haben bereits ein laufendes Gespräch über diesen Anhänger",
+      "pendingDescription": "Warten Sie auf eine Antwort vom Eigentümer, bevor Sie eine neue Nachricht senden.",
+      "goToButton": "Zum bestehenden Gespräch gehen",
+      "continuing": "Sie haben bereits über diesen Anhänger kommuniziert. Ihre neue Nachricht wird zum bestehenden Gespräch hinzugefügt."
+    },
+    "form": {
+      "placeholder": "Geben Sie Ihre Frage hier ein...",
+      "cancel": "Abbrechen",
+      "send": "Senden",
+      "sending": "Senden..."
+    }
+  }
+}

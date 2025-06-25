@@ -1,0 +1,50 @@
+{
+  "checkReservation": {
+    "title": "Bevestig je reservering",
+    "personalInfo": {
+      "title": "Persoonsgegevens",
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "email": "Email",
+      "phone": "Telefoon",
+      "driversLicense": "Rijbewijsnummer",
+      "notProvided": "Niet opgegeven"
+    },
+    "messageToLessor": {
+      "title": "Stuur een bericht naar de verhuurder",
+      "description": "Heb je nog een vraag of opmerking over deze aanhanger? Stuur gelijk een bericht naar de verhuurder!",
+      "placeholder": "Bericht"
+    },
+    "paymentMethod": {
+      "title": "Betaalmethode",
+      "description": "Kies een veilige betaalmethode voor je reservering"
+    },
+    "priceBreakdown": {
+      "title": "Prijsoverzicht",
+      "rentalPeriod": "Huurperiode",
+      "pickup": "Ophalen",
+      "return": "Terugbrengen",
+      "price": "Prijs",
+      "days": "dagen",
+      "serviceFee": "Servicefee (5%)",
+      "deliveryCost": "Bezorgkosten",
+      "securityDeposit": "Borg (terug te ontvangen)",
+      "total": "Totaal"
+    },
+    "actions": {
+      "goBack": "Terug",
+      "changeRentalPeriod": "Wijzig huurperiode",
+      "backToTrailer": "Terug naar aanhanger"
+    },
+    "errors": {
+      "wrongBookingData": "Verkeerde reserveringsgegevens gevonden. Start opnieuw alstublieft.",
+      "noBookingData": "Geen reserveringsgegevens gevonden. Start opnieuw alstublieft.",
+      "loadingError": "Er is een probleem opgetreden bij het laden van uw reserveringsgegevens.",
+      "datesUnavailable": "Deze data zijn niet meer beschikbaar. Kies een andere periode.",
+      "genericError": "Er is een fout opgetreden.",
+      "paymentError": "Er is een probleem opgetreden bij het maken van een betaling.",
+      "unknownPeriod": "Onbekende periode",
+      "noImageAvailable": "Geen afbeelding beschikbaar"
+    }
+  }
+}

@@ -1,0 +1,1067 @@
+{
+  "personalInfo": {
+    "title": "Persönliche Informationen",
+    "editProfile": "Profil bearbeiten",
+    "updateDetails": "Aktualisieren Sie Ihre persönlichen Daten und Kontaktinformationen",
+    "viewDetails": "Ihre persönlichen Daten und Kontaktinformationen",
+    "incomplete": {
+      "title": "Profil unvollständig:",
+      "message": "Vervollständigen Sie Ihr Profil mit Telefonnummer und Adressdaten, um das Beste aus BuurBak herauszuholen.",
+      "button": "Profil vervollständigen",
+      "welcome": {
+        "title": "Willkommen bei BuurBak!",
+        "subtitle": "Lassen Sie uns Ihr Profil einrichten",
+        "heading": "Schön, dass Sie hier sind!",
+        "description": "BuurBak verbindet Nachbarn, die Anhänger vermieten und mieten. Vervollständigen wir Ihr Profil, damit Sie sofort loslegen können."
+      },
+      "fillDetails": "Geben Sie Ihre Daten ein",
+      "completeProfile": "Profil vervollständigen",
+      "almostThere": "Wir sind fast fertig!",
+      "fillMissingInfo": "Füllen Sie Ihre fehlenden Informationen aus",
+      "later": "Später",
+      "letsStart": "Lassen Sie uns beginnen"
+    },
+    "form": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "emailReadonly": "E-Mail-Adresse kann nicht geändert werden",
+      "phone": "Telefonnummer",
+      "phoneNotAdded": "Keine Telefonnummer hinzugefügt",
+      "phoneRequired": "Erforderlich für Kontakt zu Vermietungen und Sicherheit",
+      "address": "Adresse",
+      "addressPlaceholder": "Straße und Hausnummer",
+      "city": "Stadt",
+      "cityPlaceholder": "z.B. Berlin",
+      "postalCode": "Postleitzahl",
+      "postalCodePlaceholder": "z.B. 12345",
+      "country": "Land",
+      "defaultCountry": "Deutschland",
+      "saving": "Speichern...",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "back": "Zurück",
+      "updateError": "Fehler beim Aktualisieren des Profils",
+      "updateSuccess": "Profil erfolgreich aktualisiert! Willkommen bei BuurBak!",
+      "profilePicture": {
+        "uploadSuccess": "Profilbild geändert",
+        "updateSuccess": "Ihr Profilbild wurde erfolgreich aktualisiert",
+        "uploadFailed": "Upload fehlgeschlagen",
+        "uploadError": "Beim Hochladen Ihres Profilbilds ist ein Problem aufgetreten",
+        "fileTooBig": "Datei zu groß",
+        "fileSizeLimit": "Das Bild muss kleiner als 5MB sein",
+        "invalidFileType": "Ungültiger Dateityp",
+        "allowedFileTypes": "Bitte laden Sie ein JPEG-, PNG- oder WebP-Bild hoch"
+      }
+    },
+    "addressInfo": "Adressinformationen"
+  },
+  "sidebar": {
+    "memberSince": "Mitglied seit",
+    "menu": "Menü",
+    "forLessors": "Für Vermieter",
+    "tabs": {
+      "renter": {
+        "profile": "Meine Informationen",
+        "rentals": "Meine Mietverträge",
+        "favorites": "Favoriten",
+        "reviews": "Bewertungen",
+        "settings": "Einstellungen"
+      },
+      "lessor": {
+        "dashboard": "Dashboard",
+        "rentals": "Buchungen",
+        "calendar": "Kalender",
+        "listings": "Meine Anhänger",
+        "reviews": "Bewertungen"
+      }
+    },
+    "mode": {
+      "renter": "Mieter",
+      "lessor": "Vermieter"
+    }
+  },
+  "paymentMethod": {
+    "title": "Zahlungsinformationen",
+    "subtitle": {
+      "lessor": "Verwalten Sie Ihre Zahlungs- und Auszahlungsmethoden einfach über Ihr Konto und machen Sie das Mieten und Vermieten von Anhängern noch einfacher.",
+      "renter": "Verwalten Sie Ihre Zahlungsmethoden für das Mieten von Anhängern"
+    },
+    "error": "Beim Laden der Zahlungsmethoden ist ein Fehler aufgetreten",
+    "loading": "Zahlungssystem wird geladen...",
+    "methods": {
+      "noMethods": "Keine Zahlungsmethode hinzugefügt",
+      "noMethodsDescription": "Fügen Sie eine Zahlungsmethode hinzu, um schnell Anhänger mieten zu können",
+      "addMethod": "Zahlungsmethode hinzufügen",
+      "manage": "Zahlungsmethoden verwalten",
+      "defaultBadge": "Standard",
+      "setAsDefault": "Als Standard",
+      "removeTooltip": "Zahlungsmethode entfernen",
+      "expires": "Läuft ab",
+      "removeSuccess": "Zahlungsmethode entfernt",
+      "removeError": "Beim Entfernen der Zahlungsmethode ist ein Fehler aufgetreten",
+      "setDefaultSuccess": "Standard-Zahlungsmethode festgelegt",
+      "setDefaultError": "Beim Festlegen der Standard-Zahlungsmethode ist ein Fehler aufgetreten",
+      "addSuccess": "Zahlungsmethode hinzugefügt"
+    },
+    "lessor": {
+      "payoutTitle": "Vermieter-Auszahlung",
+      "payoutDescription": "Verbinden Sie Ihr Bankkonto, um Zahlungen für Ihre Anhänger zu erhalten",
+      "connected": "Ihr Auszahlungskonto ist verbunden",
+      "connectButton": "Mit Stripe Connect verbinden",
+      "connectToast": "Dies würde Sie zum Stripe Connect Onboarding-Prozess führen"
+    },
+    "security": "Sichere Zahlungen über Stripe",
+    "addDialog": {
+      "title": "Zahlungsmethode hinzufügen",
+      "description": "Fügen Sie eine neue Karte oder Zahlungsmethode für Ihre Mietbuchungen hinzu",
+      "cancel": "Abbrechen",
+      "processing": "Verarbeitung...",
+      "addMethod": "Zahlungsmethode hinzufügen",
+      "systemLoading": "Zahlungssystem wird geladen..."
+    },
+    "errors": {
+      "notLoaded": "Zahlungssystem ist noch nicht vollständig geladen. Bitte versuchen Sie es erneut.",
+      "formNotLoaded": "Zahlungsformular ist nicht korrekt geladen. Bitte versuchen Sie, das Fenster erneut zu öffnen.",
+      "invalidDetails": "Ungültige Zahlungsdetails",
+      "addFailed": "Hinzufügen der Zahlungsmethode fehlgeschlagen",
+      "generalError": "Beim Hinzufügen der Zahlungsmethode ist ein Fehler aufgetreten"
+    }
+  },
+  "licenseVerification": {
+    "title": "Führerscheinverifizierung",
+    "subtitle": {
+      "verified": "Ihr Führerschein ist verifiziert",
+      "unverified": "Verifizieren Sie Ihren Führerschein, um Anhänger mieten zu können"
+    },
+    "verified": "Verifiziert",
+    "verificationId": "Verifizierungs-ID:",
+    "categories": {
+      "AM": {
+        "label": "AM",
+        "description": "Mopeds, Leichtmopeds und Leichtfahrzeuge"
+      },
+      "A1": {
+        "label": "A1",
+        "description": "Leichte Motorräder (125 cc, 11 kW)"
+      },
+      "A2": {
+        "label": "A2",
+        "description": "Mittelklasse-Motorräder (35 kW)"
+      },
+      "A": {
+        "label": "A",
+        "description": "Schwere Motorräder"
+      },
+      "B": {
+        "label": "B",
+        "description": "Personenkraftwagen"
+      },
+      "BE": {
+        "label": "BE",
+        "description": "Auto mit Anhänger (Gewicht > 750 kg)"
+      },
+      "C1": {
+        "label": "C1",
+        "description": "Leichte Lastkraftwagen (3500-7500 kg)"
+      },
+      "C": {
+        "label": "C",
+        "description": "Lastkraftwagen (> 3500 kg)"
+      },
+      "CE": {
+        "label": "CE",
+        "description": "Lastkraftwagen mit Anhänger"
+      },
+      "D1": {
+        "label": "D1",
+        "description": "Kleine Busse (max. 16 Passagiere)"
+      },
+      "D": {
+        "label": "D",
+        "description": "Busse"
+      },
+      "T": {
+        "label": "T",
+        "description": "Traktor"
+      }
+    },
+    "expiryDate": "Ablaufdatum",
+    "unknown": "Unbekannt",
+    "verifiedOn": "Verifiziert am",
+    "edit": "Bearbeiten",
+    "unverified": {
+      "title": "Nicht verifiziert",
+      "description": "Sie müssen Ihren Führerschein verifizieren, um Anhänger mieten zu können.",
+      "button": "Führerschein verifizieren"
+    },
+    "dialog": {
+      "title": {
+        "new": "Führerscheinverifizierung",
+        "edit": "Führerschein aktualisieren"
+      },
+      "step1": {
+        "new": "Geben Sie Ihre Führerscheindaten ein",
+        "edit": "Aktualisieren Sie Ihre Führerscheindaten"
+      },
+      "step2": "Wählen Sie die Kategorien auf Ihrem Führerschein",
+      "step3": "Überprüfen Sie Ihre Daten",
+      "step4": "Bestätigen Sie Ihre Verifizierung",
+      "licenseNumber": "Führerscheinnummer",
+      "licenseNumberPlaceholder": "z.B. A123456789",
+      "licenseNumberRequired": "Führerscheinnummer ist erforderlich",
+      "licenseNumberInvalid": "Ungültiges Führerscheinnummerformat",
+      "licenseNumberSecurity": "Ihre Führerscheinnummer wird sicher mit Verschlüsselung gespeichert",
+      "country": "Ausstellungsland",
+      "countrySelect": "Wählen Sie ein Land",
+      "expiryDate": "Ablaufdatum",
+      "verificationMechanism": "Überprüfungsmechanismus",
+      "verificationDescription": "Wir überprüfen Ihre Führerscheindaten auf Echtheit und Gültigkeit. Wir speichern die folgenden Daten:",
+      "encryptedHash": "Verschlüsselter Hash Ihrer Führerscheinnummer",
+      "countryOfIssue": "Ausstellungsland:",
+      "expiryDateLabel": "Ablaufdatum:",
+      "notFilled": "Nicht ausgefüllt",
+      "categoriesLabel": "Kategorien:",
+      "noCategories": "Keine Kategorien ausgewählt",
+      "termsAgreement": "Ich stimme der Verarbeitung meiner Führerscheindaten wie oben beschrieben für Verifizierungszwecke zu.",
+      "termsRequired": "Sie müssen den Bedingungen zustimmen",
+      "processing": "Verarbeitung...",
+      "verify": "Verifizieren",
+      "update": "Aktualisieren",
+      "processingTitle": "Verifizierung wird verarbeitet",
+      "processingDescription": "Wir verarbeiten Ihre Führerscheindaten. Dies kann einige Sekunden dauern.",
+      "success": {
+        "new": "Führerschein erfolgreich verifiziert",
+        "update": "Führerscheindaten erfolgreich aktualisiert"
+      },
+      "error": "Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "cancel": "Abbrechen",
+      "next": "Weiter"
+    },
+    "countries": {
+      "NL": "Niederlande",
+      "DE": "Deutschland",
+      "BE": "Belgien",
+      "FR": "Frankreich",
+      "ES": "Spanien",
+      "IT": "Italien",
+      "GB": "Vereinigtes Königreich",
+      "AT": "Österreich",
+      "CH": "Schweiz",
+      "DK": "Dänemark",
+      "SE": "Schweden",
+      "NO": "Norwegen",
+      "PL": "Polen"
+    }
+  },
+  "trailerManagement": {
+    "title": "Meine Anhänger",
+    "description": "Verwalten Sie Ihre Anhänger und verfolgen Sie die Leistung",
+    "tabs": {
+      "all": "Alle Anhänger",
+      "active": "Aktiv",
+      "deactivated": "Deaktiviert",
+      "draft": "Entwürfe"
+    },
+    "status": {
+      "active": "Aktiv",
+      "deactivated": "Deaktiviert",
+      "draft": "Entwurf"
+    },
+    "loading": "Anhänger werden geladen...",
+    "error": {
+      "title": "Fehler beim Laden",
+      "tryAgain": "Erneut versuchen"
+    },
+    "empty": {
+      "title": "Keine Anhänger eingestellt",
+      "description": "Sie haben noch keine Anhänger hinzugefügt. Beginnen Sie zu verdienen, indem Sie Ihren ersten Anhänger einstellen.",
+      "button": "Mit Vermieten beginnen"
+    },
+    "emptyFilter": {
+      "title": "Keine Anhänger gefunden",
+      "description": "Es gibt keine Anhänger in dieser Kategorie.",
+      "button": "Alle Anhänger anzeigen"
+    },
+    "deleteDialog": {
+      "title": "Anhänger löschen",
+      "confirmation": "Sind Sie sicher, dass Sie den Anhänger \"{{title}}\" löschen möchten?",
+      "warning": "Diese Aktion kann nicht rückgängig gemacht werden. Wenn der Anhänger bereits vermietet wurde, empfehlen wir, ihn zu deaktivieren, anstatt ihn zu löschen.",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "deleting": "Wird gelöscht..."
+    },
+    "deactivateDialog": {
+      "title": "Anhänger deaktivieren?",
+      "confirmation": "Sind Sie sicher, dass Sie diesen Anhänger vorübergehend deaktivieren möchten? Er wird für die Vermietung nicht mehr sichtbar sein, bis Sie ihn wieder aktivieren.",
+      "activeRentalsWarning": "Achtung: Aktive Reservierungen",
+      "activeRentalsMessage": "Dieser Anhänger hat aktive Reservierungen. Bestehende Reservierungen bleiben aktiv.",
+      "cancel": "Abbrechen",
+      "deactivate": "Deaktivieren"
+    },
+    "card": {
+      "generalTrailer": "Allgemeiner Anhänger",
+      "rental": "Vermietung",
+      "rentals": "Vermietungen",
+      "active": "Aktiv",
+      "incompleteWarning": "Unvollständige Anzeige",
+      "completeDraft": "Entwurf vervollständigen",
+      "completeListing": "Anzeige vervollständigen",
+      "editListing": "Anzeige bearbeiten",
+      "viewListing": "Anzeige ansehen",
+      "deleteListing": "Anzeige löschen"
+    }
+  },
+  "rentalHistory": {
+    "title": "Meine Miethistorie",
+    "description": "Sehen und verwalten Sie Ihre Anhängervermietungen",
+    "updating": "Aktualisierung...",
+    "tabs": {
+      "upcoming": "Bevorstehend",
+      "active": "Aktiv",
+      "past": "Abgeschlossen"
+    },
+    "emptyStates": {
+      "upcoming": {
+        "title": "Keine bevorstehenden Mieten",
+        "message": "Sie haben noch keine Anhänger für bevorstehende Termine gemietet.",
+        "action": "Anhänger finden"
+      },
+      "active": {
+        "title": "Keine aktiven Mieten",
+        "message": "Sie haben derzeit keine Anhänger in Benutzung."
+      },
+      "past": {
+        "title": "Keine Miethistorie",
+        "message": "Sie haben in der Vergangenheit noch keine Anhänger gemietet.",
+        "action": "Mieten Sie Ihren ersten Anhänger"
+      }
+    },
+    "error": {
+      "title": "Fehler beim Laden",
+      "tryAgain": "Erneut versuchen"
+    },
+    "rentalDetails": {
+      "period": "Mietzeitraum",
+      "lessor": "Vermieter",
+      "startingIn": "Beginnt in {{days}} Tagen",
+      "lateReturnWarning": "Verspätete Rückgabe kann zusätzliche Kosten verursachen",
+      "actions": {
+        "cancel": "Stornieren",
+        "details": "Details",
+        "review": "Bewerten",
+        "reportDamage": "Schaden melden",
+        "extend": "Verlängern"
+      }
+    },
+    "status": {
+      "PENDING": "Ausstehend",
+      "CONFIRMED": "Bestätigt",
+      "ACTIVE": "Aktiv",
+      "CANCELLED": "Storniert",
+      "COMPLETED": "Abgeschlossen",
+      "LATE_RETURN": "Verspätete Rückgabe",
+      "DISPUTED": "Streitfall"
+    }
+  },
+  "favorites": {
+    "title": "Meine Favoriten",
+    "description": "Anhänger, die zu Ihren Favoriten hinzugefügt wurden.",
+    "empty": {
+      "title": "Keine Favoriten",
+      "description": "Sie haben noch keine Anhänger als Favoriten gespeichert.",
+      "button": "Anhänger durchsuchen"
+    },
+    "location": "Standort",
+    "availability": "Verfügbarkeit",
+    "dailyAvailable": "Täglich verfügbar",
+    "actions": {
+      "remove": "Entfernen",
+      "view": "Anzeigen"
+    },
+    "badge": "Favorit",
+    "perDay": "/Tag",
+    "showing": "{{visible}} von {{total}} Favoriten werden angezeigt"
+  },
+  "security": {
+    "title": "Kontosicherheit",
+    "description": "Verwalten Sie Ihre Kontosicherheits- und Authentifizierungseinstellungen",
+    "changePassword": {
+      "title": "Passwort ändern",
+      "description": "Aktualisieren Sie Ihr Passwort regelmäßig, um Ihr Konto sicher zu halten",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "passwordRequirements": "Das Passwort muss mindestens 8 Zeichen lang sein und eine Zahl sowie ein Sonderzeichen enthalten",
+      "confirmPassword": "Neues Passwort bestätigen",
+      "cancel": "Abbrechen",
+      "update": "Passwort aktualisieren"
+    },
+    "twoFactor": {
+      "title": "Zwei-Faktor-Authentifizierung",
+      "description": "Fügen Sie Ihrem Konto eine zusätzliche Sicherheitsebene hinzu",
+      "sms": {
+        "title": "SMS-Authentifizierung",
+        "description": "Erhalten Sie einen Code per SMS, um Ihre Identität zu bestätigen"
+      },
+      "app": {
+        "title": "Authenticator-App",
+        "description": "Verwenden Sie eine Authenticator-App, um Verifizierungscodes zu generieren"
+      },
+      "info": "Die Zwei-Faktor-Authentifizierung fügt Ihrem Konto eine zusätzliche Sicherheitsebene hinzu, indem mehr als nur ein Passwort für die Anmeldung erforderlich ist."
+    },
+    "loginHistory": {
+      "title": "Anmeldeverlauf",
+      "description": "Überprüfen Sie die letzten Kontoaktivitäten",
+      "current": "Aktuell",
+      "viewFull": "Vollständigen Anmeldeverlauf anzeigen"
+    },
+    "dangerZone": {
+      "title": "Gefahrenbereich",
+      "description": "Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft",
+      "warning": "Sobald Sie Ihr Konto löschen, gibt es kein Zurück mehr. Bitte seien Sie sich sicher.",
+      "delete": "Konto löschen"
+    }
+  },
+  "lessorDashboard": {
+    "title": "Vermieter-Dashboard",
+    "description": "Verwalten Sie Ihre eingestellten Anhänger und Reservierungen.",
+    "loading": "Dashboard-Daten werden geladen...",
+    "error": {
+      "title": "Fehler beim Laden des Dashboards",
+      "message": "Ein Fehler ist aufgetreten: {{message}}",
+      "tryAgain": "Erneut versuchen"
+    },
+    "trailerOverview": {
+      "title": "Anhänger-Übersicht",
+      "subtitle": "Gesamtzahl der Anhänger"
+    },
+    "avgDailyPrice": {
+      "title": "Durchschn. Tagespreis",
+      "subtitle": "Pro Tag"
+    },
+    "rentalStats": {
+      "title": "Vermietungsstatistik",
+      "subtitle": "Gesamtzahl der Vermietungen"
+    },
+    "acceptanceRate": {
+      "title": "Akzeptanzrate",
+      "subtitle": "% akzeptierte Mietanfragen"
+    },
+    "responseRate": {
+      "title": "Antwortrate",
+      "subtitle": "Über 95% = Top-Vermieter"
+    },
+    "responseTime": {
+      "title": "Antwortzeit",
+      "subtitle": "Durchschn. Antwortzeit"
+    },
+    "monthlyRevenue": {
+      "title": "Monatlicher Umsatz",
+      "subtitle": "ggü. Vormonat ({{amount}})"
+    },
+    "utilizationRate": {
+      "title": "Anhänger-Auslastungsrate",
+      "subtitle": "Durchschn. über die letzten 30 Tage"
+    },
+    "averageRating": {
+      "title": "Durchschn. Bewertung",
+      "subtitle": "Durchschn. erhaltene Bewertungen"
+    },
+    "topPerformingTrailers": {
+      "title": "Leistungsstärkste Anhänger",
+      "rentals": "Vermietungen",
+      "noData": "Keine Daten verfügbar"
+    },
+    "mostViewedTrailers": {
+      "title": "Meistgesehene Anhänger",
+      "clicksFavorites": "Klicks • Favoriten",
+      "noData": "Keine Daten verfügbar"
+    },
+    "upcomingRentals": {
+      "title": "Bevorstehende Vermietungen",
+      "renter": "Mieter: {{name}}",
+      "noRentals": "Keine bevorstehenden Vermietungen",
+      "status": {
+        "pending": "Ausstehend",
+        "active": "Aktiv"
+      }
+    }
+  },
+  "lessorCalendar": {
+    "title": "Vermietungskalender",
+    "description": "Verwalten Sie Verfügbarkeiten und sehen Sie Reservierungen ein",
+    "loading": "Kalenderdaten werden geladen...",
+    "error": {
+      "title": "Fehler beim Laden",
+      "message": "Ein Fehler ist aufgetreten",
+      "tryAgain": "Erneut versuchen"
+    },
+    "tabs": {
+      "calendar": "Kalender",
+      "availability": "Einstellungen"
+    },
+    "trailerSelection": {
+      "title": "Anhänger auswählen",
+      "description": "Wählen Sie einen Anhänger aus, um seine Verfügbarkeit einzusehen und zu verwalten"
+    },
+    "calendar": {
+      "title": "Kalender für {{trailerName}}",
+      "blockDates": "Daten blockieren",
+      "unblockDates": "Blockierung aufheben",
+      "cancel": "Abbrechen",
+      "blockDay": "{{count}} Tag blockieren",
+      "blockDays": "{{count}} Tage blockieren",
+      "unblockDay": "Blockierung für {{count}} Tag aufheben",
+      "unblockDays": "Blockierung für {{count}} Tage aufheben",
+      "noTrailerSelected": {
+        "title": "Kein Anhänger ausgewählt",
+        "description": "Bitte wählen Sie oben einen Anhänger aus, um seinen Kalender einzusehen und zu verwalten"
+      },
+      "legend": {
+        "title": "Legende:",
+        "available": "Verfügbar",
+        "unavailable": "Nicht verfügbar",
+        "blocked": "Blockiert",
+        "booked": "Gebucht",
+        "today": "Heute"
+      },
+      "dayStatus": {
+        "unavailable": "Nicht verfügbar",
+        "blocked": "Blockiert"
+      },
+      "rental": {
+        "more": "+{{count}} weitere"
+      }
+    },
+    "availability": {
+      "applyTo": "Anwenden auf:",
+      "allTrailers": "Alle Anhänger",
+      "description": "Legen Sie hier Ihre Standardverfügbarkeit fest. Mieter können nur zu den hier festgelegten Tagen und Uhrzeiten buchen.",
+      "warning": {
+        "title": "Hinweis:",
+        "message": "Wenn Sie Tage, an denen bereits Reservierungen vorliegen, als nicht verfügbar markieren, bleiben diese Reservierungen bestehen. Sie müssen etwaige Reservierungen manuell stornieren."
+      },
+      "saveError": "Beim Speichern ist ein Fehler aufgetreten",
+      "quickSettings": {
+        "title": "Schnelleinstellungen",
+        "everyDay": {
+          "label": "Jeden Tag",
+          "description": "Mo bis So"
+        },
+        "weekdays": {
+          "label": "Wochentags",
+          "description": "Mo bis Fr"
+        },
+        "weekend": {
+          "label": "Wochenende",
+          "description": "Sa & So"
+        },
+        "clearAll": {
+          "label": "Alles löschen",
+          "description": "Alles zurücksetzen"
+        }
+      },
+      "daysAvailability": {
+        "title": "Verfügbarkeit nach Tag",
+        "editTimes": "Zeiten bearbeiten",
+        "noTimesSet": "Keine Zeiten festgelegt",
+        "notAvailable": "An diesem Tag nicht verfügbar"
+      },
+      "saveButton": {
+        "saving": "Speichern...",
+        "save": "Änderungen speichern",
+        "noChanges": "Keine Änderungen zu speichern"
+      },
+      "timeEditor": {
+        "title": "Zeiten bearbeiten für {{day}}",
+        "quickSelect": "Schnellauswahl",
+        "presets": {
+          "workDay": {
+            "label": "Arbeitstag",
+            "description": "9:00 - 17:00"
+          },
+          "allDay": {
+            "label": "Ganzer Tag",
+            "description": "8:00 - 20:00"
+          },
+          "morning": {
+            "label": "Morgen",
+            "description": "8:00 - 12:00"
+          },
+          "afternoon": {
+            "label": "Nachmittag",
+            "description": "12:00 - 17:00"
+          },
+          "evening": {
+            "label": "Abend",
+            "description": "17:00 - 22:00"
+          }
+        },
+        "customTimes": "Benutzerdefinierte Zeiten",
+        "startTime": "Startzeit",
+        "endTime": "Endzeit",
+        "addTimeSlot": "+ Zeitfenster hinzufügen",
+        "cancel": "Abbrechen",
+        "save": "Zeiten speichern"
+      },
+      "days": {
+        "MONDAY": "Montag",
+        "TUESDAY": "Dienstag",
+        "WEDNESDAY": "Mittwoch",
+        "THURSDAY": "Donnerstag",
+        "FRIDAY": "Freitag",
+        "SATURDAY": "Samstag",
+        "SUNDAY": "Sonntag"
+      },
+      "shortDays": {
+        "MONDAY": "Mo",
+        "TUESDAY": "Di",
+        "WEDNESDAY": "Mi",
+        "THURSDAY": "Do",
+        "FRIDAY": "Fr",
+        "SATURDAY": "Sa",
+        "SUNDAY": "So"
+      }
+    }
+  },
+  "lessorHistory": {
+    "title": "Vermietungen verwalten",
+    "description": "Verwalten Sie Reservierungen für Ihre Anhänger",
+    "loading": "Wird geladen...",
+    "error": {
+      "title": "Fehler beim Laden der Vermietungen",
+      "tryAgain": "Erneut versuchen",
+      "retrying": "Wird erneut versucht..."
+    },
+    "tabs": {
+      "upcoming": "Bevorstehend",
+      "active": "Aktiv",
+      "past": "Abgeschlossen"
+    },
+    "rentalInfo": {
+      "rentedTo": "Vermietet an",
+      "rentalPeriod": "Mietzeitraum",
+      "lateReturnWarning": "Verspätete Rückgabe kann zusätzliche Kosten verursachen"
+    },
+    "buttons": {
+      "viewDetails": "Details anzeigen",
+      "manageRental": "Vermietung verwalten",
+      "reviewRental": "Vermietung bewerten",
+      "refresh": "Aktualisieren"
+    },
+    "emptyStates": {
+      "upcoming": {
+        "title": "Keine bevorstehenden Vermietungen",
+        "message": "Derzeit sind keine Vermietungen für Ihren Anhänger geplant."
+      },
+      "active": {
+        "title": "Keine aktiven Vermietungen",
+        "message": "Derzeit werden keine Ihrer Anhänger gemietet."
+      },
+      "past": {
+        "title": "Keine Vermietungshistorie",
+        "message": "Es gibt noch keine abgeschlossenen Vermietungen Ihrer Anhänger."
+      }
+    },
+    "status": {
+      "PENDING": "Ausstehend",
+      "CONFIRMED": "Bestätigt",
+      "ACTIVE": "Aktiv",
+      "CANCELLED": "Storniert",
+      "COMPLETED": "Abgeschlossen",
+      "LATE_RETURN": "Verspätete Rückgabe",
+      "DISPUTED": "Streitfall"
+    }
+  },
+  "reviews": {
+    "lessor": {
+      "title": "Erhaltene Bewertungen",
+      "description": "Sehen Sie, was Mieter über Ihre Anhänger sagen",
+      "avgRating": "{{rating}} durchschnittliche Bewertung"
+    },
+    "user": {
+      "title": "Abgegebene Bewertungen",
+      "description": "Bewertungen, die Sie für gemietete Anhänger hinterlassen haben"
+    },
+    "loading": "Bewertungen werden geladen...",
+    "error": {
+      "title": "Fehler beim Laden der Bewertungen",
+      "tryAgain": "Erneut versuchen"
+    },
+    "tabs": {
+      "all": "Alle Bewertungen",
+      "positive": "Positiv",
+      "improvement": "Verbesserungsbedarf"
+    },
+    "filters": {
+      "showAll": "Alle anzeigen"
+    },
+    "emptyStates": {
+      "all": {
+        "lessor": {
+          "title": "Keine Bewertungen",
+          "message": "Sie haben noch keine Bewertungen für Ihre Anhänger erhalten."
+        },
+        "user": {
+          "title": "Keine Bewertungen",
+          "message": "Sie haben noch keine Bewertungen für gemietete Anhänger hinterlassen."
+        }
+      },
+      "positive": {
+        "lessor": {
+          "title": "Keine positiven Bewertungen",
+          "message": "Sie haben noch keine positiven Bewertungen für Ihre Anhänger erhalten."
+        },
+        "user": {
+          "title": "Keine positiven Bewertungen",
+          "message": "Sie haben noch keine positiven Bewertungen hinterlassen."
+        }
+      },
+      "improvement": {
+        "lessor": {
+          "title": "Keine Verbesserungspunkte",
+          "message": "Sie haben keine Bewertungen mit Verbesserungspunkten erhalten."
+        },
+        "user": {
+          "title": "Keine Verbesserungspunkte",
+          "message": "Sie haben keine Bewertungen mit Verbesserungspunkten hinterlassen."
+        }
+      }
+    },
+    "review": {
+      "anonymous": "Anonym",
+      "writeReview": "Bewertung schreiben",
+      "dates": {
+        "posted": "Gepostet am {{date}}",
+        "month": "{{month}}"
+      }
+    },
+    "response": {
+      "title": "Antwort des Eigentümers",
+      "date": "Beantwortet am {{date}}"
+    },
+    "actions": {
+      "respond": "Antworten",
+      "editResponse": "Antwort bearbeiten",
+      "editReview": "Bewertung bearbeiten"
+    },
+    "dialogs": {
+      "response": {
+        "title": "Auf Bewertung antworten",
+        "editTitle": "Ihre Antwort bearbeiten",
+        "description": "Schreiben Sie eine Antwort auf diese Bewertung, sie wird öffentlich sichtbar sein.",
+        "editDescription": "Bearbeiten Sie Ihre Antwort auf diese Bewertung.",
+        "reviewLabel": "Bewertung",
+        "responseLabel": "Ihre Antwort",
+        "responsePlaceholder": "Schreiben Sie Ihre Antwort...",
+        "buttons": {
+          "cancel": "Abbrechen",
+          "respond": "Antworten",
+          "update": "Antwort aktualisieren",
+          "saving": "Speichern..."
+        }
+      },
+      "edit": {
+        "title": "Bewertung bearbeiten",
+        "description": "Aktualisieren Sie Ihre Bewertung für \"{{trailerTitle}}\".",
+        "rating": "Bewertung",
+        "titleLabel": "Titel (optional)",
+        "titlePlaceholder": "Fassen Sie Ihre Erfahrung zusammen",
+        "reviewLabel": "Bewertung",
+        "reviewPlaceholder": "Teilen Sie Ihre Erfahrung...",
+        "buttons": {
+          "cancel": "Abbrechen",
+          "update": "Bewertung aktualisieren",
+          "saving": "Speichern..."
+        }
+      }
+    }
+  },
+  "settings": {
+    "dialog": {
+      "title": "Einstellungen",
+      "description": "Verwalten Sie Ihre Kontoeinstellungen und Präferenzen",
+      "backButton": "Zurück"
+    },
+    "sections": {
+      "account": "Konto",
+      "lessorSettings": "Vermietereinstellungen",
+      "notifications": "Benachrichtigungen",
+      "security": "Sicherheit",
+      "billing": "Abrechnung"
+    },
+    "logout": "Abmelden",
+    "account": {
+      "password": {
+        "title": "Passwort",
+        "description": "Halten Sie Ihr Konto mit einem starken Passwort sicher",
+        "changeButton": "Passwort ändern",
+        "dialog": {
+          "title": "Passwort ändern",
+          "description": "Wählen Sie ein starkes Passwort mit mindestens 8 Zeichen",
+          "currentPassword": "Aktuelles Passwort",
+          "newPassword": "Neues Passwort",
+          "confirmPassword": "Passwort bestätigen",
+          "passwordMismatch": "Passwörter stimmen nicht überein",
+          "passwordTooShort": "Passwort muss mindestens 8 Zeichen lang sein",
+          "cancel": "Abbrechen",
+          "change": "Ändern"
+        },
+        "success": "Passwort erfolgreich geändert"
+      },
+      "accountManagement": {
+        "title": "Kontoverwaltung",
+        "description": "Vorübergehend deaktivieren oder dauerhaft löschen",
+        "deactivateButton": "Konto deaktivieren",
+        "deleteButton": "Konto löschen",
+        "deactivateDialog": {
+          "title": "Konto deaktivieren?",
+          "description": "Ihr Konto wird vorübergehend deaktiviert. Sie können sich jederzeit wieder anmelden, um Ihr Konto zu reaktivieren.",
+          "cancel": "Abbrechen",
+          "deactivate": "Deaktivieren"
+        },
+        "deleteDialog": {
+          "title": "Konto dauerhaft löschen?",
+          "description": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten werden dauerhaft gelöscht.",
+          "confirmationLabel": "Geben Sie Ihre E-Mail-Adresse zur Bestätigung ein:",
+          "cancel": "Abbrechen",
+          "delete": "Löschen",
+          "deleting": "Wird gelöscht..."
+        }
+      }
+    },
+    "lessorSettings": {
+      "autoApproval": {
+        "title": "Automatische Genehmigung",
+        "description": "Buchungen von vertrauenswürdigen Mietern automatisch akzeptieren",
+        "toggle": "Automatische Genehmigung",
+        "toggleDescription": "Buchungen werden direkt bestätigt, wenn sie Ihren Kriterien entsprechen",
+        "minRating": {
+          "toggle": "Mindestbewertung erforderlich",
+          "toggleDescription": "Nur Mieter mit einer Mindestbewertung akzeptieren",
+          "label": "Mindestwert",
+          "star": "Stern"
+        },
+        "minRentals": {
+          "label": "Mindestanzahl früherer Vermietungen",
+          "options": {
+            "none": "Kein Minimum",
+            "one": "1 Vermietung",
+            "three": "3 Vermietungen",
+            "five": "5 Vermietungen",
+            "ten": "10 Vermietungen"
+          }
+        },
+        "verifiedOnly": {
+          "label": "Nur verifizierte Benutzer",
+          "description": "Nur Benutzer mit verifiziertem Führerschein"
+        }
+      },
+      "rentalTerms": {
+        "title": "Mietbedingungen",
+        "description": "Standardeinstellungen für neue Anhänger",
+        "minDuration": {
+          "label": "Mindestmietdauer",
+          "options": {
+            "oneDay": "1 Tag",
+            "twoDays": "2 Tage",
+            "threeDays": "3 Tage",
+            "oneWeek": "1 Woche"
+          }
+        },
+        "maxDuration": {
+          "label": "Maximale Mietdauer",
+          "options": {
+            "oneWeek": "1 Woche",
+            "twoWeeks": "2 Wochen",
+            "oneMonth": "1 Monat",
+            "twoMonths": "2 Monate",
+            "threeMonths": "3 Monate"
+          }
+        },
+        "securityDeposit": {
+          "label": "Kaution-Prozentsatz",
+          "description": "Prozentsatz des Gesamtmietpreises als Kaution"
+        }
+      },
+      "cancellationPolicy": {
+        "title": "Stornierungsrichtlinie",
+        "description": "Bestimmen Sie, wann Mieter stornieren können",
+        "policies": {
+          "flexible": {
+            "label": "Flexibel",
+            "description": "Kostenlose Stornierung bis 24 Stunden vor Abholung"
+          },
+          "moderate": {
+            "label": "Moderat",
+            "description": "100% Rückerstattung bei Stornierung innerhalb von 72 Stunden"
+          },
+          "strict": {
+            "label": "Streng",
+            "description": "Keine Rückerstattung innerhalb von 7 Tagen"
+          },
+          "custom": {
+            "label": "Benutzerdefiniert",
+            "description": "Erstellen Sie Ihre eigene Richtlinie",
+            "placeholder": "Beschreiben Sie Ihre Stornierungsrichtlinie..."
+          }
+        }
+      },
+      "saveButton": {
+        "saving": "Speichern...",
+        "save": "Einstellungen speichern",
+        "noChanges": "Keine Änderungen zu speichern"
+      }
+    },
+    "notifications": {
+      "loading": "Einstellungen werden geladen...",
+      "emailNotifications": {
+        "disabled": {
+          "title": "E-Mail-Benachrichtigungen sind deaktiviert",
+          "description": "Sie erhalten keine E-Mails von uns, bis Sie dies wieder aktivieren"
+        }
+      },
+      "categories": {
+        "bookings": {
+          "title": "Buchungen",
+          "description": "Updates zu Ihren Vermietungen und Reservierungen",
+          "settings": {
+            "booking_request": {
+              "label": "Neue Buchungsanfragen",
+              "description": "Wenn jemand Ihren Anhänger mieten möchte"
+            },
+            "booking_confirmed": {
+              "label": "Buchungsbestätigungen",
+              "description": "Wenn eine Buchung bestätigt wird"
+            },
+            "booking_cancelled": {
+              "label": "Stornierungen",
+              "description": "Wenn eine Buchung storniert wird"
+            },
+            "booking_modified": {
+              "label": "Änderungen",
+              "description": "Wenn Buchungsdetails geändert werden"
+            }
+          }
+        },
+        "payments": {
+          "title": "Zahlungen",
+          "description": "Finanztransaktionen und Auszahlungen",
+          "settings": {
+            "payment_received": {
+              "label": "Zahlung erhalten",
+              "description": "Wenn Sie eine Zahlung erhalten haben"
+            },
+            "payout_processed": {
+              "label": "Auszahlung verarbeitet",
+              "description": "Wenn Geld auf Ihr Konto überwiesen wurde"
+            },
+            "payment_failed": {
+              "label": "Fehlgeschlagene Zahlungen",
+              "description": "Wenn eine Zahlung fehlgeschlagen ist"
+            }
+          }
+        },
+        "messages": {
+          "title": "Nachrichten",
+          "description": "Kommunikation mit Mietern und Vermietern",
+          "settings": {
+            "new_message": {
+              "label": "Neue Nachrichten",
+              "description": "Wenn Sie eine neue Nachricht erhalten"
+            },
+            "unread_reminder": {
+              "label": "Erinnerung an ungelesene Nachrichten",
+              "description": "Tägliche Erinnerung für ungelesene Nachrichten"
+            }
+          }
+        },
+        "reminders": {
+          "title": "Erinnerungen",
+          "description": "Wichtige Termine und Aktionen",
+          "settings": {
+            "pickup_reminder": {
+              "label": "Abholungserinnerung",
+              "description": "24 Stunden vor der Abholung eines Anhängers"
+            },
+            "return_reminder": {
+              "label": "Rückgabeerinnerung",
+              "description": "24 Stunden vor der Rückgabe eines Anhängers"
+            },
+            "review_reminder": {
+              "label": "Bewertung abgeben",
+              "description": "Erinnerung, eine Bewertung abzugeben"
+            }
+          }
+        },
+        "marketing": {
+          "title": "Angebote & Neuigkeiten",
+          "description": "Updates über neue Funktionen und Angebote",
+          "settings": {
+            "promotions": {
+              "label": "Sonderangebote",
+              "description": "Rabatte und Werbeaktionen"
+            },
+            "newsletter": {
+              "label": "Newsletter",
+              "description": "Monatliche Updates und Tipps"
+            },
+            "new_features": {
+              "label": "Neue Funktionen",
+              "description": "Wenn wir neue Funktionen einführen"
+            }
+          }
+        }
+      },
+      "saveButton": {
+        "saving": "Speichern...",
+        "save": "Einstellungen speichern",
+        "noChanges": "Keine Änderungen zu speichern"
+      }
+    },
+    "security": {
+      "twoFactor": {
+        "title": "Zwei-Faktor-Authentifizierung",
+        "description": "Zusätzliche Sicherheit für Ihr Konto",
+        "authApp": {
+          "label": "Authenticator-App verwenden",
+          "description": "Erfordert einen Code bei jeder neuen Anmeldung"
+        }
+      },
+      "loginAlerts": {
+        "title": "Benachrichtigungen",
+        "description": "Benachrichtigungen für Kontoaktivitäten",
+        "newLogin": {
+          "label": "E-Mail bei neuer Anmeldung",
+          "description": "Benachrichtigung bei Anmeldung von einem neuen Gerät"
+        }
+      },
+      "devices": {
+        "title": "Geräte",
+        "description": "{{count}} aktive Sitzungen",
+        "current": "aktuell",
+        "removeButton": "Entfernen",
+        "removeDialog": {
+          "title": "Gerät entfernen?",
+          "description": "Dieses Gerät wird abgemeldet und muss sich erneut anmelden.",
+          "cancel": "Abbrechen",
+          "remove": "Entfernen"
+        }
+      }
+    },
+    "billing": {
+      "paymentMethods": {
+        "title": "Zahlungsmethoden",
+        "description": "Verwalten Sie Ihre Karten für Zahlungen und erhalten Sie Mieteinnahmen"
+      },
+      "transactions": {
+        "title": "Transaktionsverlauf",
+        "emptyState": "Es gibt noch keine Transaktionen anzuzeigen",
+        "status": {
+          "completed": "Abgeschlossen",
+          "pending": "In Bearbeitung"
+        }
+      }
+    }
+  }
+}

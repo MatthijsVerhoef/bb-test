@@ -1,0 +1,187 @@
+// app/api/user/profile/reviews/counts/route.ts
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import { UserStatsService } from '@/services/user-stats-updater';
+
+// Longer cache for counts since they change less frequently
+const CACHE_CONTROL_HEADERS = {
+  'Cache-Control': 'public, max-age=300, s-maxage=600, stale-while-revalidate=1800'
+};
+
+export async function GET(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const role = searchParams.get('role') || session.user.role;
+    const userId = session.user.id;
+
+    // Check if we have up-to-date stats already
+    const userStats = await prisma.userStats.findUnique({
+      where: { userId },
+      select: {
+        ratingBreakdown: true,
+        positiveReviews: true,
+        improvementReviews: true,
+        averageRating: true,
+        receivedReviewsCount: true,
+        lastUpdated: true,
+      }
+    });
+    
+    // If stats are recent (less than 10 minutes old) and we have rating data, use them
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    if (userStats && userStats.lastUpdated > tenMinutesAgo && userStats.ratingBreakdown) {
+      const ratingBreakdown = userStats.ratingBreakdown as Record<string, number>;
+      
+      return NextResponse.json({
+        total: userStats.receivedReviewsCount,
+        positive: userStats.positiveReviews,
+        improvement: userStats.improvementReviews,
+        averageRating: userStats.averageRating,
+        ratingBreakdown
+      }, { headers: CACHE_CONTROL_HEADERS });
+    }
+    
+    // Fall back to query approach if needed
+    if (role.toUpperCase() === 'LESSOR') {
+      // Single query that joins and aggregates in one go
+      const result = await prisma.$queryRaw<Array<{
+        rating: number;
+        count: bigint;
+        avg_rating: number | null;
+        total_count: bigint;
+      }>>`
+        SELECT 
+          r.rating,
+          COUNT(*) as count,
+          AVG(r.rating) OVER() as avg_rating,
+          COUNT(*) OVER() as total_count
+        FROM Review r
+        INNER JOIN Trailer t ON r.trailerId = t.id
+        WHERE t.ownerId = ${userId}
+        GROUP BY r.rating
+      `;
+
+      // Process results
+      let positiveCount = 0;
+      let improvementCount = 0;
+      const ratingBreakdown: Record<number, number> = {};
+      
+      if (result.length === 0) {
+        // Schedule background update for empty results
+        UserStatsService.scheduleUpdate(userId);
+        
+        return NextResponse.json({
+          total: 0,
+          positive: 0,
+          improvement: 0,
+          averageRating: null,
+          ratingBreakdown: {}
+        }, { headers: CACHE_CONTROL_HEADERS });
+      }
+
+      const totalCount = Number(result[0].total_count);
+      const averageRating = result[0].avg_rating ? Number(result[0].avg_rating) : null;
+
+      result.forEach(row => {
+        const rating = row.rating;
+        const count = Number(row.count);
+        
+        ratingBreakdown[rating] = count;
+        
+        if (rating >= 4) {
+          positiveCount += count;
+        } else {
+          improvementCount += count;
+        }
+      });
+      
+      // Schedule a background update to save these results
+      UserStatsService.scheduleUpdate(userId);
+
+      return NextResponse.json({
+        total: totalCount,
+        positive: positiveCount,
+        improvement: improvementCount,
+        averageRating,
+        ratingBreakdown
+      }, { headers: CACHE_CONTROL_HEADERS });
+
+    } else {
+      // For regular users - simpler query
+      const result = await prisma.$queryRaw<Array<{
+        rating: number;
+        count: bigint;
+        avg_rating: number | null;
+        total_count: bigint;
+      }>>`
+        SELECT 
+          rating,
+          COUNT(*) as count,
+          AVG(rating) OVER() as avg_rating,
+          COUNT(*) OVER() as total_count
+        FROM Review
+        WHERE reviewerId = ${userId}
+        GROUP BY rating
+      `;
+
+      // Same processing logic as above...
+      let positiveCount = 0;
+      let improvementCount = 0;
+      const ratingBreakdown: Record<number, number> = {};
+      
+      if (result.length === 0) {
+        // Schedule background update for empty results
+        UserStatsService.scheduleUpdate(userId);
+        
+        return NextResponse.json({
+          total: 0,
+          positive: 0,
+          improvement: 0,
+          averageRating: null,
+          ratingBreakdown: {}
+        }, { headers: CACHE_CONTROL_HEADERS });
+      }
+
+      const totalCount = Number(result[0].total_count);
+      const averageRating = result[0].avg_rating ? Number(result[0].avg_rating) : null;
+
+      result.forEach(row => {
+        const rating = row.rating;
+        const count = Number(row.count);
+        
+        ratingBreakdown[rating] = count;
+        
+        if (rating >= 4) {
+          positiveCount += count;
+        } else {
+          improvementCount += count;
+        }
+      });
+      
+      // Schedule a background update to save these results
+      UserStatsService.scheduleUpdate(userId);
+
+      return NextResponse.json({
+        total: totalCount,
+        positive: positiveCount,
+        improvement: improvementCount,
+        averageRating,
+        ratingBreakdown
+      }, { headers: CACHE_CONTROL_HEADERS });
+    }
+
+  } catch (error) {
+    console.error('Error fetching review counts:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch review counts' },
+      { status: 500 }
+    );
+  }
+}

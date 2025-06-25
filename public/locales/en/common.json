@@ -1,0 +1,76 @@
+{
+  "locale": "en",
+  "header": {
+    "home": "Home",
+    "trailers": "Trailers",
+    "addTrailer": "Add Trailer",
+    "profile": "Profile",
+    "chat": "Messages",
+    "login": "Login",
+    "logout": "Logout",
+    "blogs": "Blogs",
+    "contact": "Contact",
+    "register": "Sign Up",
+    "rentOut": "I want to rent out",
+    "favorites": "Favorites",
+    "myRentals": "My Rentals",
+    "myTrailers": "My Trailers",
+    "howItWorks": "How it works",
+    "faq": "FAQ",
+    "help": "Help"
+  },
+  "footer": {
+    "about": "About Us",
+    "howItWorks": "How It Works",
+    "contact": "Contact",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "sitemap": "Sitemap"
+  },
+  "feedback": {
+    "triggerButton": "Give us feedback!",
+    "title": "Provide Feedback",
+    "description": "Help us improve our platform by answering the questions below.",
+    "successMessage": "Thank you for your feedback! We appreciate your input.",
+    "ratingLabel": "How would you rate our platform?",
+    "improvementsLabel": "What improvements would you like to see?",
+    "improvementsHint": "Think about things you missed while using our platform, things you'd like to see different, and anything else you can think of!",
+    "improvementsPlaceholder": "Write what you'd like to see different/missing...",
+    "recommendLabel": "Would you rent/lend through our platform again?",
+    "yes": "Yes",
+    "no": "No",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "submitButton": "Submit Feedback",
+    "error": {
+      "missingFields": "It looks like not all fields have been filled in!",
+      "submissionFailed": "Something went wrong while submitting your feedback"
+    }
+  },
+  "language": {
+    "select": "Select language"
+  },
+  "general": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "tryAgain": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "next": "Next",
+    "previous": "Previous",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "viewMore": "View more",
+    "viewLess": "View less",
+    "showAll": "Show all",
+    "noResults": "No results found",
+    "done": "Done"
+  }
+}

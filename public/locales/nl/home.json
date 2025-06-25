@@ -1,0 +1,206 @@
+{
+  "hero": {
+    "title": "Huur een aanhanger in jouw buurt",
+    "subtitle": "Vind de perfecte aanhanger voor jouw klus bij particulieren in de buurt",
+    "searchPlaceholder": "Zoek een aanhanger",
+    "addDates": "Datums toevoegen",
+    "searchButton": "Zoeken"
+  },
+  "features": {
+    "secure": {
+      "title": "Veilig & verzekerd",
+      "description": "Alle aanhangers zijn verzekerd voor schade"
+    },
+    "local": {
+      "title": "Lokaal & dichtbij",
+      "description": "Vind aanhangers in jouw directe omgeving"
+    },
+    "affordable": {
+      "title": "Betaalbaar",
+      "description": "Bespaar geld door direct van particulieren te huren"
+    }
+  },
+  "categories": {
+    "title": "Populaire categorieën",
+    "open": "Open aanhanger",
+    "closed": "Gesloten aanhanger",
+    "car": "Autotransporter",
+    "boat": "Boottrailer",
+    "motorcycle": "Motortrailer",
+    "horse": "Paardentrailer"
+  },
+  "howItWorks": {
+    "title": "Hoe werkt het?",
+    "step1": {
+      "title": "Zoek en vind",
+      "description": "Vind de perfecte aanhanger in jouw buurt"
+    },
+    "step2": {
+      "title": "Boek online",
+      "description": "Reserveer veilig en gemakkelijk online"
+    },
+    "step3": {
+      "title": "Ophalen en gebruiken",
+      "description": "Haal de aanhanger op en gebruik hem voor jouw klus"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "category": "Categorie",
+    "priceRange": "Prijsbereik",
+    "minPrice": "Minimale prijs",
+    "maxPrice": "Maximale prijs",
+    "dimensions": "Afmetingen",
+    "length": "Lengte",
+    "width": "Breedte",
+    "height": "Hoogte",
+    "features": "Kenmerken",
+    "clearFilters": "Filters wissen",
+    "applyFilters": "Filters toepassen"
+  },
+  "trailerCard": {
+    "perDay": "/ dag",
+    "available": "Beschikbaar",
+    "unavailable": "Niet beschikbaar",
+    "viewDetails": "Bekijk details",
+    "rating": "Beoordeling",
+    "noRatings": "Nog geen beoordelingen",
+    "removeFromFavorites": "Verwijder uit favorieten",
+    "addToFavorites": "Toevoegen aan favorieten"
+  },
+  "quickSearch": {
+    "rentTrailerIn": "Huur jouw aanhanger in",
+    "searchLocation": "Locatie zoeken",
+    "addDates": "Datums toevoegen",
+    "wherePlaceholder": "Waar wil je een aanhanger huren?",
+    "searching": "Zoeken...",
+    "noLocationsFound": "Geen locaties gevonden",
+    "pickup": "Ophalen",
+    "return": "Terugbrengen",
+    "search": "Zoek een aanhanger"
+  },
+  "filters": {
+    "title": "Filters",
+    "clearAll": "Alle filters wissen",
+    "pricePerDay": "Prijs per dag",
+    "trailerSize": "Aanhanger Grootte",
+    "trailerType": "Type aanhanger",
+    "accessories": "Accessoires",
+    "license": "Rijbewijs",
+    "dimensions": "Afmetingen",
+    "availability": "Beschikbaarheid",
+    "deliveryOptions": "Bezorgopties",
+    "homeDelivery": "Thuisbezorging Beschikbaar",
+    "insurance": "Verzekering Inbegrepen",
+    "rentalDuration": "Huurduur (dagen)",
+    "minDuration": "Minimum",
+    "maxDuration": "Maximum",
+    "sizeOptions": {
+      "small": "Klein",
+      "medium": "Gemiddeld",
+      "large": "Groot"
+    },
+    "showMore": "Toon meer",
+    "showLess": "Toon minder",
+    "more": "meer",
+    "licenseOptions": {
+      "none": "Geen Rijbewijs Verplichting",
+      "B": "BE Rijbewijs",
+      "BE": "B+ Rijbewijs"
+    },
+    "dimensionLabels": {
+      "length": "Lengte",
+      "width": "Breedte",
+      "height": "Hoogte",
+      "weight": "Gewicht",
+      "capacity": "Laadvermogen",
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "dateRange": {
+      "selectDates": "Selecteer data",
+      "clearDates": "Datums wissen"
+    },
+    "mobileDrawer": {
+      "filters": "Filters",
+      "apply": "Filters toepassen",
+      "reset": "Reset"
+    }
+  },
+  "sortBy": {
+    "label": "Sorteer op",
+    "options": {
+      "default": "Standaard",
+      "priceLowToHigh": "Prijs: laag naar hoog",
+      "priceHighToLow": "Prijs: hoog naar laag",
+      "rating": "Beoordeling",
+      "distance": "Afstand"
+    }
+  },
+  "activeFilters": {
+    "none": "0 Actieve filters",
+    "single": "1 Actieve filter",
+    "multiple": "Actieve filters"
+  },
+  "cityTitle": {
+    "rentTrailerIn": "Aanhanger huren in"
+  },
+  "cta": {
+    "title": "Jouw aanhanger verhuren?",
+    "description": "Verdien extra geld door jouw aanhanger te verhuren wanneer je hem niet gebruikt",
+    "button": "Start met verhuren"
+  },
+  "faq": {
+    "title": "Vaak gestelde vragen",
+    "subtitle": "Alles wat je moet weten over het huren en verhuren van aanhangers",
+    "items": {
+      "howItWorks": {
+        "title": "Hoe werkt verhuren via ons platform?",
+        "content": [
+          "Onze peer-to-peer verhuurservice werkt supergemakkelijk:",
+          "- Maak gratis een account aan",
+          "- Voeg je aanhanger met duidelijke foto's en beschrijving toe",
+          "- Stel je eigen verhuurprijs en beschikbaarheid in",
+          "- Ontvang verzoeken en verhuur jouw aanhanger aan andere gebruikers",
+          "- Verdien extra inkomen met je aanhanger die anders stilstaat"
+        ]
+      },
+      "safety": {
+        "title": "Veiligheid & Verzekering",
+        "content": [
+          "Veiligheid staat bij ons centraal:",
+          "- Verplichte identificatie van alle gebruikers",
+          "- Geïntegreerd beoordelings- en reviewsysteem",
+          "- Optionele aanvullende verzekering voor verhuurders",
+          "- Transparante communicatie tussen verhuurder en huurder",
+          "- Gegarandeerde betaling via ons platform"
+        ]
+      },
+      "benefits": {
+        "title": "Voordelen voor Verhuurders",
+        "content": [
+          "Waarom verhuren via ons platform?",
+          "- Verdien geld met je stilstaande aanhanger",
+          "- Volledige controle over je verhuurvoorwaarden",
+          "- Flexibele beschikbaarheid instellen",
+          "- Ontmoet nieuwe mensen en help de community",
+          "- Ondersteunende klantenservice bij vragen"
+        ]
+      },
+      "howToRent": {
+        "title": "Hoe huur ik een aanhanger?",
+        "content": [
+          "Een aanhanger huren is simpel:",
+          "- Zoek op locatie of type aanhanger",
+          "- Vergelijk prijzen en lees reviews",
+          "- Boek direct via ons platform",
+          "- Haal de aanhanger op bij de verhuurder",
+          "- Gebruik hem voor je project en lever hem weer in"
+        ]
+      }
+    },
+    "moreQuestions": "Meer vragen? Neem gerust contact met ons op!",
+    "contact": "Contact",
+    "howItWorksLink": "Hoe het werkt"
+  }
+}
