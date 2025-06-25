@@ -240,10 +240,7 @@ export default function TrailerSpecs({
       </h4>
       <CardContent className="p-0">
         <div className="border-b pb-6">
-          <h3
-            className="text-sm font-medium mb-2 text-gray-700"
-            onClick={() => console.log(category)}
-          >
+          <h3 className="text-sm font-medium mb-2 text-gray-700">
             {t("specs.type")}
           </h3>
           {/* Main Type Specification */}

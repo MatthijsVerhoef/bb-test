@@ -198,7 +198,6 @@ export default function RentalBookingForm({
             ? "bg-white shadow-none border-none p-0"
             : "sticky top-24 bg-[#f6f8f9] shadow-none py-7 px-3 border-none"
         } overflow-visible`}
-        onClick={() => console.log("HIER FORM DATA", formData)}
       >
         <CardHeader
           className={`${isMobile ? "p-0 pb-4" : ""} overflow-visible`}

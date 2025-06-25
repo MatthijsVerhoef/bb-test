@@ -51,45 +51,41 @@ interface UseStripePaymentMethodsResult {
 
 // Helper function to get client locale directly from cookies/localStorage
 function getClientLocale(): string {
-  if (typeof window === 'undefined') {
-    return 'en';
+  if (typeof window === "undefined") {
+    return "en";
   }
-  
+
   // Try to get from cookie first
   const cookieMatch = document.cookie.match(/preferred-locale=([^;]+)/);
-  if (cookieMatch && ['nl', 'en', 'de'].includes(cookieMatch[1])) {
+  if (cookieMatch && ["nl", "en", "de"].includes(cookieMatch[1])) {
     return cookieMatch[1];
   }
-  
+
   // Fallback to localStorage
-  const storedLocale = localStorage.getItem('preferred-locale');
-  if (storedLocale && ['nl', 'en', 'de'].includes(storedLocale)) {
+  const storedLocale = localStorage.getItem("preferred-locale");
+  if (storedLocale && ["nl", "en", "de"].includes(storedLocale)) {
     return storedLocale;
   }
-  
-  return 'en';
+
+  return "en";
 }
 
 export function useStripePaymentMethods(): UseStripePaymentMethodsResult {
-  const { i18n } = useTranslation('profile');
+  const { i18n } = useTranslation("profile");
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddPaymentMethodForm, setShowAddPaymentMethodForm] =
     useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  
+
   // Get current locale directly from cookies/localStorage
   const initialLocale = getClientLocale();
   const [currentLocale, setCurrentLocale] = useState(initialLocale);
-  
-  console.log('Initial locale from cookies/localStorage:', initialLocale);
-  console.log('i18n language:', i18n?.language);
-  
+
   // Update currentLocale when i18n.language changes
   useEffect(() => {
     if (i18n?.language) {
-      console.log('i18n language changed to:', i18n.language);
       setCurrentLocale(i18n.language);
     }
   }, [i18n?.language]);
@@ -253,14 +249,14 @@ export const AddPaymentMethodForm = ({
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { t } = useTranslation('profile');
+  const { t } = useTranslation("profile");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!stripe || !elements) {
       console.error("Stripe or Elements not loaded", { stripe, elements });
-      setError(t('paymentMethod.errors.notLoaded'));
+      setError(t("paymentMethod.errors.notLoaded"));
       return;
     }
 
@@ -268,7 +264,7 @@ export const AddPaymentMethodForm = ({
     const paymentElement = elements.getElement("payment");
     if (!paymentElement) {
       console.error("Payment Element not found in the DOM");
-      setError(t('paymentMethod.errors.formNotLoaded'));
+      setError(t("paymentMethod.errors.formNotLoaded"));
       return;
     }
 
@@ -279,7 +275,9 @@ export const AddPaymentMethodForm = ({
       // Validate the payment form first
       const { error: validationError } = await elements.submit();
       if (validationError) {
-        throw new Error(validationError.message || t('paymentMethod.errors.invalidDetails'));
+        throw new Error(
+          validationError.message || t("paymentMethod.errors.invalidDetails")
+        );
       }
 
       // Short timeout to ensure the element is completely ready
@@ -294,7 +292,9 @@ export const AddPaymentMethodForm = ({
       });
 
       if (result.error) {
-        throw new Error(result.error.message || t('paymentMethod.errors.addFailed'));
+        throw new Error(
+          result.error.message || t("paymentMethod.errors.addFailed")
+        );
       }
 
       // Successfully added the payment method
@@ -303,7 +303,7 @@ export const AddPaymentMethodForm = ({
       setError(
         err instanceof Error
           ? err.message
-          : t('paymentMethod.errors.generalError')
+          : t("paymentMethod.errors.generalError")
       );
       console.error("Error adding payment method:", err);
     } finally {
@@ -337,10 +337,12 @@ export const AddPaymentMethodForm = ({
 
       <div className="flex justify-end space-x-2">
         <Button variant="outline" onClick={onCancel} disabled={isLoading}>
-          {t('paymentMethod.addDialog.cancel')}
+          {t("paymentMethod.addDialog.cancel")}
         </Button>
         <Button type="submit" disabled={!stripe || isLoading}>
-          {isLoading ? t('paymentMethod.addDialog.processing') : t('paymentMethod.addDialog.addMethod')}
+          {isLoading
+            ? t("paymentMethod.addDialog.processing")
+            : t("paymentMethod.addDialog.addMethod")}
         </Button>
       </div>
     </form>
@@ -351,30 +353,29 @@ export const AddPaymentMethodForm = ({
 export const StripePaymentMethodsProvider = ({
   children,
   clientSecret,
-  locale = 'en',
+  locale = "en",
 }: {
   children: React.ReactNode;
   clientSecret: string;
   locale?: string;
 }) => {
-  const { t } = useTranslation('profile');
-  
+  const { t } = useTranslation("profile");
+
   // Map i18n language codes to Stripe locale codes
   const getStripeLocale = (langCode: string | undefined) => {
-    if (!langCode) return 'en';
-    
+    if (!langCode) return "en";
+
     const localeMap: Record<string, string> = {
-      'nl': 'nl',
-      'en': 'en',
-      'de': 'de'
+      nl: "nl",
+      en: "en",
+      de: "de",
     };
-    return localeMap[langCode] || 'en';
+    return localeMap[langCode] || "en";
   };
-  
+
   // Use explicitly passed locale
   const stripeLocale = getStripeLocale(locale);
-  console.log('Stripe locale:', stripeLocale, 'from passed locale:', locale);
-  
+
   const options = {
     clientSecret,
     appearance: {
@@ -396,7 +397,9 @@ export const StripePaymentMethodsProvider = ({
   // Only render if stripePromise is available
   if (!stripePromise) {
     return (
-      <div className="p-4 text-center">{t('paymentMethod.addDialog.systemLoading')}</div>
+      <div className="p-4 text-center">
+        {t("paymentMethod.addDialog.systemLoading")}
+      </div>
     );
   }
 

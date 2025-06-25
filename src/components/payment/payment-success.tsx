@@ -100,7 +100,6 @@ export default function PaymentSuccessDialog({
         const startTime = performance.now();
         const response = await fetch(`/api/rentals/details?${queryParam}`);
         const endTime = performance.now();
-        console.log(`Rental details fetch took ${endTime - startTime}ms`);
 
         if (!response.ok) {
           throw new Error("Kon geen boekingsgegevens ophalen.");
@@ -231,10 +230,7 @@ export default function PaymentSuccessDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md p-6 overflow-hidden rounded-xl">
         <DialogHeader className="">
-          <DialogTitle
-            className="font-semibold text-lg"
-            onClick={() => console.log(rentalDetails)}
-          >
+          <DialogTitle className="font-semibold text-lg">
             Reservering successvol
           </DialogTitle>
           <DialogDescription className="-mt-1">

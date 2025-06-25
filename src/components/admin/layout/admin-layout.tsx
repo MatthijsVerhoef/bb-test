@@ -378,10 +378,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main
-          className="flex-1 overflow-y-auto"
-          onClick={() => console.log(pathname)}
-        >
+        <main className="flex-1 overflow-y-auto">
           <div
             className={`${
               pathname !== "/admin/blogs/editor" && "p-4 sm:p-6 lg:p-8"

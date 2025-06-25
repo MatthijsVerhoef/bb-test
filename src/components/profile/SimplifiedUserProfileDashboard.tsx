@@ -188,7 +188,6 @@ export default function SimplifiedUserProfileDashboard({
   useEffect(() => {
     const handleProfileTabChange = (event: CustomEvent) => {
       const { tab, mode } = event.detail;
-      console.log("Received tab change event:", { tab, mode });
 
       if (mode && mode !== activeMode) {
         setActiveMode(mode);
@@ -213,8 +212,6 @@ export default function SimplifiedUserProfileDashboard({
 
   // Create a direct mode change handler
   const handleModeChange = (mode: "renter" | "lessor") => {
-    console.log("Sidebar requested mode change to:", mode);
-
     setActiveMode(mode);
 
     // Also set the appropriate tab for this mode
@@ -231,7 +228,6 @@ export default function SimplifiedUserProfileDashboard({
 
   // Create a direct tab change handler
   const handleTabChange = (tab: string) => {
-    console.log("Setting active tab to:", tab);
     setActiveTab(tab);
 
     // Update URL using Next.js router

@@ -41,16 +41,13 @@ export default function AppProvider({
 
   // Initialize stores on mount
   useEffect(() => {
-    console.log("[AppProvider] Initializing stores...");
     initializeAuth();
     initializeFavorites();
   }, [initializeAuth, initializeFavorites]);
 
   // Handle user-dependent actions
   useEffect(() => {
-    console.log("[AppProvider] User changed:", user);
     if (user) {
-      console.log("[AppProvider] User logged in, syncing data...");
       syncFavorites();
       fetchNotifications();
     }

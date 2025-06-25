@@ -34,7 +34,6 @@ export function RentalCancellationDialog({
     try {
       // Call the onCancel function passed from parent
       const result = await onCancel(rental.id, reason);
-      console.log("Rental successfully cancelled:", result);
       onClose();
     } catch (error) {
       console.error("Error cancelling rental:", error);
@@ -49,9 +48,7 @@ export function RentalCancellationDialog({
   return (
     <AlertDialogContent className="rounded-2xl p-8">
       <AlertDialogHeader>
-        <AlertDialogTitle onClick={() => console.log(rental)}>
-          Annuleer reservering
-        </AlertDialogTitle>
+        <AlertDialogTitle>Annuleer reservering</AlertDialogTitle>
         <AlertDialogDescription>
           Weet u zeker dat u uw reservering wilt annuleren? Na annulering kan
           deze niet meer hersteld worden.

@@ -30,28 +30,21 @@ export default function CalendarManagement({
   const blockedPeriods = data?.blockedPeriods || [];
   const weeklyAvailabilityArray = data?.weeklyAvailabilityData || [];
 
-  console.log("📊 CalendarManagement - Data loaded:", {
-    trailers: trailers.length,
-    rentals: rentals.length,
-    blockedPeriods: blockedPeriods.length,
-    weeklyAvailability: weeklyAvailabilityArray.length,
-  });
-
   if (isLoading) {
     return (
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-semibold text-[#222222] tracking-tight mb-1">
-            {t('lessorCalendar.title')}
+            {t("lessorCalendar.title")}
           </h2>
           <p className="text-muted-foreground text-base">
-            {t('lessorCalendar.description')}
+            {t("lessorCalendar.description")}
           </p>
         </div>
         <div className="flex items-center justify-center py-16">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-primary" />
-            <p className="text-gray-600">{t('lessorCalendar.loading')}</p>
+            <p className="text-gray-600">{t("lessorCalendar.loading")}</p>
           </div>
         </div>
       </div>
@@ -63,24 +56,26 @@ export default function CalendarManagement({
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-semibold text-[#222222] tracking-tight mb-1">
-            {t('lessorCalendar.title')}
+            {t("lessorCalendar.title")}
           </h2>
           <p className="text-muted-foreground text-base">
-            {t('lessorCalendar.description')}
+            {t("lessorCalendar.description")}
           </p>
         </div>
         <Card className="border-red-200 shadow-none">
           <CardContent className="flex items-center justify-center py-16">
             <div className="text-center">
               <Calendar className="w-12 h-12 text-red-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">{t('lessorCalendar.error.title')}</h3>
+              <h3 className="text-lg font-medium mb-2">
+                {t("lessorCalendar.error.title")}
+              </h3>
               <p className="text-gray-600 mb-4">
                 {error instanceof Error
                   ? error.message
-                  : t('lessorCalendar.error.message')}
+                  : t("lessorCalendar.error.message")}
               </p>
               <Button onClick={() => window.location.reload()}>
-                {t('lessorCalendar.error.tryAgain')}
+                {t("lessorCalendar.error.tryAgain")}
               </Button>
             </div>
           </CardContent>
@@ -94,10 +89,10 @@ export default function CalendarManagement({
       {/* Header */}
       <div>
         <h2 className="text-2xl font-semibold text-[#222222] tracking-tight mb-1">
-          {t('lessorCalendar.title')}
+          {t("lessorCalendar.title")}
         </h2>
         <p className="text-muted-foreground text-base">
-          {t('lessorCalendar.description')}
+          {t("lessorCalendar.description")}
         </p>
       </div>
 
@@ -110,13 +105,13 @@ export default function CalendarManagement({
                 value="calendar"
                 className="data-[state=active]:bg-[#222222] data-[state=active]:shadow-none data-[state=active]:text-white shadow-none py-4 text-xs max-w-fit px-7 rounded-full data-[state=inactive]:border data-[state=inactive]:border-gray-200"
               >
-                {t('lessorCalendar.tabs.calendar')}
+                {t("lessorCalendar.tabs.calendar")}
               </TabsTrigger>
               <TabsTrigger
                 value="availability"
                 className="data-[state=active]:bg-[#222222] data-[state=active]:shadow-none data-[state=active]:text-white shadow-none py-4 text-xs max-w-fit px-7 rounded-full data-[state=inactive]:border data-[state=inactive]:border-gray-200"
               >
-                {t('lessorCalendar.tabs.availability')}
+                {t("lessorCalendar.tabs.availability")}
               </TabsTrigger>
             </TabsList>
           </div>

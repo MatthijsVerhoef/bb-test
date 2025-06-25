@@ -77,10 +77,6 @@ export function TranslationProvider({
   useEffect(() => {
     // If we're already initialized with all needed translations, skip loading
     if (initialTranslations && Object.keys(initialTranslations).length >= 3) {
-      console.log(
-        "Using server-provided translations",
-        Object.keys(initialTranslations)
-      );
       return;
     }
 
@@ -109,8 +105,6 @@ export function TranslationProvider({
       (!translations.trailer ||
         Object.keys(translations.trailer || {}).length === 0)
     ) {
-      // Prioritize loading the trailer namespace
-      console.log("Trailer page detected, loading trailer namespace");
       const loadTrailerNamespace = async () => {
         try {
           const response = await fetch(`/locales/${locale}/trailer.json`);

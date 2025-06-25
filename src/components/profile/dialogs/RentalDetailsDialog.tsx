@@ -59,9 +59,7 @@ export function RentalDetailsDialog({
     <DialogContent className="max-w-md md:max-w-1.5xl max-h-[90vh] p-0 flex flex-col rounded-2xl overflow-hidden">
       <DialogHeader className="p-8 pb-2">
         <DialogTitle className="flex items-center justify-between">
-          <span onClick={() => console.log(rental)}>
-            Details over deze verhuring
-          </span>
+          <span>Details over deze verhuring</span>
           <StatusBadge status={rental.status} className="ml-2" />
         </DialogTitle>
         <DialogDescription>
@@ -416,10 +414,7 @@ export function RentalDetailsDialog({
                         </Badge>
                       </div>
                       <div>
-                        <h4
-                          className="text-sm font-medium mb-1"
-                          onClick={() => console.log(rental)}
-                        >
+                        <h4 className="text-sm font-medium mb-1">
                           Betalingsmethode
                         </h4>
                         <p>{rental.payment.paymentMethod}</p>

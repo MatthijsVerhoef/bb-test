@@ -47,12 +47,6 @@ export function RentalManagementDialog({
     rental.status
   );
 
-  // Debug status change
-  useEffect(() => {
-    console.log("Current status:", rental.status);
-    console.log("Selected status:", newStatus);
-  }, [rental.status, newStatus]);
-
   // Damage report state
   const [damageDescription, setDamageDescription] = useState("");
   const [damageStatus, setDamageStatus] = useState<DamageStatus>(
@@ -151,11 +145,6 @@ export function RentalManagementDialog({
 
       setUploadProgress(30);
 
-      console.log(
-        "Uploading files to /api/upload/damage-photos:",
-        files.map((f) => `${f.name} (${Math.round(f.size / 1024)}KB)`)
-      );
-
       const response = await fetch("/api/upload/damage-photos", {
         method: "POST",
         body: formData,
@@ -169,7 +158,6 @@ export function RentalManagementDialog({
       }
 
       const data = await response.json();
-      console.log("Upload response:", data);
 
       setUploadProgress(100);
 
@@ -207,15 +195,6 @@ export function RentalManagementDialog({
       // Truncate the description if it's too long
       const shortenedDescription = truncateDescription(damageDescription);
 
-      console.log("Submitting damage report with data:", {
-        description: `${shortenedDescription.substring(0, 50)}... (${
-          shortenedDescription.length
-        } chars)`,
-        damageStatus,
-        photoCount: photoUrls.length,
-        repairCost: repairCost ? parseFloat(repairCost) : undefined,
-      });
-
       // First submit to our API
       const response = await fetch(`/api/rentals/${rental.id}/damage-report`, {
         method: "POST",
@@ -237,7 +216,6 @@ export function RentalManagementDialog({
       }
 
       const result = await response.json();
-      console.log("Damage report submission successful:", result);
 
       // If we have a callback function from the parent, call it
       if (onAddDamageReport) {
@@ -354,7 +332,6 @@ export function RentalManagementDialog({
               <select
                 value={newStatus}
                 onChange={(e) => {
-                  console.log("Selected new value:", e.target.value);
                   setNewStatus(e.target.value as RentalStatus);
                 }}
                 className="w-full rounded-lg shadow-none min-h-11 border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"

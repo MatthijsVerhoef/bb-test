@@ -96,7 +96,7 @@ export function ChatRoomList({
   }
 
   return (
-    <div className="space-y-1 p-2" onClick={() => console.log("rooms", rooms)}>
+    <div className="space-y-1 p-2">
       {filteredRooms.map((room, index) => {
         const otherParticipant = room.participants[0];
         const displayName = otherParticipant?.firstName

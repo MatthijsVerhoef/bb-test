@@ -118,7 +118,7 @@ export default function Reviews({ role, initialReviews = [] }: ReviewsProps) {
           headers: {
             "Content-Type": "application/json",
             // Only bypass cache on explicit refresh
-            ...(isRefresh ? { "Cache-Control": "no-cache" } : {})
+            ...(isRefresh ? { "Cache-Control": "no-cache" } : {}),
           },
         });
 
@@ -128,16 +128,15 @@ export default function Reviews({ role, initialReviews = [] }: ReviewsProps) {
         }
 
         const data = await response.json();
-        
+
         // Verify that the data has the expected structure
         if (!data) {
           throw new Error("Empty response received from API");
         }
-        
+
         // Ensure we have an array (empty array if null/undefined)
         const reviewsData = Array.isArray(data.reviews) ? data.reviews : [];
-        console.log('Received reviews data:', reviewsData.length, 'items');
-        
+
         setReviews(reviewsData);
 
         // Only fetch counts if this is an initial load or explicit refresh
@@ -170,34 +169,33 @@ export default function Reviews({ role, initialReviews = [] }: ReviewsProps) {
             "Content-Type": "application/json",
           },
           // Add cache: 'force-cache' to use HTTP cache when available
-          cache: 'force-cache',
+          cache: "force-cache",
         }
       );
 
       if (response.ok) {
         const data = await response.json();
         // Validate data structure and provide defaults
-        const total = typeof data.total === 'number' ? data.total : 0;
-        const positive = typeof data.positive === 'number' ? data.positive : 0;
-        const improvement = typeof data.improvement === 'number' ? data.improvement : 0;
-        
+        const total = typeof data.total === "number" ? data.total : 0;
+        const positive = typeof data.positive === "number" ? data.positive : 0;
+        const improvement =
+          typeof data.improvement === "number" ? data.improvement : 0;
+
         setCounts({
           total,
           positive,
-          improvement
+          improvement,
         });
-        
-        if (typeof data.averageRating === 'number') {
+
+        if (typeof data.averageRating === "number") {
           setAverageRating(data.averageRating);
         }
-        
-        console.log('Counts data received:', { total, positive, improvement });
       } else {
         // Set default values on error
         setCounts({
           total: 0,
-          positive: 0, 
-          improvement: 0
+          positive: 0,
+          improvement: 0,
         });
         setAverageRating(null);
       }
@@ -206,8 +204,8 @@ export default function Reviews({ role, initialReviews = [] }: ReviewsProps) {
       // Set default values on error
       setCounts({
         total: 0,
-        positive: 0, 
-        improvement: 0
+        positive: 0,
+        improvement: 0,
       });
       setAverageRating(null);
     }

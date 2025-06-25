@@ -183,13 +183,6 @@ export default function ReservationClient({
         }),
       });
 
-      // Don't redirect on 401 - allow guest checkout
-      // Guest users should be able to make reservations
-      if (response.status === 401) {
-        console.log("User not authenticated, proceeding with guest checkout");
-        // Continue processing - don't redirect
-      }
-
       const data = await response.json();
 
       if (response.status === 400) {
@@ -236,7 +229,6 @@ export default function ReservationClient({
           paymentIntentId: intentId,
         }),
       });
-      console.log("Payment intent canceled successfully");
     } catch (err) {
       console.error("Error canceling payment intent:", err);
     }

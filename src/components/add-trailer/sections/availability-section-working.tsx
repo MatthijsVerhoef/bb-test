@@ -337,7 +337,6 @@ export const AvailabilitySection: React.FC<AvailabilitySectionProps> = ({
       })
     );
 
-    console.log("Saving availability to form:", weeklyAvailability);
     updateFormData("weeklyAvailability", weeklyAvailability);
 
     // Mark section as completed
@@ -583,7 +582,7 @@ export const AvailabilitySection: React.FC<AvailabilitySectionProps> = ({
       summary={getSummary()}
       onToggle={onToggle}
     >
-      <div className="space-y-6" onClick={() => console.log(formData)}>
+      <div className="space-y-6">
         {/* Description */}
         <div>
           <p className="text-gray-600 mb-6">

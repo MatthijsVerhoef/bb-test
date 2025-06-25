@@ -57,14 +57,14 @@ interface StripePaymentFormWrapperProps {
 
 // Helper function to map i18n language codes to Stripe locale codes
 const getStripeLocale = (langCode: string | undefined) => {
-  if (!langCode) return 'en';
-  
+  if (!langCode) return "en";
+
   const localeMap: Record<string, string> = {
-    'nl': 'nl',
-    'en': 'en',
-    'de': 'de'
+    nl: "nl",
+    en: "en",
+    de: "de",
   };
-  return localeMap[langCode] || 'en';
+  return localeMap[langCode] || "en";
 };
 
 // Component that wraps Stripe Elements
@@ -76,7 +76,7 @@ export function StripePaymentFormWrapper({
   existingRentalId,
 }: StripePaymentFormWrapperProps) {
   const router = useRouter();
-  const { t, i18n } = useTranslation('profile');
+  const { t, i18n } = useTranslation("profile");
   const [clientSecret, setClientSecret] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,28 +86,26 @@ export function StripePaymentFormWrapper({
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const amount = rentalDetails.totalPrice;
   const [paymentSuccessful, setPaymentSuccessful] = useState(false);
-  
+
   // Get current language for Stripe directly from cookies/localStorage
   const [currentLocale, setCurrentLocale] = useState(() => {
-    if (typeof window === 'undefined') return 'en';
-    
+    if (typeof window === "undefined") return "en";
+
     // Try to get from cookie first
     const cookieMatch = document.cookie.match(/preferred-locale=([^;]+)/);
-    if (cookieMatch && ['nl', 'en', 'de'].includes(cookieMatch[1])) {
+    if (cookieMatch && ["nl", "en", "de"].includes(cookieMatch[1])) {
       return cookieMatch[1];
     }
-    
+
     // Fallback to localStorage
-    const storedLocale = localStorage.getItem('preferred-locale');
-    if (storedLocale && ['nl', 'en', 'de'].includes(storedLocale)) {
+    const storedLocale = localStorage.getItem("preferred-locale");
+    if (storedLocale && ["nl", "en", "de"].includes(storedLocale)) {
       return storedLocale;
     }
-    
-    return 'en';
+
+    return "en";
   });
-  
-  console.log('StripePaymentForm direct language from cookies:', currentLocale);
-  
+
   // Also update if i18n changes
   useEffect(() => {
     if (i18n?.language) {
@@ -171,8 +169,6 @@ export function StripePaymentFormWrapper({
       if (data.rental && data.rental.id) {
         setRentalId(data.rental.id);
       }
-
-      console.log("Payment initialized successfully");
     } catch (err) {
       console.error("Error initializing payment:", err);
       const errorMessage =
@@ -188,23 +184,16 @@ export function StripePaymentFormWrapper({
 
   // Handle cleanup separately from component unmount
   const handleCleanup = async () => {
-    if (
-      paymentIntentId &&
-      !cleanupCalled.current &&
-      !paymentSuccessful
-    ) {
+    if (paymentIntentId && !cleanupCalled.current && !paymentSuccessful) {
       cleanupCalled.current = true;
 
-      console.log("Cleaning up abandoned payment");
       try {
         // We prioritize rentalId over paymentIntentId for cancellation
         // But always include paymentIntentId if available for proper block cleanup
-        const payload = rentalId 
-          ? { rentalId, paymentIntentId } 
+        const payload = rentalId
+          ? { rentalId, paymentIntentId }
           : { paymentIntentId };
-          
-        console.log("Payment cleanup payload:", payload);
-        
+
         await fetch("/api/payments/cancel", {
           method: "POST",
           headers: {
@@ -212,16 +201,16 @@ export function StripePaymentFormWrapper({
           },
           body: JSON.stringify(payload),
         });
-        console.log("Payment cleanup successful");
       } catch (err) {
         console.error("Error during payment cleanup:", err);
       }
     }
   };
-  
+
   // Modified onClose handler that ensures cleanup happens before closing
   const handleDialogClose = (open: boolean) => {
-    if (!open) { // Dialog is closing
+    if (!open) {
+      // Dialog is closing
       handleCleanup();
       onClose();
     }
@@ -238,63 +227,64 @@ export function StripePaymentFormWrapper({
           // Use the synchronous fetch API for beforeunload
           // This won't guarantee completion but gives it a better chance
           const xhr = new XMLHttpRequest();
-          xhr.open('POST', '/api/cancel-payment-intent/emergency', false); // synchronous request
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          
+          xhr.open("POST", "/api/cancel-payment-intent/emergency", false); // synchronous request
+          xhr.setRequestHeader("Content-Type", "application/json");
+
           // Use a minimal payload with just the payment intent ID
           const payload = JSON.stringify({ paymentIntentId });
-          console.log('Sending emergency cleanup request on page unload:', payload);
-          
+
           try {
             xhr.send(payload);
             if (xhr.status === 200) {
-              console.log('Emergency cleanup request sent on page unload');
               cleanupCalled.current = true;
             }
           } catch (e) {
-            console.error('Error in emergency cleanup:', e);
+            console.error("Error in emergency cleanup:", e);
           }
-          
+
           // Also attempt to use sendBeacon as a backup method (more reliable in some browsers)
           if (navigator.sendBeacon) {
             try {
-              const blob = new Blob([payload], { type: 'application/json' });
-              const success = navigator.sendBeacon('/api/cancel-payment-intent/emergency', blob);
+              const blob = new Blob([payload], { type: "application/json" });
+              const success = navigator.sendBeacon(
+                "/api/cancel-payment-intent/emergency",
+                blob
+              );
               if (success) {
-                console.log('Beacon cleanup request sent successfully');
               } else {
-                console.warn('Beacon cleanup request failed to queue');
+                console.warn("Beacon cleanup request failed to queue");
               }
             } catch (beaconError) {
-              console.error('Error sending beacon:', beaconError);
+              console.error("Error sending beacon:", beaconError);
             }
           }
         }
-        
+
         // Standard beforeunload message (browser will show its own dialog)
-        event.returnValue = "Er is nog een betaling in behandeling. Weet je zeker dat je deze pagina wilt verlaten?";
+        event.returnValue =
+          "Er is nog een betaling in behandeling. Weet je zeker dat je deze pagina wilt verlaten?";
         return event.returnValue;
       };
-      
+
       // Add the event listener
-      window.addEventListener('beforeunload', handleBeforeUnload);
-      
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
       // Return cleanup function
       return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener("beforeunload", handleBeforeUnload);
       };
     }
-    
+
     return undefined;
   }, [paymentIntentId, paymentSuccessful]);
-  
+
   // Memoize the cleanup function to prevent unnecessary rerenders
   const memoizedCleanup = useCallback(() => {
     if (!cleanupCalled.current && paymentIntentId && !paymentSuccessful) {
       handleCleanup();
     }
   }, [paymentIntentId, paymentSuccessful]);
-  
+
   // Component unmount cleanup (for normal component unmount without page navigation)
   useEffect(() => {
     return () => {
@@ -479,7 +469,6 @@ function PaymentForm({
           paymentIntent.status === "processing" ||
           paymentIntent.status === "requires_capture")
       ) {
-        console.log("Payment successful:", paymentIntent);
         onSuccess(paymentIntent.id);
       } else {
         throw new Error(`Unexpected payment status: ${paymentIntent?.status}`);

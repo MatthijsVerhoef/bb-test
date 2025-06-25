@@ -48,11 +48,6 @@ export function DamageReportDialog({
     // Add the rental ID for organization in the cloud
     formData.append("rentalId", rental.id);
 
-    console.log(
-      "Uploading files to /api/upload/damage-photos:",
-      files.map((f) => `${f.name} (${Math.round(f.size / 1024)}KB)`)
-    );
-
     const response = await fetch("/api/upload/damage-photos", {
       method: "POST",
       body: formData,
@@ -64,7 +59,6 @@ export function DamageReportDialog({
     }
 
     const data = await response.json();
-    console.log("Upload response:", data);
 
     return data;
   };
@@ -83,15 +77,6 @@ export function DamageReportDialog({
       const photoUrls = uploadedImages
         .filter((img) => img.url)
         .map((img) => img.url!);
-
-      console.log("Submitting damage report with data:", {
-        description: `${shortenedDescription.substring(0, 50)}... (${
-          shortenedDescription.length
-        } chars)`,
-        damageStatus,
-        photoCount: photoUrls.length,
-        repairCost: repairCost ? parseFloat(repairCost) : undefined,
-      });
 
       // Submit the damage report to our API
       const response = await fetch(`/api/rentals/${rental.id}/damage-report`, {
@@ -114,7 +99,6 @@ export function DamageReportDialog({
       }
 
       const result = await response.json();
-      console.log("Damage report submission successful:", result);
 
       // If we have a callback function, call it
       if (onSubmitDamage) {

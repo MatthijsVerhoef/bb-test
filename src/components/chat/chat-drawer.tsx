@@ -156,10 +156,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
       >
         {/* Header */}
         <SheetHeader className="px-6 pt-4 pb-4 border-b">
-          <SheetTitle
-            className="flex items-center text-xl"
-            onClick={() => console.log("hey", chatRooms)}
-          >
+          <SheetTitle className="flex items-center text-xl">
             <AnimatePresence mode="wait">
               {!showChatList && (
                 <motion.div

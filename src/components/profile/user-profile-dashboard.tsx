@@ -64,7 +64,6 @@ export default function UserProfileDashboard({
       const prefetchData = async () => {
         try {
           await prefetchLessorCalendarData(queryClient);
-          console.log("Lessor calendar data prefetched successfully");
         } catch (error) {
           console.error(
             "Background prefetch of lessor calendar data failed:",

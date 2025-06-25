@@ -172,10 +172,7 @@ export default function PaymentMethodManager({
   const isLessor = user.role === "LESSOR" || user.role === "ADMIN";
 
   return (
-    <Card
-      className="shadow-none border-none p-0"
-      onClick={() => console.log(paymentMethods)}
-    >
+    <Card className="shadow-none border-none p-0">
       {showCardHeader && (
         <CardHeader className="py-2 px-0">
           <CardTitle className="font-medium">

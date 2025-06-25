@@ -68,10 +68,7 @@ export default function TrailerGallery({
 
   return (
     <>
-      <div
-        className="grid grid-cols-1 sm:grid-cols-3 gap-2"
-        onClick={() => console.log(trailer)}
-      >
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         {/* Main image column (larger) */}
         <div
           className="col-span-1 sm:col-span-2 bg-gray-100 relative aspect-[4/3] overflow-hidden rounded-lg cursor-pointer"

@@ -86,7 +86,7 @@ const emptyData = {
 
 export default function LessorDashboard() {
   const { t } = useTranslation("profile");
-  
+
   // Use a ref to store data from the API
   const dataRef = useRef(emptyData);
 
@@ -166,7 +166,7 @@ export default function LessorDashboard() {
             signal: controller.signal,
             cache: "no-store", // Prevent caching to always get fresh data
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
           });
 
@@ -175,7 +175,6 @@ export default function LessorDashboard() {
           }
 
           const result = await response.json();
-          console.log("Lessor dashboard data:", result);
 
           // Only update if component is still mounted
           if (isMounted) {
@@ -196,21 +195,25 @@ export default function LessorDashboard() {
                 activeTrailers: result.trailerStats?.activeTrailers || 0,
                 utilizationRate: result.trailerStats?.utilizationRate || 0,
                 averagePrice: result.trailerStats?.averagePrice || 0,
-                trailersNeedingMaintenance: result.trailerStats?.trailersNeedingMaintenance || 0,
-                overdueMaintenanceTrailers: result.trailerStats?.overdueMaintenanceTrailers || 0,
+                trailersNeedingMaintenance:
+                  result.trailerStats?.trailersNeedingMaintenance || 0,
+                overdueMaintenanceTrailers:
+                  result.trailerStats?.overdueMaintenanceTrailers || 0,
               },
               revenueStats: {
-                currentMonthRevenue: result.revenueStats?.currentMonthRevenue || 0,
+                currentMonthRevenue:
+                  result.revenueStats?.currentMonthRevenue || 0,
                 lastMonthRevenue: result.revenueStats?.lastMonthRevenue || 0,
                 revenueChange: result.revenueStats?.revenueChange || 0,
-                currentMonthRentals: result.revenueStats?.currentMonthRentals || 0,
+                currentMonthRentals:
+                  result.revenueStats?.currentMonthRentals || 0,
                 lastMonthRentals: result.revenueStats?.lastMonthRentals || 0,
               },
               topPerformingTrailers: result.topPerformingTrailers || [],
               mostViewedTrailers: result.mostViewedTrailers || [],
               upcomingRentals: result.upcomingRentals || [],
             };
-            
+
             // Store data in ref to avoid re-renders
             dataRef.current = safeData;
 
@@ -249,10 +252,10 @@ export default function LessorDashboard() {
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-semibold text-[#222222] tracking-tight">
-            {t('lessorDashboard.title')}
+            {t("lessorDashboard.title")}
           </h2>
           <p className="text-muted-foreground text-base">
-            {t('lessorDashboard.description')}
+            {t("lessorDashboard.description")}
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
@@ -272,17 +275,19 @@ export default function LessorDashboard() {
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-semibold text-[#222222] tracking-tight">
-            {t('lessorDashboard.title')}
+            {t("lessorDashboard.title")}
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
-            {t('lessorDashboard.description')}
+            {t("lessorDashboard.description")}
           </p>
         </div>
         <div className="flex flex-col items-center justify-center h-[300px]">
           <p className="text-destructive mb-4">
-            {t('lessorDashboard.error.message', { message: error })}
+            {t("lessorDashboard.error.message", { message: error })}
           </p>
-          <Button onClick={() => setIsLoading(true)}>{t('lessorDashboard.error.tryAgain')}</Button>
+          <Button onClick={() => setIsLoading(true)}>
+            {t("lessorDashboard.error.tryAgain")}
+          </Button>
         </div>
       </div>
     );
@@ -292,10 +297,10 @@ export default function LessorDashboard() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl mb-1 font-semibold text-[#222222] tracking-tight">
-          {t('lessorDashboard.title')}
+          {t("lessorDashboard.title")}
         </h2>
         <p className="text-muted-foreground text-base">
-          {t('lessorDashboard.description')}
+          {t("lessorDashboard.description")}
         </p>
       </div>
 
@@ -303,30 +308,32 @@ export default function LessorDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
         <StatCard
           icon={Truck}
-          title={t('lessorDashboard.trailerOverview.title')}
+          title={t("lessorDashboard.trailerOverview.title")}
           value={data.trailerStats.totalTrailers}
-          subtitle={t('lessorDashboard.trailerOverview.subtitle')}
+          subtitle={t("lessorDashboard.trailerOverview.subtitle")}
         />
 
         <StatCard
           icon={Euro}
-          title={t('lessorDashboard.avgDailyPrice.title')}
+          title={t("lessorDashboard.avgDailyPrice.title")}
           value={formatCurrency(data.trailerStats.averagePrice)}
-          subtitle={t('lessorDashboard.avgDailyPrice.subtitle')}
+          subtitle={t("lessorDashboard.avgDailyPrice.subtitle")}
         />
 
         <StatCard
           icon={BarChart3}
-          title={t('lessorDashboard.rentalStats.title')}
+          title={t("lessorDashboard.rentalStats.title")}
           value={data.stats.totalRentals}
-          subtitle={t('lessorDashboard.rentalStats.subtitle')}
+          subtitle={t("lessorDashboard.rentalStats.subtitle")}
         />
       </div>
 
       {/* Key Performance Metrics */}
       <div className="grid grid-cols-3 flex-1 border rounded-lg">
         <div className="border-r p-4">
-          <p className="text-[13px] font-medium">{t('lessorDashboard.acceptanceRate.title')}</p>
+          <p className="text-[13px] font-medium">
+            {t("lessorDashboard.acceptanceRate.title")}
+          </p>
           <div className="flex items-center mt-7">
             <p className="text-xl font-medium">
               {data.stats.acceptanceRate?.toFixed(0) || 0}%
@@ -334,12 +341,14 @@ export default function LessorDashboard() {
             {getChangeIndicator(10, true)}
           </div>
           <p className="text-[11px] text-muted-foreground mt-1">
-            {t('lessorDashboard.acceptanceRate.subtitle')}
+            {t("lessorDashboard.acceptanceRate.subtitle")}
           </p>
         </div>
 
         <div className="border-r p-4">
-          <p className="text-[13px] font-medium">{t('lessorDashboard.responseRate.title')}</p>
+          <p className="text-[13px] font-medium">
+            {t("lessorDashboard.responseRate.title")}
+          </p>
           <div className="flex items-center mt-7">
             <p className="text-xl font-medium">
               {data.stats.responseRate?.toFixed(0) || 0}%
@@ -347,12 +356,14 @@ export default function LessorDashboard() {
             {getChangeIndicator(15, true)}
           </div>
           <p className="text-[11px] text-muted-foreground mt-1">
-            {t('lessorDashboard.responseRate.subtitle')}
+            {t("lessorDashboard.responseRate.subtitle")}
           </p>
         </div>
 
         <div className="p-4">
-          <p className="text-[13px] font-medium">{t('lessorDashboard.responseTime.title')}</p>
+          <p className="text-[13px] font-medium">
+            {t("lessorDashboard.responseTime.title")}
+          </p>
           <div className="flex items-center mt-7">
             <p className="text-xl font-medium">
               {data.stats.responseTime
@@ -362,7 +373,7 @@ export default function LessorDashboard() {
             {getChangeIndicator(-12, true)}
           </div>
           <p className="text-[11px] text-muted-foreground mt-1">
-            {t('lessorDashboard.responseTime.subtitle')}
+            {t("lessorDashboard.responseTime.subtitle")}
           </p>
         </div>
 
@@ -371,7 +382,7 @@ export default function LessorDashboard() {
           <CardContent className="p-0 flex-1 flex flex-col">
             <div className="flex items-center">
               <p className="text-[13px] me-auto font-medium text-[#222222]">
-                {t('lessorDashboard.monthlyRevenue.title')}
+                {t("lessorDashboard.monthlyRevenue.title")}
               </p>
             </div>
             <div className="text-xl font-medium flex items-center text-[#222222] mt-5">
@@ -379,8 +390,8 @@ export default function LessorDashboard() {
               {getChangeIndicator(data.revenueStats.revenueChange, true)}
             </div>
             <p className="text-[11px] text-muted-foreground mt-1">
-              {t('lessorDashboard.monthlyRevenue.subtitle', { 
-                amount: formatCurrency(data.revenueStats.lastMonthRevenue) 
+              {t("lessorDashboard.monthlyRevenue.subtitle", {
+                amount: formatCurrency(data.revenueStats.lastMonthRevenue),
               })}
             </p>
           </CardContent>
@@ -390,14 +401,14 @@ export default function LessorDashboard() {
           <CardContent className="p-0 flex-1 flex flex-col">
             <div className="flex items-center">
               <p className="text-[13px] me-auto font-medium text-[#222222]">
-                {t('lessorDashboard.utilizationRate.title')}
+                {t("lessorDashboard.utilizationRate.title")}
               </p>
             </div>
             <div className="text-xl font-medium text-[#222222] mt-5">
               {(data.trailerStats.utilizationRate || 0).toFixed(1)}%
             </div>
             <p className="text-[11px] text-muted-foreground mt-1">
-              {t('lessorDashboard.utilizationRate.subtitle')}
+              {t("lessorDashboard.utilizationRate.subtitle")}
             </p>
           </CardContent>
         </Card>
@@ -406,7 +417,7 @@ export default function LessorDashboard() {
           <CardContent className="p-0 flex-1 flex flex-col">
             <div className="flex items-center">
               <p className="text-[13px] me-auto font-medium text-[#222222]">
-                {t('lessorDashboard.averageRating.title')}
+                {t("lessorDashboard.averageRating.title")}
               </p>
             </div>
             <div className="text-xl flex items-center font-medium text-[#222222] mt-5">
@@ -420,7 +431,7 @@ export default function LessorDashboard() {
               )}
             </div>
             <p className="text-[11px] text-muted-foreground mt-1">
-              {t('lessorDashboard.averageRating.subtitle')}
+              {t("lessorDashboard.averageRating.subtitle")}
             </p>
           </CardContent>
         </Card>
@@ -435,7 +446,7 @@ export default function LessorDashboard() {
           <CardHeader>
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              {t('lessorDashboard.topPerformingTrailers.title')}
+              {t("lessorDashboard.topPerformingTrailers.title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -465,7 +476,8 @@ export default function LessorDashboard() {
                         {trailer.title}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {trailer.totalRentals} {t('lessorDashboard.topPerformingTrailers.rentals')}
+                        {trailer.totalRentals}{" "}
+                        {t("lessorDashboard.topPerformingTrailers.rentals")}
                       </p>
                     </div>
                   </div>
@@ -478,7 +490,7 @@ export default function LessorDashboard() {
               {(!data.topPerformingTrailers ||
                 data.topPerformingTrailers.length === 0) && (
                 <p className="text-center text-sm text-muted-foreground">
-                  {t('lessorDashboard.topPerformingTrailers.noData')}
+                  {t("lessorDashboard.topPerformingTrailers.noData")}
                 </p>
               )}
             </div>
@@ -490,7 +502,7 @@ export default function LessorDashboard() {
           <CardHeader>
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <EyeIcon className="h-4 w-4" />
-              {t('lessorDashboard.mostViewedTrailers.title')}
+              {t("lessorDashboard.mostViewedTrailers.title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -520,7 +532,9 @@ export default function LessorDashboard() {
                         {trailer.title}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {t('lessorDashboard.mostViewedTrailers.clicksFavorites')}
+                        {t(
+                          "lessorDashboard.mostViewedTrailers.clicksFavorites"
+                        )}
                       </p>
                     </div>
                   </div>
@@ -534,7 +548,7 @@ export default function LessorDashboard() {
               {(!data.mostViewedTrailers ||
                 data.mostViewedTrailers.length === 0) && (
                 <p className="text-center text-sm text-muted-foreground">
-                  {t('lessorDashboard.mostViewedTrailers.noData')}
+                  {t("lessorDashboard.mostViewedTrailers.noData")}
                 </p>
               )}
             </div>
@@ -549,7 +563,7 @@ export default function LessorDashboard() {
         <CardHeader className="p-0">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            {t('lessorDashboard.upcomingRentals.title')}
+            {t("lessorDashboard.upcomingRentals.title")}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -571,7 +585,9 @@ export default function LessorDashboard() {
                   <div className="me-auto">
                     <p className="text-sm font-medium">{rental.trailerTitle}</p>
                     <p className="text-xs text-muted-foreground">
-                      {t('lessorDashboard.upcomingRentals.renter', { name: rental.renterName })}
+                      {t("lessorDashboard.upcomingRentals.renter", {
+                        name: rental.renterName,
+                      })}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {formatDate(rental.startDate)} -{" "}
@@ -584,15 +600,15 @@ export default function LessorDashboard() {
                     </p>
                     <Badge variant="outline" className="mt-1">
                       {new Date(rental.startDate) > new Date()
-                        ? t('lessorDashboard.upcomingRentals.status.pending')
-                        : t('lessorDashboard.upcomingRentals.status.active')}
+                        ? t("lessorDashboard.upcomingRentals.status.pending")
+                        : t("lessorDashboard.upcomingRentals.status.active")}
                     </Badge>
                   </div>
                 </div>
               ))
             ) : (
               <p className="text-sm text-muted-foreground bg-[#f6f8f9] text-center py-12 rounded-xl">
-                {t('lessorDashboard.upcomingRentals.noRentals')}
+                {t("lessorDashboard.upcomingRentals.noRentals")}
               </p>
             )}
           </div>
