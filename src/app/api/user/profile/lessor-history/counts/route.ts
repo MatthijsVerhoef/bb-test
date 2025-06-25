@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-// import { logger } from '@/lib/logger';
 
 // Simple in-memory cache for counts
 const countsCache = new Map<string, { data: any; timestamp: number }>();
@@ -30,7 +29,6 @@ export async function GET() {
       return NextResponse.json(cached.data);
     }
     
-    // logger.info('Fetching fresh counts', { userId });
     
     // Single efficient aggregation query
     const rentalCounts = await prisma.rental.groupBy({
@@ -97,11 +95,7 @@ export async function GET() {
       }
     }
     
-    // logger.info('Counts fetched successfully', {
-    //   userId,
-    //   total: result.total,
-    //   executionTime: result._debug?.executionTime
-    // });
+
     
     const response = NextResponse.json(result);
     response.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60');

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-// import { logger } from '@/lib/logger';
 
 export async function GET(request: Request) {
   try {
@@ -25,9 +24,6 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const offset = (page - 1) * limit;
     
-    // logger.info(`Lessor History Request`, { userId, status, page, limit });
-    
-    // Build where clause for the query
     const whereClause: any = {
       OR: [
         {
@@ -171,13 +167,6 @@ export async function GET(request: Request) {
     
     const executionTime = Math.round(performance.now() - startTime);
     
-    // logger.info(`Lessor History Response`, {
-    //   userId,
-    //   rentalCount: rentals.length,
-    //   totalCount,
-    //   executionTime
-    // });
-    
     const response = NextResponse.json({
       rentals: formattedRentals,
       pagination: {
@@ -199,7 +188,6 @@ export async function GET(request: Request) {
     return response;
     
   } catch (error) {
-    // logger.error('Error fetching lessor rental history', error as Error);
     return NextResponse.json(
       { error: 'Failed to fetch lessor rental history' },
       { status: 500 }

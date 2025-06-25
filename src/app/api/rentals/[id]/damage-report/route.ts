@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { logger } from '@/lib/logger';
 
 export async function POST(
   request: NextRequest,
@@ -164,7 +163,6 @@ export async function POST(
     });
     
   } catch (error) {
-    logger.error('Error creating damage report:', error);
     return NextResponse.json(
       { error: 'An error occurred while creating the damage report' },
       { status: 500 }
