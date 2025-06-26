@@ -81,8 +81,11 @@ export function TranslationProvider({
         "home",
         "trailer",
         "addTrailer",
+        "auth",
         "profile",
         "reservation",
+        "trailerTypes",
+        "auth",
       ];
 
       const translationPromises = namespaces.map(async (namespace) => {

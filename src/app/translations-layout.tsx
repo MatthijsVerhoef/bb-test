@@ -30,6 +30,7 @@ async function getServerTranslations(
       "profile",
       "reservation",
       "trailerTypes",
+      "auth",
     ];
     const translations: Record<string, any> = {};
 
