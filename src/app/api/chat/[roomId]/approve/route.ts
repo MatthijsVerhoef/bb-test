@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/auth';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { roomId: string } }
+  { params }: { params: Promise<{ roomId: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,8 +15,8 @@ export async function POST(
     }
 
     const userId = session.user.id;
-    // Make sure to get roomId after the await to avoid Next.js warning
-    const roomId = params.roomId;
+    // Await params to get roomId
+    const { roomId } = await params;
 
     // Check if the user is a participant of this chat room
     const chatRoom = await prisma.chatRoom.findUnique({

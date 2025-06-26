@@ -1,9 +1,7 @@
 // /lib/email.ts
 import nodemailer from 'nodemailer';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma'
 
-// Initialize Prisma client
-const prisma = new PrismaClient();
 
 // Configure transporter (use environment variables in production)
 const transporter = nodemailer.createTransport({

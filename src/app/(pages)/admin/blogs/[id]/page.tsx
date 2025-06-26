@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { use } from 'react';
-import { ChevronLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { AdminBlogForm } from '@/components/admin/blogs/admin-blog-form';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { use } from "react";
+import { ChevronLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { AdminBlogForm } from "@/components/admin/blogs/admin-blog-form";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Blog {
   id: string;
@@ -24,10 +24,13 @@ interface Blog {
   categories: { id: string; name: string }[];
 }
 
-export default function EditBlogPage({ params }: { params: { id: string } }) {
+export default function EditBlogPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const router = useRouter();
-  // Unwrap params using React.use()
-  const id = use(params).id;
+  const { id } = use(params);
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,22 +42,22 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
 
       try {
         const response = await fetch(`/api/admin/blogs/${id}`);
-        
         if (!response.ok) {
-          throw new Error('Failed to fetch blog');
+          throw new Error("Failed to fetch blog");
         }
-        
         const data = await response.json();
         setBlog(data);
       } catch (err) {
-        console.error('Error fetching blog:', err);
-        setError('Er is een fout opgetreden bij het ophalen van het blog artikel.');
+        console.error("Error fetching blog:", err);
+        setError(
+          "Er is een fout opgetreden bij het ophalen van het blog artikel."
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    if (id !== 'new-blog') {
+    if (id !== "new-blog") {
       fetchBlog();
     } else {
       setLoading(false);
@@ -62,7 +65,7 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
   }, [id]);
 
   const handleBack = () => {
-    router.push('/admin/blogs');
+    router.push("/admin/blogs");
   };
 
   if (loading) {
@@ -120,13 +123,13 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
           Terug
         </Button>
         <h1 className="text-2xl font-semibold">
-          {id === 'new-blog' ? 'Nieuw blog artikel' : `Bewerk: ${blog?.title || ''}`}
+          {id === "new-blog"
+            ? "Nieuw blog artikel"
+            : `Bewerk: ${blog?.title || ""}`}
         </h1>
       </div>
-      <AdminBlogForm 
-        blog={blog} 
-        isNew={id === 'new-blog'} 
-      />
+
+      <AdminBlogForm blog={blog} isNew={id === "new-blog"} />
     </div>
   );
 }

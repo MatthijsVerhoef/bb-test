@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 // This handles POST requests to respond to a damage request
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -19,7 +19,7 @@ export async function POST(
     }
 
     // Get the damage report ID from params
-    const { id: damageReportId } = params;
+    const { id: damageReportId } = await params;
     if (!damageReportId) {
       return NextResponse.json(
         { error: "Damage report ID is required" },

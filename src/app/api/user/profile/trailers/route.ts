@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { unstable_cache as cache } from 'next/cache';
 
 // Strong cache headers for better performance
 const CACHE_CONTROL_HEADERS = {
@@ -131,7 +130,7 @@ export async function GET(request: Request) {
 }
 
 /**
- * DELETE endpoint to remove a trailer
+ * DELETE endpoint to remove a trailer (with ID in query params)
  */
 export async function DELETE(request: Request) {
   try {
@@ -196,10 +195,11 @@ export async function DELETE(request: Request) {
       where: { id: trailerId },
     });
     
-    // Invalidate cache tags
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/revalidate?tag=trailers`, {
-      method: 'POST',
-    });
+    // Invalidate cache tags if needed
+    // Note: This would need to be a proper revalidation endpoint
+    // await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/revalidate?tag=trailers`, {
+    //   method: 'POST',
+    // });
     
     return NextResponse.json({ success: true });
     
@@ -212,100 +212,81 @@ export async function DELETE(request: Request) {
   }
 }
 
-// API handler for DELETE requests with ID in the URL
-export async function DELETE_WITH_ID(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    // Get authenticated user session
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-    
-    const trailerId = params.id;
-    
-    // Verify the trailer belongs to the user and check active rentals in one efficient query
-    const trailer = await prisma.trailer.findUnique({
-      where: { id: trailerId },
-      select: {
-        ownerId: true,
-        rentals: {
-          where: {
-            status: { in: ['PENDING', 'CONFIRMED', 'ACTIVE'] },
-          },
-          take: 1,
-          select: { id: true },
-        },
-      },
-    });
-    
-    if (!trailer) {
-      return NextResponse.json(
-        { error: 'Trailer not found' },
-        { status: 404 }
-      );
-    }
-    
-    if (trailer.ownerId !== session.user.id) {
-      return NextResponse.json(
-        { error: 'You are not authorized to delete this trailer' },
-        { status: 403 }
-      );
-    }
-    
-    // Check if the trailer has any active rentals
-    if (trailer.rentals.length > 0) {
-      return NextResponse.json(
-        { error: 'Cannot delete a trailer with active rentals' },
-        { status: 400 }
-      );
-    }
-    
-    // Delete the trailer
-    await prisma.trailer.delete({
-      where: { id: trailerId },
-    });
-    
-    // Invalidate cache tags
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/revalidate?tag=trailers`, {
-      method: 'POST',
-    });
-    
-    return NextResponse.json({ success: true });
-    
-  } catch (error) {
-    console.error('Error deleting trailer:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete trailer' },
-      { status: 500 }
-    );
-  }
-}
 
-// API route for cache revalidation - must be secured properly
-export async function POST(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const tag = searchParams.get('tag');
-  
-  if (!tag) {
-    return NextResponse.json({ revalidated: false, error: 'Tag is required' }, { status: 400 });
-  }
-  
-  try {
-    // Revalidate all cache entries with the specified tag
-    // This is needed if we want to flush specific cache entries
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/revalidate?tag=${tag}`, {
-      method: 'POST',
-    });
+
+
+
+// app/api/user/profile/trailers/[id]/route.ts
+// import { NextResponse } from 'next/server';
+// import { getServerSession } from 'next-auth/next';
+// import { authOptions } from '@/lib/auth';
+// import { prisma } from '@/lib/prisma';
+
+// export async function DELETE(
+//   request: Request,
+//   { params }: { params: Promise<{ id: string }> }
+// ) {
+//   try {
+//     // Get authenticated user session
+//     const session = await getServerSession(authOptions);
+//     if (!session?.user?.id) {
+//       return NextResponse.json(
+//         { error: 'Unauthorized' },
+//         { status: 401 }
+//       );
+//     }
     
-    return NextResponse.json({ revalidated: true });
-  } catch (error) {
-    console.error('Error revalidating cache:', error);
-    return NextResponse.json({ revalidated: false, error: 'Failed to revalidate' }, { status: 500 });
-  }
-}
+//     const { id: trailerId } = await params;
+    
+//     // Verify the trailer belongs to the user and check active rentals in one efficient query
+//     const trailer = await prisma.trailer.findUnique({
+//       where: { id: trailerId },
+//       select: {
+//         ownerId: true,
+//         rentals: {
+//           where: {
+//             status: { in: ['PENDING', 'CONFIRMED', 'ACTIVE'] },
+//           },
+//           take: 1,
+//           select: { id: true },
+//         },
+//       },
+//     });
+    
+//     if (!trailer) {
+//       return NextResponse.json(
+//         { error: 'Trailer not found' },
+//         { status: 404 }
+//       );
+//     }
+    
+//     if (trailer.ownerId !== session.user.id) {
+//       return NextResponse.json(
+//         { error: 'You are not authorized to delete this trailer' },
+//         { status: 403 }
+//       );
+//     }
+    
+//     // Check if the trailer has any active rentals
+//     if (trailer.rentals.length > 0) {
+//       return NextResponse.json(
+//         { error: 'Cannot delete a trailer with active rentals' },
+//         { status: 400 }
+//       );
+//     }
+    
+//     // Delete the trailer
+//     await prisma.trailer.delete({
+//       where: { id: trailerId },
+//     });
+    
+//     return NextResponse.json({ success: true });
+    
+//   } catch (error) {
+//     console.error('Error deleting trailer:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to delete trailer' },
+//       { status: 500 }
+//     );
+//   }
+// }

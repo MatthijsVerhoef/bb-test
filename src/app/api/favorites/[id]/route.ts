@@ -7,7 +7,7 @@ import { authOptions } from "@/lib/auth"; // Adjust path as needed
 // DELETE /api/favorites/[id] - Remove a trailer from favorites
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -19,8 +19,9 @@ export async function DELETE(
       );
     }
 
-    const trailerId = params.id;
-
+    // Await params to get the id
+    const { id: trailerId } = await params;
+    
     if (!trailerId) {
       return NextResponse.json(
         { error: "Trailer ID is required" },

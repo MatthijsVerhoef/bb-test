@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get authenticated user session
@@ -18,26 +18,28 @@ export async function POST(
         { status: 403 }
       );
     }
-    
-    const rentalId = params.id;
+
+    // Await params to get the id
+    const { id: rentalId } = await params;
+
     if (!rentalId) {
       return NextResponse.json(
         { error: 'Rental ID is required' },
         { status: 400 }
       );
     }
-    
+
     // Parse request body
     const body = await request.json();
     const { reason } = body;
-    
+
     if (!reason) {
       return NextResponse.json(
         { error: 'Cancellation reason is required' },
         { status: 400 }
       );
     }
-    
+
     // Fetch the rental
     const rental = await prisma.rental.findUnique({
       where: { id: rentalId },
@@ -64,14 +66,14 @@ export async function POST(
         },
       },
     });
-    
+
     if (!rental) {
       return NextResponse.json(
         { error: 'Rental not found' },
         { status: 404 }
       );
     }
-    
+
     // Check if rental can be cancelled (based on status)
     const cancellableStatuses = ['PENDING', 'CONFIRMED'];
     if (!cancellableStatuses.includes(rental.status)) {
@@ -80,11 +82,11 @@ export async function POST(
         { status: 400 }
       );
     }
-    
+
     // Format admin info for notification
     const adminName = `${session.user.firstName || ''} ${session.user.lastName || ''}`.trim();
     const adminReason = `Door admin (${adminName}): ${reason}`;
-    
+
     // Update the rental status
     const updatedRental = await prisma.rental.update({
       where: { id: rentalId },
@@ -94,10 +96,10 @@ export async function POST(
         cancellationDate: new Date(),
       },
     });
-    
+
     // Create notifications for both renter and lessor
     const adminCancelMsg = `Verhuring ${rentalId.substring(0, 8)} is geannuleerd door een beheerder. Reden: ${reason}`;
-    
+
     // Create batch transaction for both notifications
     await prisma.$transaction([
       // Notification for renter
@@ -121,13 +123,13 @@ export async function POST(
         },
       }),
     ]);
-    
+
     // Return success response
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       rental: updatedRental,
     });
-    
+
   } catch (error) {
     console.error('Error cancelling rental as admin:', error);
     return NextResponse.json(

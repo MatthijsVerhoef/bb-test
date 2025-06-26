@@ -52,7 +52,7 @@ async function cleanupExpiredTemporaryBlocks() {
 
 export async function GET(
   request: Request,
-  context: { params: { trailerId?: string } }
+  { params }: { params: Promise<{ trailerId: string }> }
 ) {
   // Run cleanup as a background task
   cleanupExpiredTemporaryBlocks().catch(error => {
@@ -64,8 +64,7 @@ export async function GET(
     const rangeParam = url.searchParams.get('range') || 'threeMonths';
 
     // Extract trailerId
-    const params = context.params instanceof Promise ? await context.params : context.params;
-    const trailerId = params.trailerId;
+    const { trailerId } = await params;
 
     if (!trailerId) {
       return NextResponse.json(

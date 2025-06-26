@@ -1,18 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma} from '@/lib/prisma';
 
 interface Params {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function GET(request: NextRequest, { params }: Params) {
   try {
-    const { slug } = params;
-
+    // Await the params Promise
+    const { slug } = await params;
+    
     if (!slug) {
       return NextResponse.json(
         { error: 'Blog slug is required' },
@@ -48,7 +47,6 @@ export async function GET(request: NextRequest, { params }: Params) {
     if (!blog.published) {
       // Optionally check for authentication/authorization here
       // For example, only admin users can view unpublished blogs
-      
       // For now, simply return a 404 for unpublished blogs
       return NextResponse.json(
         { error: 'Blog not found' },
@@ -87,6 +85,7 @@ export async function GET(request: NextRequest, { params }: Params) {
         relatedBlogs
       }
     });
+
   } catch (error) {
     console.error('Error fetching blog:', error);
     return NextResponse.json(

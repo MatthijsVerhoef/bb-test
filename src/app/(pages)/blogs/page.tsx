@@ -21,13 +21,15 @@ interface BlogItem {
 }
 
 interface BlogListProps {
-  searchParams: { page?: string; category?: string };
+  searchParams: Promise<{ page?: string; category?: string }>;
 }
 
 export default async function BlogList({ searchParams }: BlogListProps) {
-  const page = parseInt(searchParams.page || "1", 10);
+  // Await the searchParams Promise
+  const params = await searchParams;
+  const page = parseInt(params.page || "1", 10);
   const limit = 9;
-  const category = searchParams.category;
+  const category = params.category;
   const skip = (page - 1) * limit;
 
   // Build filter conditions for blogs

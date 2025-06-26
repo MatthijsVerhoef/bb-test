@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 // Delete a payment method
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -23,7 +23,7 @@ export async function DELETE(
       );
     }
 
-    const paymentMethodId = params.id;
+    const { id: paymentMethodId } = await params;
     if (!paymentMethodId) {
       return NextResponse.json(
         { error: 'Payment method ID is required' },

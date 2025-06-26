@@ -8,18 +8,17 @@ import { prisma } from "@/lib/prisma";
 import { ChevronLeft, Ellipsis, HeartHandshake, Share } from "lucide-react";
 
 interface BlogParams {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // Generate metadata for the blog page
 export async function generateMetadata({
   params,
 }: BlogParams): Promise<Metadata> {
-  // Use await for params to satisfy Next.js
-  const resolvedParams = await Promise.resolve(params);
-  const { slug } = resolvedParams;
+  // Await the params Promise
+  const { slug } = await params;
 
   try {
     // Fetch the blog data
@@ -63,9 +62,8 @@ function formatPublishedDate(dateString: string | null) {
 }
 
 export default async function BlogPostPage({ params }: BlogParams) {
-  // Fix: Await the params object before destructuring
-  const resolvedParams = await Promise.resolve(params);
-  const { slug } = resolvedParams;
+  // Await the params Promise
+  const { slug } = await params;
 
   if (!slug) {
     return notFound();

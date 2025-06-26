@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { roomId: string } }
+  { params }: { params: Promise<{ roomId: string }> }
 ) {
   try {
     // Get the current user from the session
@@ -19,12 +19,14 @@ export async function GET(
     }
 
     const userId = session.user.id;
-    const roomId = params.roomId;
     
+    // Await params to get roomId
+    const { roomId } = await params;
+
     // Get trailerId from URL search params
     const { searchParams } = new URL(request.url);
     const trailerId = searchParams.get("trailerId");
-    
+
     if (!trailerId) {
       return NextResponse.json(
         { error: "trailerId is required" },
@@ -55,7 +57,7 @@ export async function GET(
     const isParticipant = chatRoom.participants.some(
       (p) => p.userId === userId
     );
-    
+
     if (!isParticipant) {
       return NextResponse.json(
         { error: "You are not a participant in this chat room" },
@@ -67,7 +69,7 @@ export async function GET(
     const otherParticipants = chatRoom.participants.filter(
       (p) => p.userId !== userId
     );
-    
+
     // Get all messages in this chat room
     const messages = await prisma.chatMessage.findMany({
       where: {
@@ -87,8 +89,8 @@ export async function GET(
 
     // Check if any message mentions this trailer
     const mentionsTrailer = messages.some(
-      (message) => 
-        message.message.includes(`ID: ${trailerId}`) || 
+      (message) =>
+        message.message.includes(`ID: ${trailerId}`) ||
         message.message.includes(`trailerId: ${trailerId}`) ||
         message.message.includes(`trailer ${trailerId}`) ||
         message.message.includes(`aanhanger ${trailerId}`)
@@ -103,22 +105,22 @@ export async function GET(
 
     // Check if there are unanswered messages from the current user
     let hasPendingMessages = false;
-    
+
     if (messages.length > 0) {
       // Get latest messages (last 10 or all, whichever is less)
       const recentMessages = messages.slice(Math.max(messages.length - 10, 0));
-      
+
       // Find the last message from the current user
       const lastUserMessageIndex = recentMessages
         .map(msg => msg.sender.id === userId)
         .lastIndexOf(true);
-      
+
       if (lastUserMessageIndex !== -1) {
         // Check if there's a response after the last user message
         const hasResponse = recentMessages
           .slice(lastUserMessageIndex + 1)
           .some(msg => msg.sender.id !== userId);
-        
+
         // If no response after the last user message, there are pending messages
         hasPendingMessages = !hasResponse;
       }
@@ -128,6 +130,7 @@ export async function GET(
       mentionsTrailer: true,
       hasPendingMessages,
     });
+
   } catch (error) {
     console.error("Error checking trailer conversation:", error);
     return NextResponse.json(

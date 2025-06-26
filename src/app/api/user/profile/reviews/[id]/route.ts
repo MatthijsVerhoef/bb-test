@@ -13,7 +13,7 @@ const CACHE_CONTROL_HEADERS = {
 // Get single review
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get authenticated user session
@@ -25,7 +25,7 @@ export async function GET(
       );
     }
     
-    const reviewId = params.id;
+    const { id: reviewId} = await params;
     
     // Generate cache key based on review ID and user
     const cacheKey = createHash('md5')
@@ -191,7 +191,7 @@ export async function GET(
 // Update a review (edit)
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get authenticated user session
@@ -203,7 +203,7 @@ export async function PATCH(
       );
     }
     
-    const reviewId = params.id;
+    const {id: reviewId} = await params;
     
     // Verify the review exists and belongs to the user
     const existingReview = await prisma.review.findUnique({
@@ -305,7 +305,7 @@ export async function PATCH(
 // Delete a review
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get authenticated user session
@@ -317,7 +317,7 @@ export async function DELETE(
       );
     }
     
-    const reviewId = params.id;
+    const {id: reviewId } = await params;
     
     // Verify the review exists and belongs to the user
     const existingReview = await prisma.review.findUnique({

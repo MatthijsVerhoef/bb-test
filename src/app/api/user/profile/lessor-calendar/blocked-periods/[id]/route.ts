@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth/next";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ trailerId: string }> }
 ) {
   try {
     // Get the authenticated user
@@ -15,9 +15,8 @@ export async function DELETE(
     }
 
     const userId = session.user.id;
-    const blockedPeriodId = params.id;
-    
-    // Make sure the user has LESSOR role
+    const { trailerId: blockedPeriodId } = await params;
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, role: true },

@@ -7,7 +7,7 @@ import { authOptions } from "@/lib/auth";
 // PUT /api/notifications/[id]/read - Mark a notification as read
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -19,7 +19,7 @@ export async function PUT(
       );
     }
 
-    const id = params.id;
+    const { id } = await params;
 
     // Check if notification exists and belongs to the user
     const notification = await prisma.notification.findUnique({

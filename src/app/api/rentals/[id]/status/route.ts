@@ -18,7 +18,7 @@ const VALID_TRANSITIONS = {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 1. Check authentication
@@ -31,9 +31,8 @@ export async function PATCH(
     }
 
     // 2. Validate request parameters
-    // Fix for Next.js dynamic route parameters warning - explicitly await
-    const paramsObj = await Promise.resolve(params);
-    const rentalId = paramsObj.id;
+    // Await the params Promise
+    const { id: rentalId } = await params;
     if (!rentalId) {
       return NextResponse.json(
         { error: 'Rental ID is required' },

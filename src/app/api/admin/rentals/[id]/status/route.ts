@@ -17,7 +17,7 @@ const ADMIN_VALID_TRANSITIONS = {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check authentication
@@ -29,8 +29,8 @@ export async function PATCH(
       );
     }
 
-    // Get rental ID from params
-    const rentalId = params.id;
+    // Get rental ID from params - await the Promise
+    const { id: rentalId } = await params;
     if (!rentalId) {
       return NextResponse.json(
         { error: 'Rental ID is required' },

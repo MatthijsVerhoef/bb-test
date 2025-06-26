@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
 // Add or update a response to a review (for lessors)
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get authenticated user session
@@ -19,7 +19,8 @@ export async function POST(
       );
     }
     
-    const reviewId = params.id;
+    // Await params to get review ID
+    const { id: reviewId } = await params;
     
     // Get response text from request body
     const { response } = await request.json();
@@ -94,7 +95,7 @@ export async function POST(
 // Remove a response from a review (for lessors)
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get authenticated user session
@@ -106,7 +107,8 @@ export async function DELETE(
       );
     }
     
-    const reviewId = params.id;
+    // Await params to get review ID
+    const { id: reviewId } = await params;
     
     // OPTIMIZATION: Use transaction to validate and update in one go
     const result = await prisma.$transaction(async (tx) => {

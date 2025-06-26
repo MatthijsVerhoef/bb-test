@@ -6,10 +6,14 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log('Damage report request received for rental:', params.id);
+    // Await the params first
+    const { id: rentalId } = await params;
+    
+    console.log('Damage report request received for rental:', rentalId);
+    
     // 1. Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -18,11 +22,7 @@ export async function POST(
         { status: 401 }
       );
     }
-
-    // 2. Validate request parameters
-    // Fix for Next.js dynamic route parameters warning - explicitly await
-    const paramsObj = await Promise.resolve(params);
-    const rentalId = paramsObj.id;
+    
     if (!rentalId) {
       return NextResponse.json(
         { error: 'Rental ID is required' },
@@ -128,7 +128,7 @@ export async function POST(
       data: {
         userId: notificationUserId,
         message: `Een schaderapport is ingediend voor verhuring ${rentalId.substring(0, 8)}. Controleer de details.`,
-        type: 'SYSTEM', // Changed from 'DAMAGE' which doesn't exist in NotificationType enum
+        type: 'SYSTEM',
         read: false,
         actionUrl: `/rental/${rentalId}`,
       },
@@ -149,7 +149,7 @@ export async function POST(
         data: {
           userId: notificationUserId,
           message: `Verhuurstatus is bijgewerkt naar "In geschil" vanwege een schademelding.`,
-          type: 'SYSTEM', // Using SYSTEM as it's a valid enum value
+          type: 'SYSTEM',
           read: false,
           actionUrl: `/rental/${rentalId}`,
         },
@@ -163,8 +163,29 @@ export async function POST(
     });
     
   } catch (error) {
+    console.error('Error creating damage report:', error);
     return NextResponse.json(
       { error: 'An error occurred while creating the damage report' },
+      { status: 500 }
+    );
+  }
+}
+
+// If you also have a GET handler in this file
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // Await the params
+    const { id: rentalId } = await params;
+    
+    // Your GET handler logic here...
+    
+  } catch (error) {
+    console.error('Error in GET handler:', error);
+    return NextResponse.json(
+      { error: 'An error occurred' },
       { status: 500 }
     );
   }

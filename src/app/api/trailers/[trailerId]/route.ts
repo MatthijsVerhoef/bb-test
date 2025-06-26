@@ -7,7 +7,7 @@ import { mapTrailerTypeToEnum } from "@/lib/trailer-type-mapper";
 /**
  * GET: Fetch a single trailer by ID
  */
-export async function GET(request: Request, { params }: { params: { trailerId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ trailerId: string }> }) {
   try {
     // Await the params object first
     const { trailerId } = await params;
@@ -85,15 +85,15 @@ export async function GET(request: Request, { params }: { params: { trailerId: s
  * PUT/PATCH: Update a trailer
  * PUT is used for the full form update, PATCH for partial updates
  */
-export async function PUT(request: Request, { params }: { params: { trailerId: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ trailerId: string }> }) {
   return updateTrailer(request, params);
 }
 
-export async function PATCH(request: Request, { params }: { params: { trailerId: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ trailerId: string }> }) {
   return updateTrailer(request, params);
 }
 
-async function updateTrailer(request: Request, params: { trailerId: string }) {
+async function updateTrailer(request: Request, params: Promise<{ trailerId: string }>) {
   try {
     // Await the params object first
     const { trailerId } = await params;
@@ -309,7 +309,7 @@ async function updateTrailer(request: Request, params: { trailerId: string }) {
 /**
  * DELETE: Remove a trailer
  */
-export async function DELETE(request: Request, { params }: { params: { trailerId: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ trailerId: string }> }) {
   try {
     // Await the params object first
     const { trailerId } = await params;

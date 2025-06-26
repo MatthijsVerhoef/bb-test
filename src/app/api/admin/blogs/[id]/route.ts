@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma';
 // GET: Get a single blog by ID
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     const blog = await prisma.blog.findUnique({
       where: { id },
@@ -21,14 +21,14 @@ export async function GET(
         },
       },
     });
-    
+
     if (!blog) {
       return NextResponse.json(
         { error: 'Blog not found' },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json(blog);
   } catch (error) {
     console.error('Error fetching blog:', error);
@@ -42,25 +42,25 @@ export async function GET(
 // PUT: Update a blog
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const data = await request.json();
-    
+
     // Check if blog exists
     const existingBlog = await prisma.blog.findUnique({
       where: { id },
       include: { categories: true },
     });
-    
+
     if (!existingBlog) {
       return NextResponse.json(
         { error: 'Blog not found' },
         { status: 404 }
       );
     }
-    
+
     // Validate required fields
     if (!data.title || !data.slug || !data.content) {
       return NextResponse.json(
@@ -68,13 +68,13 @@ export async function PUT(
         { status: 400 }
       );
     }
-    
+
     // Check if slug already exists (but exclude the current blog)
     if (data.slug !== existingBlog.slug) {
       const slugCheck = await prisma.blog.findUnique({
         where: { slug: data.slug },
       });
-      
+
       if (slugCheck) {
         return NextResponse.json(
           { error: 'A blog with this slug already exists' },
@@ -82,7 +82,7 @@ export async function PUT(
         );
       }
     }
-    
+
     // Prepare update data
     const updateData: any = {
       title: data.title,
@@ -93,7 +93,7 @@ export async function PUT(
       metaTitle: data.metaTitle || null,
       metaDescription: data.metaDescription || null,
     };
-    
+
     // Handle publishing
     if (!existingBlog.published && data.published) {
       updateData.published = true;
@@ -101,7 +101,7 @@ export async function PUT(
     } else if (existingBlog.published && !data.published) {
       updateData.published = false;
     }
-    
+
     // Update the blog
     const updatedBlog = await prisma.blog.update({
       where: { id },
@@ -116,7 +116,7 @@ export async function PUT(
         categories: true,
       },
     });
-    
+
     return NextResponse.json(updatedBlog);
   } catch (error) {
     console.error('Error updating blog:', error);
@@ -130,28 +130,28 @@ export async function PUT(
 // DELETE: Delete a blog
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
-    
+    const { id } = await params;
+
     // Check if blog exists
     const existingBlog = await prisma.blog.findUnique({
       where: { id },
     });
-    
+
     if (!existingBlog) {
       return NextResponse.json(
         { error: 'Blog not found' },
         { status: 404 }
       );
     }
-    
+
     // Delete the blog
     await prisma.blog.delete({
       where: { id },
     });
-    
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting blog:', error);

@@ -10,7 +10,7 @@ export const revalidate = 300;
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
 
@@ -464,9 +464,9 @@ async function getTrailerData(id: string) {
 }
 
 interface TrailerDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function TrailerDetailPage({

@@ -21,11 +21,11 @@ interface DamageRequestPayload {
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get rental ID from URL params
-    const rentalId = params.id;
+    const { id: rentalId } = await params;
 
     // Validate rental ID
     if (!rentalId) {
@@ -157,11 +157,11 @@ export async function POST(
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+ { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Get rental ID from URL params
-    const rentalId = params.id;
+    const {id: rentalId} = await params;
 
     // Validate rental ID
     if (!rentalId) {
