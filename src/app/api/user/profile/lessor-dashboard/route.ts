@@ -1,28 +1,58 @@
-// app/api/user/profile/lessor-dashboard/route.ts
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { subMonths, startOfMonth, endOfMonth } from 'date-fns';
 
+// Cache configuration
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const cache = new Map<string, { data: any; timestamp: number }>();
+
 export async function GET(request: Request) {
+  console.time('Lessor Dashboard Total Time');
+
   try {
+    console.time('Session Fetch');
     const session = await getServerSession(authOptions);
-    
+    console.timeEnd('Session Fetch');
+
     if (!session?.user) {
+      console.timeEnd('Lessor Dashboard Total Time');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userId = session.user.id;
+    
+    // Check cache first
+    const cacheKey = `lessor-dashboard-${userId}`;
+    const cached = cache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      console.log('Returning cached dashboard data');
+      console.timeEnd('Lessor Dashboard Total Time');
+      return NextResponse.json(cached.data);
+    }
+
     const currentDate = new Date();
     const lastMonth = subMonths(currentDate, 1);
     const startOfLastMonth = startOfMonth(lastMonth);
     const endOfLastMonth = endOfMonth(lastMonth);
 
-    // Execute all queries in a single transaction for better performance
-    const dashboardData = await prisma.$transaction(async (tx) => {
-      // Get or create user stats
-      const userStats = await tx.userStats.upsert({
+    console.time('Database Transaction');
+    
+    // Execute all queries in parallel
+    const [
+      userStats,
+      trailerStats,
+      currentMonthRentals,
+      lastMonthRevenue,
+      topTrailersWithRevenue,
+      upcomingRentals,
+      mostViewedTrailers,
+      utilizationData
+    ] = await Promise.all([
+      // 1. User Stats
+      prisma.userStats.upsert({
         where: { userId },
         create: {
           userId,
@@ -33,31 +63,28 @@ export async function GET(request: Request) {
           completedRentals: 0,
         },
         update: {},
-      });
+      }),
 
-      // Aggregate trailer statistics in a single query
-      const trailerAggregates = await tx.trailer.aggregate({
-        where: { ownerId: userId },
-        _count: { _all: true },
-        _avg: { pricePerDay: true },
-      });
+      // 2. Trailer Stats - Combined query
+      prisma.$queryRaw<{
+        totalTrailers: bigint;
+        activeTrailers: bigint;
+        maintenanceCount: bigint;
+        overdueCount: bigint;
+        avgPrice: number | null;
+      }[]>`
+        SELECT 
+          COUNT(DISTINCT id) as totalTrailers,
+          COUNT(DISTINCT CASE WHEN status = 'ACTIVE' THEN id END) as activeTrailers,
+          COUNT(DISTINCT CASE WHEN status = 'MAINTENANCE' THEN id END) as maintenanceCount,
+          COUNT(DISTINCT CASE WHEN nextMaintenance < ${currentDate} THEN id END) as overdueCount,
+          AVG(pricePerDay) as avgPrice
+        FROM Trailer
+        WHERE ownerId = ${userId}
+      `,
 
-      const activeTrailers = await tx.trailer.count({
-        where: { ownerId: userId, status: 'ACTIVE' },
-      });
-
-      // Get maintenance counts in parallel
-      const [maintenanceCount, overdueCount] = await Promise.all([
-        tx.trailer.count({
-          where: { ownerId: userId, status: 'MAINTENANCE' },
-        }),
-        tx.trailer.count({
-          where: { ownerId: userId, nextMaintenance: { lt: currentDate } },
-        }),
-      ]);
-
-      // Get current month rentals with minimal data
-      const currentMonthRentals = await tx.rental.findMany({
+      // 3. Current Month Rentals
+      prisma.rental.findMany({
         where: {
           lessorId: userId,
           startDate: {
@@ -75,47 +102,40 @@ export async function GET(request: Request) {
             select: { id: true, title: true },
           },
         },
-      });
+      }),
 
-      // Get last month revenue (just the sum)
-      const lastMonthRevenue = await tx.rental.aggregate({
+      // 4. Last Month Revenue
+      prisma.rental.aggregate({
         where: {
           lessorId: userId,
           startDate: { gte: startOfLastMonth, lte: endOfLastMonth },
         },
         _sum: { totalPrice: true },
         _count: { _all: true },
-      });
+      }),
 
-      // Get top performing trailers with aggregated data
-      const topTrailers = await tx.trailer.findMany({
-        where: { ownerId: userId },
-        select: {
-          id: true,
-          title: true,
-          _count: {
-            select: { rentals: { where: { status: 'COMPLETED' } } },
-          },
-        },
-        orderBy: {
-          rentals: { _count: 'desc' },
-        },
-        take: 5,
-      });
+      // 5. Top Performing Trailers with Revenue
+      prisma.$queryRaw<{
+        id: string;
+        title: string;
+        rentalCount: bigint;
+        totalRevenue: number;
+      }[]>`
+        SELECT 
+          t.id,
+          t.title,
+          COUNT(r.id) as rentalCount,
+          COALESCE(SUM(r.totalPrice), 0) as totalRevenue
+        FROM Trailer t
+        LEFT JOIN Rental r ON t.id = r.trailerId AND r.status = 'COMPLETED'
+        WHERE t.ownerId = ${userId}
+        GROUP BY t.id, t.title
+        ORDER BY rentalCount DESC
+        LIMIT 5
+      `,
 
-      // Calculate revenue for top trailers
-      const topTrailerIds = topTrailers.map(t => t.id);
-      const topTrailerRevenues = await tx.rental.groupBy({
-        by: ['trailerId'],
-        where: {
-          trailerId: { in: topTrailerIds },
-          status: 'COMPLETED',
-        },
-        _sum: { totalPrice: true },
-      });
-
-      // Get upcoming rentals efficiently
-      const upcomingRentals = await tx.rental.findMany({
+      // 6. Upcoming Rentals
+      prisma.rental.findMany({
         where: {
           lessorId: userId,
           status: { in: ['CONFIRMED', 'PENDING'] },
@@ -141,10 +161,10 @@ export async function GET(request: Request) {
         },
         orderBy: { startDate: 'asc' },
         take: 5,
-      });
+      }),
 
-      // Get most viewed trailers
-      const mostViewedTrailers = await tx.trailer.findMany({
+      // 7. Most Viewed Trailers
+      prisma.trailer.findMany({
         where: { ownerId: userId },
         select: {
           id: true,
@@ -154,53 +174,51 @@ export async function GET(request: Request) {
         },
         orderBy: { views: 'desc' },
         take: 5,
-      });
+      }),
 
-      // Calculate utilization for last 30 days
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-      const utilizationData = await tx.rental.findMany({
+      // 8. Utilization Data - Simplified
+      prisma.rental.findMany({
         where: {
           lessorId: userId,
           status: { in: ['COMPLETED', 'ACTIVE'] },
-          startDate: { gte: thirtyDaysAgo },
+          startDate: { gte: subMonths(currentDate, 1) },
         },
         select: { startDate: true, endDate: true },
-      });
+      })
+    ]);
 
-      return {
-        userStats,
-        trailerAggregates,
-        activeTrailers,
-        maintenanceCount,
-        overdueCount,
-        currentMonthRentals,
-        lastMonthRevenue,
-        topTrailers,
-        topTrailerRevenues,
-        upcomingRentals,
-        mostViewedTrailers,
-        utilizationData,
-      };
-    });
+    console.timeEnd('Database Transaction');
 
-    // Process data after transaction
-    const currentMonthRevenue = dashboardData.currentMonthRentals.reduce(
+    console.time('Post Processing');
+    
+    // Process trailer stats
+    const trailerAggregates = trailerStats[0] || {
+      totalTrailers: 0n,
+      activeTrailers: 0n,
+      maintenanceCount: 0n,
+      overdueCount: 0n,
+      avgPrice: null
+    };
+
+    // Calculate current month revenue
+    const currentMonthRevenue = currentMonthRentals.reduce(
       (sum, rental) => sum + rental.totalPrice,
       0
     );
 
-    const revenueChange = dashboardData.lastMonthRevenue._sum.totalPrice
-      ? ((currentMonthRevenue - dashboardData.lastMonthRevenue._sum.totalPrice) /
-          dashboardData.lastMonthRevenue._sum.totalPrice) * 100
+    // Calculate revenue change
+    const revenueChange = lastMonthRevenue._sum.totalPrice
+      ? ((currentMonthRevenue - lastMonthRevenue._sum.totalPrice) /
+          lastMonthRevenue._sum.totalPrice) * 100
       : 100;
 
-    // Calculate utilization
+    // Calculate utilization rate
+    const thirtyDaysAgo = subMonths(currentDate, 1);
     let totalDaysRented = 0;
-    dashboardData.utilizationData.forEach(rental => {
-      const start = new Date(rental.startDate) < dashboardData.thirtyDaysAgo 
-        ? dashboardData.thirtyDaysAgo 
+    
+    utilizationData.forEach(rental => {
+      const start = new Date(rental.startDate) < thirtyDaysAgo 
+        ? thirtyDaysAgo 
         : new Date(rental.startDate);
       const end = new Date(rental.endDate) > currentDate 
         ? currentDate 
@@ -209,52 +227,51 @@ export async function GET(request: Request) {
       if (days > 0) totalDaysRented += days;
     });
 
-    const utilizationRate = dashboardData.activeTrailers > 0
-      ? (totalDaysRented / (dashboardData.activeTrailers * 30)) * 100
+    const activeTrailerCount = Number(trailerAggregates.activeTrailers);
+    const utilizationRate = activeTrailerCount > 0
+      ? (totalDaysRented / (activeTrailerCount * 30)) * 100
       : 0;
 
-    // Map revenue to top trailers
-    const revenueMap = dashboardData.topTrailerRevenues.reduce((acc, item) => {
-      acc[item.trailerId] = item._sum.totalPrice || 0;
-      return acc;
-    }, {} as Record<string, number>);
-
-    const topPerformingTrailers = dashboardData.topTrailers.map(trailer => ({
+    // Format top performing trailers
+    const topPerformingTrailers = topTrailersWithRevenue.map(trailer => ({
       id: trailer.id,
       title: trailer.title,
-      totalRentals: trailer._count.rentals,
-      totalRevenue: revenueMap[trailer.id] || 0,
+      totalRentals: Number(trailer.rentalCount),
+      totalRevenue: trailer.totalRevenue,
     }));
 
-    return NextResponse.json({
+    console.timeEnd('Post Processing');
+
+    // Build response
+    const dashboardData = {
       stats: {
-        totalRentals: dashboardData.userStats.totalRentals,
-        totalIncome: dashboardData.userStats.totalIncome,
-        completedRentals: dashboardData.userStats.completedRentals,
-        cancelledRentals: dashboardData.userStats.cancelledRentals,
-        averageRating: dashboardData.userStats.averageRating,
-        responseRate: dashboardData.userStats.responseRate,
-        responseTime: dashboardData.userStats.responseTime,
-        acceptanceRate: dashboardData.userStats.acceptanceRate,
+        totalRentals: userStats.totalRentals,
+        totalIncome: userStats.totalIncome,
+        completedRentals: userStats.completedRentals,
+        cancelledRentals: userStats.cancelledRentals,
+        averageRating: userStats.averageRating,
+        responseRate: userStats.responseRate,
+        responseTime: userStats.responseTime,
+        acceptanceRate: userStats.acceptanceRate,
       },
       trailerStats: {
-        totalTrailers: dashboardData.trailerAggregates._count._all,
-        activeTrailers: dashboardData.activeTrailers,
+        totalTrailers: Number(trailerAggregates.totalTrailers),
+        activeTrailers: activeTrailerCount,
         utilizationRate,
-        averagePrice: dashboardData.trailerAggregates._avg.pricePerDay || 0,
-        trailersNeedingMaintenance: dashboardData.maintenanceCount,
-        overdueMaintenanceTrailers: dashboardData.overdueCount,
+        averagePrice: trailerAggregates.avgPrice || 0,
+        trailersNeedingMaintenance: Number(trailerAggregates.maintenanceCount),
+        overdueMaintenanceTrailers: Number(trailerAggregates.overdueCount),
       },
       revenueStats: {
         currentMonthRevenue,
-        lastMonthRevenue: dashboardData.lastMonthRevenue._sum.totalPrice || 0,
+        lastMonthRevenue: lastMonthRevenue._sum.totalPrice || 0,
         revenueChange,
-        currentMonthRentals: dashboardData.currentMonthRentals.length,
-        lastMonthRentals: dashboardData.lastMonthRevenue._count._all,
+        currentMonthRentals: currentMonthRentals.length,
+        lastMonthRentals: lastMonthRevenue._count._all,
       },
       topPerformingTrailers,
-      mostViewedTrailers: dashboardData.mostViewedTrailers,
-      upcomingRentals: dashboardData.upcomingRentals.map(rental => ({
+      mostViewedTrailers,
+      upcomingRentals: upcomingRentals.map(rental => ({
         id: rental.id,
         startDate: rental.startDate,
         endDate: rental.endDate,
@@ -263,9 +280,30 @@ export async function GET(request: Request) {
         totalPrice: rental.totalPrice,
         images: rental.trailer.images,
       })),
+    };
+
+    // Update cache
+    cache.set(cacheKey, {
+      data: dashboardData,
+      timestamp: Date.now(),
     });
+
+    // Clean old cache entries
+    if (cache.size > 100) {
+      const now = Date.now();
+      for (const [key, value] of cache.entries()) {
+        if (now - value.timestamp > CACHE_DURATION * 2) {
+          cache.delete(key);
+        }
+      }
+    }
+
+    console.timeEnd('Lessor Dashboard Total Time');
+    
+    return NextResponse.json(dashboardData);
   } catch (error) {
     console.error('Error fetching lessor dashboard data:', error);
+    console.timeEnd('Lessor Dashboard Total Time');
     return NextResponse.json(
       { error: 'Failed to fetch lessor dashboard data' },
       { status: 500 }

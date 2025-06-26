@@ -86,7 +86,7 @@ interface LessorHistoryProps {
     current: number;
     past: number;
   };
-  isLoading?: boolean; // Allow parent to control loading state
+  isLoading?: boolean;
   onStatusUpdate?: (
     rentalId: string,
     newStatus: string,
@@ -101,65 +101,102 @@ export default function LessorHistory({
   userId,
   initialRentals = [],
   initialCounts = { upcoming: 0, current: 0, past: 0 },
-  isLoading: parentIsLoading = false, // Use parent's loading state
+  isLoading: parentIsLoading = false,
   onStatusUpdate = async () => {},
   onAddDamageReport = async () => {},
   onViewDetails,
   onManageBooking,
 }: LessorHistoryProps) {
-  // State management
-  const [activeTab, setActiveTab] = useState("upcoming");
-  const [selectedRental, setSelectedRental] = useState<RentalData | null>(null);
-  const [dialogState, setDialogState] = useState({
-    details: false,
-    manage: false,
-  });
-  const [rentals, setRentals] = useState<RentalData[]>(initialRentals);
-  const [error, setError] = useState<string | null>(null);
-  const [counts, setCounts] = useState(initialCounts);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
   const { t } = useTranslation("profile");
 
-  const locale =
-    t("common:locale") === "nl"
-      ? "nl-NL"
-      : t("common:locale") === "de"
-      ? "de-DE"
-      : "en-US";
+  // State management - following RentalHistory pattern
+  const [activeTab, setActiveTab] = useState("upcoming");
+  const [selectedRental, setSelectedRental] = useState<RentalData | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [manageOpen, setManageOpen] = useState(false);
 
-  const formatters = useMemo(
-    () => ({
-      currency: new Intl.NumberFormat(locale, {
-        style: "currency",
-        currency: "EUR",
-      }),
-      date: new Intl.DateTimeFormat(locale, {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }),
-    }),
-    [locale]
+  // Optimized state management
+  const [rentals, setRentals] = useState<RentalData[]>(initialRentals);
+  const [counts, setCounts] = useState(initialCounts);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(
+    initialRentals.length > 0
   );
 
-  // OPTIMIZATION 2: Only fetch data for refresh, not initial load
+  // Memoized filtered rentals
+  const { upcomingRentals, activeRentals, pastRentals } = useMemo(() => {
+    const upcoming = rentals.filter(
+      (r) =>
+        r.status === RentalStatus.CONFIRMED || r.status === RentalStatus.PENDING
+    );
+    const active = rentals.filter(
+      (r) =>
+        r.status === RentalStatus.ACTIVE ||
+        r.status === RentalStatus.LATE_RETURN ||
+        r.status === RentalStatus.DISPUTED
+    );
+    const past = rentals.filter(
+      (r) =>
+        r.status === RentalStatus.COMPLETED ||
+        r.status === RentalStatus.CANCELLED
+    );
+
+    return {
+      upcomingRentals: upcoming,
+      activeRentals: active,
+      pastRentals: past,
+    };
+  }, [rentals]);
+
+  // Optimized fetch function - similar to RentalHistory
+  const fetchRentals = useCallback(async (showLoading = false) => {
+    try {
+      if (showLoading) setIsRefreshing(true);
+      setError(null);
+
+      const response = await fetch("/api/user/profile/lessor-history", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch rental history");
+      }
+
+      const data = await response.json();
+      setRentals(data.rentals || []);
+      setCounts(data.counts || { upcoming: 0, current: 0, past: 0 });
+      setHasInitiallyLoaded(true);
+    } catch (err) {
+      console.error("Error fetching lessor history:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to fetch rental history"
+      );
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  // Quick counts update (lighter API call)
   const fetchCounts = useCallback(async () => {
     try {
       const response = await fetch("/api/user/profile/lessor-history/counts", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
         },
       });
 
       if (response.ok) {
         const data = await response.json();
         setCounts({
-          upcoming: data.upcoming ?? 0,
-          current: data.current ?? 0,
-          past: data.past ?? 0,
+          upcoming: data.upcoming || 0,
+          current: data.current || 0,
+          past: data.past || 0,
         });
       }
     } catch (err) {
@@ -167,91 +204,95 @@ export default function LessorHistory({
     }
   }, []);
 
-  const fetchRentals = useCallback(
-    async (isRefresh = false) => {
-      // OPTIMIZATION 3: Don't set loading state if this is initial data or we have data
-      if (isRefresh || rentals.length === 0) {
-        setIsRefreshing(true);
-        setError(null);
-
-        try {
-          const response = await fetch("/api/user/profile/lessor-history", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Cache-Control": "no-cache",
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error(`Failed to fetch rentals: ${response.statusText}`);
-          }
-
-          const data = await response.json();
-          if (Array.isArray(data.rentals)) {
-            setRentals(data.rentals);
-          }
-
-          // Always fetch counts as they may have changed
-          await fetchCounts();
-        } catch (err) {
-          console.error("Error fetching rentals:", err);
-          setError(
-            err instanceof Error ? err.message : "Failed to fetch rentals"
-          );
-        } finally {
-          setIsRefreshing(false);
-        }
-      }
-    },
-    [rentals.length, fetchCounts]
-  );
-
-  // OPTIMIZATION 4: Only fetch data if we don't have initial data
+  // Only fetch if we don't have initial data
   useEffect(() => {
-    // Only fetch if we don't have initial data
-    if (initialRentals.length === 0 && !parentIsLoading) {
-      fetchRentals();
-    }
-
-    // Set up a refresh timer for all tabs (every 2 minutes)
-    const refreshInterval = setInterval(() => {
+    if (!hasInitiallyLoaded && !parentIsLoading) {
       fetchRentals(true);
+    } else if (hasInitiallyLoaded) {
+      // Background refresh after a delay
+      const timer = setTimeout(() => {
+        fetchCounts(); // Just update counts in background
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [hasInitiallyLoaded, parentIsLoading, fetchRentals, fetchCounts]);
+
+  // Refresh data periodically (every 2 minutes)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchCounts();
     }, 2 * 60 * 1000);
 
-    return () => {
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
+    return () => clearInterval(interval);
+  }, [fetchCounts]);
+
+  // Optimized handlers
+  const handleStatusUpdateComplete = useCallback(
+    async (rentalId: string, newStatus: string, note?: string) => {
+      try {
+        const response = await fetch(`/api/rentals/${rentalId}/status`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus, note }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Failed to update rental status");
+        }
+
+        // Optimistically update the UI
+        setRentals((prev) =>
+          prev.map((rental) =>
+            rental.id === rentalId ? { ...rental, status: newStatus } : rental
+          )
+        );
+
+        // Call parent callback
+        await onStatusUpdate(rentalId, newStatus, note);
+
+        // Background refresh
+        setTimeout(() => fetchRentals(false), 500);
+      } catch (err) {
+        console.error("Error updating rental status:", err);
+        throw err;
       }
-    };
-  }, [fetchRentals, initialRentals.length, parentIsLoading]);
-
-  useEffect(() => {
-    if (initialRentals.length > 0) {
-      setRentals(initialRentals);
-    }
-  }, [initialRentals]);
-
-  useEffect(() => {
-    setCounts(initialCounts);
-  }, [initialCounts]);
-
-  // Helper functions
-  const formatCurrency = useCallback(
-    (amount: number) => {
-      return formatters.currency.format(amount);
     },
-    [formatters]
+    [onStatusUpdate, fetchRentals]
   );
 
-  const formatDate = useCallback(
-    (date: Date) => {
-      return formatters.date.format(new Date(date));
+  const handleAddDamageReportComplete = useCallback(
+    async (rentalId: string, damageReport: any) => {
+      try {
+        await onAddDamageReport(rentalId, damageReport);
+        // Background refresh
+        setTimeout(() => fetchRentals(false), 500);
+      } catch (err) {
+        console.error("Error adding damage report:", err);
+        throw err;
+      }
     },
-    [formatters]
+    [onAddDamageReport, fetchRentals]
   );
 
-  // Get badge variant based on status
+  // Memoized utility functions
+  const formatCurrency = useCallback((amount: number) => {
+    return new Intl.NumberFormat("nl-NL", {
+      style: "currency",
+      currency: "EUR",
+    }).format(amount);
+  }, []);
+
+  const formatDate = useCallback((date: Date) => {
+    return new Intl.DateTimeFormat("nl-NL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(new Date(date));
+  }, []);
+
   const getBadgeVariant = useCallback((status: string) => {
     const variants: Record<
       string,
@@ -268,108 +309,15 @@ export default function LessorHistory({
     return variants[status] || "outline";
   }, []);
 
-  // Format status for display with translations
   const getDisplayStatus = useCallback(
     (status: string) => {
-      return t(`lessorHistory.status.${status}`) || status.replace("_", " ");
+      return t(`lessorHistory.status.${status}`, { defaultValue: status });
     },
     [t]
   );
 
-  // Memoized filtered rentals to avoid recalculation on every render
-  const filteredRentals = useMemo(() => {
-    return {
-      upcoming: rentals.filter(
-        (r) =>
-          r.status === RentalStatus.CONFIRMED ||
-          r.status === RentalStatus.PENDING
-      ),
-      active: rentals.filter(
-        (r) =>
-          r.status === RentalStatus.ACTIVE ||
-          r.status === RentalStatus.LATE_RETURN ||
-          r.status === RentalStatus.DISPUTED
-      ),
-      past: rentals.filter(
-        (r) =>
-          r.status === RentalStatus.COMPLETED ||
-          r.status === RentalStatus.CANCELLED
-      ),
-    };
-  }, [rentals]);
-
-  // Event handlers
-  const handleViewDetails = useCallback(
-    (rental: RentalData) => {
-      if (onViewDetails) {
-        onViewDetails(rental);
-        return;
-      }
-      setSelectedRental(rental);
-      setDialogState((prev) => ({ ...prev, details: true }));
-    },
-    [onViewDetails]
-  );
-
-  const handleManageBooking = useCallback(
-    (rental: RentalData) => {
-      if (onManageBooking) {
-        onManageBooking(rental);
-        return;
-      }
-      setSelectedRental(rental);
-      setDialogState((prev) => ({ ...prev, manage: true }));
-    },
-    [onManageBooking]
-  );
-
-  const handleStatusUpdateComplete = useCallback(
-    async (rentalId: string, newStatus: string, note?: string) => {
-      try {
-        // Use our new API endpoint to update the rental status
-        const response = await fetch(`/api/rentals/${rentalId}/status`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus, note }),
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to update rental status");
-        }
-
-        // Call the callback if provided
-        if (onStatusUpdate) {
-          await onStatusUpdate(rentalId, newStatus, note);
-        }
-
-        // Refresh data after successful update
-        fetchRentals(true);
-      } catch (err) {
-        console.error("Error updating rental status:", err);
-      }
-    },
-    [onStatusUpdate, fetchRentals]
-  );
-
-  const handleAddDamageReportComplete = useCallback(
-    async (rentalId: string, damageReport: any) => {
-      try {
-        await onAddDamageReport(rentalId, damageReport);
-        // Refresh data after successful update
-        fetchRentals(true);
-      } catch (err) {
-        console.error("Error adding damage report:", err);
-      }
-    },
-    [onAddDamageReport, fetchRentals]
-  );
-
-  // UI rendering functions
   const renderRentalCard = useCallback(
-    (rental: RentalData, isLastItem: boolean = false) => (
+    (rental: RentalData, index?: number, isLastItem?: boolean) => (
       <Card key={rental.id} className="p-0 border-0 shadow-none">
         <CardContent className="p-0">
           <div
@@ -384,10 +332,8 @@ export default function LessorHistory({
                   alt={rental.trailerTitle}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 300px"
-                  loading="lazy"
-                  placeholder="blur"
-                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2YxZjFmMSIvPjwvc3ZnPg=="
+                  sizes="(max-width: 768px) 100vw, 168px"
+                  priority={index === 0}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-muted">
@@ -429,7 +375,10 @@ export default function LessorHistory({
                     variant="outline"
                     className="text-[13px]"
                     size="sm"
-                    onClick={() => handleViewDetails(rental)}
+                    onClick={() => {
+                      setSelectedRental(rental);
+                      setDetailsOpen(true);
+                    }}
                   >
                     {t("lessorHistory.buttons.viewDetails")}
                   </Button>
@@ -438,7 +387,10 @@ export default function LessorHistory({
                     variant="default"
                     size="sm"
                     className="text-[13px]"
-                    onClick={() => handleManageBooking(rental)}
+                    onClick={() => {
+                      setSelectedRental(rental);
+                      setManageOpen(true);
+                    }}
                   >
                     {t("lessorHistory.buttons.manageRental")}
                   </Button>
@@ -465,18 +417,11 @@ export default function LessorHistory({
         </CardContent>
       </Card>
     ),
-    [
-      formatDate,
-      formatCurrency,
-      getBadgeVariant,
-      getDisplayStatus,
-      handleViewDetails,
-      handleManageBooking,
-    ]
+    [formatDate, formatCurrency, getBadgeVariant, getDisplayStatus, t]
   );
 
   const renderEmptyState = useCallback(
-    (type: keyof typeof filteredRentals) => {
+    (type: "upcoming" | "active" | "past") => {
       return (
         <Card className="border-0 shadow-none bg-[#f6f8f9]">
           <CardContent className="flex flex-col items-center justify-center h-[350px]">
@@ -509,7 +454,8 @@ export default function LessorHistory({
     [fetchRentals, isRefreshing, t]
   );
 
-  if (parentIsLoading) {
+  // Show loading state only if no initial data
+  if (!hasInitiallyLoaded && (isRefreshing || parentIsLoading)) {
     return (
       <div className="space-y-6">
         <div>
@@ -520,21 +466,15 @@ export default function LessorHistory({
             {t("lessorHistory.description")}
           </p>
         </div>
-
-        <Card className="border-0 shadow-none bg-[#f6f8f9]">
-          <CardContent className="flex flex-col items-center justify-center h-[350px]">
-            <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-            <h3 className="font-medium text-lg">
-              {t("lessorHistory.loading")}
-            </h3>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-center h-[200px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
       </div>
     );
   }
 
   // Error state
-  if (error) {
+  if (error && rentals.length === 0) {
     return (
       <div className="space-y-6">
         <div>
@@ -547,7 +487,7 @@ export default function LessorHistory({
         </div>
 
         <Card className="border-0 shadow-none bg-[#f8f6f6]">
-          <CardContent className="flex flex-col items-center justify-center h-[350px]">
+          <CardContent className="flex flex-col items-center justify-center h-[200px]">
             <div className="text-destructive mb-4 text-3xl">!</div>
             <h3 className="font-medium text-lg">
               {t("lessorHistory.error.title")}
@@ -558,17 +498,9 @@ export default function LessorHistory({
             <Button
               variant="outline"
               className="mt-4"
-              onClick={() => fetchRentals()}
-              disabled={isRefreshing}
+              onClick={() => fetchRentals(true)}
             >
-              {isRefreshing ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t("lessorHistory.error.retrying")}
-                </>
-              ) : (
-                t("lessorHistory.error.tryAgain")
-              )}
+              {t("lessorHistory.error.tryAgain")}
             </Button>
           </CardContent>
         </Card>
@@ -577,11 +509,15 @@ export default function LessorHistory({
   }
 
   const currentRentals =
-    filteredRentals[activeTab as keyof typeof filteredRentals] || [];
+    activeTab === "upcoming"
+      ? upcomingRentals
+      : activeTab === "active"
+      ? activeRentals
+      : pastRentals;
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-[#222222] tracking-tight">
             {t("lessorHistory.title")}
@@ -590,12 +526,18 @@ export default function LessorHistory({
             {t("lessorHistory.description")}
           </p>
         </div>
+        {isRefreshing && rentals.length > 0 && (
+          <div className="flex items-center text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            {t("lessorHistory.updating")}
+          </div>
+        )}
       </div>
 
       <Tabs
-        defaultValue="upcoming"
+        value={activeTab}
+        onValueChange={setActiveTab}
         className="w-full mt-9"
-        onValueChange={(value) => setActiveTab(value)}
       >
         <TabsList className="w-full bg-white gap-x-2 pb-[25px] rounded-0 flex items-center justify-start rounded-none">
           <TabsTrigger
@@ -625,7 +567,11 @@ export default function LessorHistory({
           {currentRentals.length > 0 ? (
             <div className="space-y-4">
               {currentRentals.map((rental, index) =>
-                renderRentalCard(rental, index === currentRentals.length - 1)
+                renderRentalCard(
+                  rental,
+                  index,
+                  index === currentRentals.length - 1
+                )
               )}
             </div>
           ) : (
@@ -637,7 +583,11 @@ export default function LessorHistory({
           {currentRentals.length > 0 ? (
             <div className="space-y-4">
               {currentRentals.map((rental, index) =>
-                renderRentalCard(rental, index === currentRentals.length - 1)
+                renderRentalCard(
+                  rental,
+                  index,
+                  index === currentRentals.length - 1
+                )
               )}
             </div>
           ) : (
@@ -649,7 +599,11 @@ export default function LessorHistory({
           {currentRentals.length > 0 ? (
             <div className="space-y-4">
               {currentRentals.map((rental, index) =>
-                renderRentalCard(rental, index === currentRentals.length - 1)
+                renderRentalCard(
+                  rental,
+                  index,
+                  index === currentRentals.length - 1
+                )
               )}
             </div>
           ) : (
@@ -658,35 +612,22 @@ export default function LessorHistory({
         </TabsContent>
       </Tabs>
 
+      {/* Dialogs */}
       {selectedRental && (
         <>
-          <Dialog
-            open={dialogState.details}
-            onOpenChange={(open) =>
-              setDialogState((prev) => ({ ...prev, details: open }))
-            }
-          >
+          <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
             <RentalDetailsDialog
               rental={selectedRental}
               role="LESSOR"
-              onClose={() =>
-                setDialogState((prev) => ({ ...prev, details: false }))
-              }
+              onClose={() => setDetailsOpen(false)}
             />
           </Dialog>
 
-          <Dialog
-            open={dialogState.manage}
-            onOpenChange={(open) =>
-              setDialogState((prev) => ({ ...prev, manage: open }))
-            }
-          >
+          <Dialog open={manageOpen} onOpenChange={setManageOpen}>
             <RentalManagementDialog
               rental={selectedRental}
               role="LESSOR"
-              onClose={() =>
-                setDialogState((prev) => ({ ...prev, manage: false }))
-              }
+              onClose={() => setManageOpen(false)}
               onStatusUpdate={handleStatusUpdateComplete}
               onAddDamageReport={handleAddDamageReportComplete}
             />

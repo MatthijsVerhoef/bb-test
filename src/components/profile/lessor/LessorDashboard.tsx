@@ -13,15 +13,15 @@ import {
   BadgeDollarSign,
   BadgePoundSterling,
 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n/client";
 
-// Create a simple StatCard component to reduce duplication
-const StatCard = ({ icon: Icon, title, value, subtitle }) => (
+// Memoized StatCard component to prevent unnecessary re-renders
+const StatCard = memo(({ icon: Icon, title, value, subtitle }) => (
   <Card className="p-0 bg-[#f6f8f9] border-0 shadow-none rounded-lg">
     <CardContent className="p-4">
       <div className="flex items-center gap-2">
@@ -34,10 +34,11 @@ const StatCard = ({ icon: Icon, title, value, subtitle }) => (
       </div>
     </CardContent>
   </Card>
-);
+));
+StatCard.displayName = "StatCard";
 
-// Skeleton version of the stat card
-const StatCardSkeleton = () => (
+// Memoized skeleton component
+const StatCardSkeleton = memo(() => (
   <Card className="p-0 bg-[#f6f8f9] border-0 shadow-none rounded-lg">
     <CardContent className="p-4">
       <div className="flex items-center gap-2">
@@ -50,204 +51,294 @@ const StatCardSkeleton = () => (
       </div>
     </CardContent>
   </Card>
+));
+StatCardSkeleton.displayName = "StatCardSkeleton";
+
+// Memoized change indicator component
+const ChangeIndicator = memo(({ value = 0, isGood = true }) => {
+  const isPositive = value >= 0;
+  const showGreen = (isPositive && isGood) || (!isPositive && !isGood);
+
+  return (
+    <div className="flex items-center">
+      <div
+        className={`size-5 mx-2 rounded-full flex items-center justify-center ${
+          showGreen ? "bg-[#CEFAC2]" : "bg-[#FDECD9]"
+        }`}
+      >
+        {isPositive ? (
+          <ArrowUp
+            className={showGreen ? "text-[#428C28]" : "text-[#EF8333]"}
+            size={13}
+          />
+        ) : (
+          <ArrowDown
+            className={showGreen ? "text-[#428C28]" : "text-[#EF8333]"}
+            size={13}
+          />
+        )}
+      </div>
+      <span
+        className={`${
+          showGreen ? "text-[#428C28]" : "text-[#EF8333]"
+        } font-medium text-sm`}
+      >
+        {Math.abs(value).toFixed(0)}%
+      </span>
+    </div>
+  );
+});
+ChangeIndicator.displayName = "ChangeIndicator";
+
+// Memoized metric card component
+const MetricCard = memo(
+  ({ title, value, change, subtitle, isLast = false, isBottomRow = false }) => {
+    const borderClasses = isBottomRow
+      ? isLast
+        ? "shadow-none rounded-none border-t border-l-0 border-b-0 border-r-0 rounded-br-lg"
+        : "shadow-none rounded-none border-t border-l-0 border-b-0"
+      : isLast
+      ? "border-r-0"
+      : "border-r";
+
+    const roundedClasses =
+      isBottomRow && !isLast
+        ? "rounded-bl-lg rounded-br-none rounded-t-none"
+        : "";
+
+    return (
+      <div className={`${isBottomRow ? "" : borderClasses}`}>
+        {isBottomRow ? (
+          <Card className={`h-fit ${borderClasses} ${roundedClasses} p-4`}>
+            <CardContent className="p-0 flex-1 flex flex-col">
+              <div className="flex items-center">
+                <p className="text-[13px] me-auto font-medium text-[#222222]">
+                  {title}
+                </p>
+              </div>
+              <div className="text-xl font-medium flex items-center text-[#222222] mt-5">
+                {value}
+                {change !== undefined && (
+                  <ChangeIndicator value={change} isGood={true} />
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-1">
+                {subtitle}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="p-4">
+            <p className="text-[13px] font-medium">{title}</p>
+            <div className="flex items-center mt-7">
+              <p className="text-xl font-medium">{value}</p>
+              {change !== undefined && (
+                <ChangeIndicator value={change} isGood={true} />
+              )}
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-1">{subtitle}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
 );
+MetricCard.displayName = "MetricCard";
 
-// Create empty data structure to avoid null checks
-const emptyData = {
-  stats: {
-    totalRentals: 0,
-    totalIncome: 0,
-    completedRentals: 0,
-    cancelledRentals: 0,
-    averageRating: null,
-    responseRate: null,
-    responseTime: null,
-    acceptanceRate: null,
-  },
-  trailerStats: {
-    totalTrailers: 0,
-    activeTrailers: 0,
-    utilizationRate: 0,
-    averagePrice: 0,
-    trailersNeedingMaintenance: 0,
-    overdueMaintenanceTrailers: 0,
-  },
-  revenueStats: {
-    currentMonthRevenue: 0,
-    lastMonthRevenue: 0,
-    revenueChange: 0,
-    currentMonthRentals: 0,
-    lastMonthRentals: 0,
-  },
-  topPerformingTrailers: [],
-  mostViewedTrailers: [],
-  upcomingRentals: [],
-};
+// Memoized trailer list item
+const TrailerListItem = memo(
+  ({ trailer, index, formatCurrency, type = "performance" }) => (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="w-6 h-6 min-w-6 rounded-full bg-white flex items-center justify-center text-sm font-medium">
+          {index + 1}
+        </div>
+        <div>
+          <p className="text-sm max-w-[160px] truncate font-medium">
+            {trailer.title}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {type === "performance"
+              ? `${trailer.totalRentals} verhuringen`
+              : "Weergaven & favorieten"}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-1 ms-auto bg-[#222222] text-white text-xs rounded-full px-2 py-1 font-medium">
+        {type === "performance" ? (
+          formatCurrency(trailer.totalRevenue)
+        ) : (
+          <>
+            <EyeIcon strokeWidth={1.5} className="size-3 text-white" />
+            <span className="font-medium">{trailer.views}</span>
+          </>
+        )}
+      </div>
+    </div>
+  )
+);
+TrailerListItem.displayName = "TrailerListItem";
 
-export default function LessorDashboard() {
+// Memoized rental item
+const RentalItem = memo(({ rental, formatDate, formatCurrency, t }) => (
+  <div className="flex items-center justify-start border-b pb-3 last:border-0">
+    <img
+      className="size-12 rounded-full object-cover me-4"
+      alt={rental.trailerTitle}
+      src={rental?.images?.[0]?.url || "/images/placeholder.jpg"}
+      onError={(e) => {
+        e.currentTarget.src = "/images/placeholder.jpg";
+      }}
+      loading="lazy"
+    />
+    <div className="me-auto">
+      <p className="text-sm font-medium">{rental.trailerTitle}</p>
+      <p className="text-xs text-muted-foreground">
+        {t("lessorDashboard.upcomingRentals.renter", {
+          name: rental.renterName,
+        })}
+      </p>
+      <p className="text-xs text-muted-foreground mt-1">
+        {formatDate(rental.startDate)} - {formatDate(rental.endDate)}
+      </p>
+    </div>
+    <div className="text-right">
+      <p className="text-sm font-medium">{formatCurrency(rental.totalPrice)}</p>
+      <Badge variant="outline" className="mt-1">
+        {new Date(rental.startDate) > new Date()
+          ? t("lessorDashboard.upcomingRentals.status.pending")
+          : t("lessorDashboard.upcomingRentals.status.active")}
+      </Badge>
+    </div>
+  </div>
+));
+RentalItem.displayName = "RentalItem";
+
+// Initial data prop type
+interface LessorDashboardProps {
+  initialData?: any;
+}
+
+// Cache duration in milliseconds (5 minutes)
+const CACHE_DURATION = 5 * 60 * 1000;
+
+// Global cache for dashboard data
+let dataCache: { data: any; timestamp: number } | null = null;
+
+export default function LessorDashboard({ initialData }: LessorDashboardProps) {
   const { t } = useTranslation("profile");
 
-  // Use a ref to store data from the API
-  const dataRef = useRef(emptyData);
+  // State management
+  const [data, setData] = useState(() => {
+    // If we have initial data, use it
+    if (initialData) {
+      dataCache = { data: initialData, timestamp: Date.now() };
+      return initialData;
+    }
+    // Otherwise check cache
+    if (dataCache && Date.now() - dataCache.timestamp < CACHE_DURATION) {
+      return dataCache.data;
+    }
+    return null;
+  });
+  const [isLoading, setIsLoading] = useState(!data);
+  const [error, setError] = useState<string | null>(null);
 
-  // State for UI control
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // State for component rendering
-  const [renderCount, setRenderCount] = useState(0);
-
-  // Format helpers
-  const formatCurrency = (amount) => {
+  // Memoized format functions
+  const formatCurrency = useCallback((amount: number) => {
     return new Intl.NumberFormat("nl-NL", {
       style: "currency",
       currency: "EUR",
     }).format(amount || 0);
-  };
+  }, []);
 
-  const formatDate = (date) => {
+  const formatDate = useCallback((date: string | Date) => {
     if (!date) return "";
     return new Intl.DateTimeFormat("nl-NL", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
     }).format(new Date(date));
-  };
+  }, []);
 
-  const getChangeIndicator = (value = 0, isGood = true) => {
-    const isPositive = value >= 0;
-    const showGreen = (isPositive && isGood) || (!isPositive && !isGood);
-
-    return (
-      <div className="flex items-center">
-        <div
-          className={`size-5 mx-2 rounded-full flex items-center justify-center ${
-            showGreen ? "bg-[#CEFAC2]" : "bg-[#FDECD9]"
-          }`}
-        >
-          {isPositive ? (
-            <ArrowUp
-              className={showGreen ? "text-[#428C28]" : "text-[#EF8333]"}
-              size={13}
-            />
-          ) : (
-            <ArrowDown
-              className={showGreen ? "text-[#428C28]" : "text-[#EF8333]"}
-              size={13}
-            />
-          )}
-        </div>
-        <span
-          className={`${
-            showGreen ? "text-[#428C28]" : "text-[#EF8333]"
-          } font-medium text-sm`}
-        >
-          {Math.abs(value || 0).toFixed(0)}%
-        </span>
-      </div>
-    );
-  };
-
-  // Fetch data function
-  useEffect(() => {
-    // Check if we need to fetch data (first render or error recovery)
-    if (isLoading || error) {
-      let isMounted = true;
-      let controller;
-
-      const fetchData = async () => {
-        // Reset error state if retrying
-        if (error) setError(null);
-
-        controller = new AbortController();
-
-        try {
-          const response = await fetch("/api/user/profile/lessor-dashboard", {
-            signal: controller.signal,
-            cache: "no-store", // Prevent caching to always get fresh data
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-          }
-
-          const result = await response.json();
-
-          // Only update if component is still mounted
-          if (isMounted) {
-            // Make sure we have default values for all fields
-            const safeData = {
-              stats: {
-                totalRentals: result.stats?.totalRentals || 0,
-                totalIncome: result.stats?.totalIncome || 0,
-                completedRentals: result.stats?.completedRentals || 0,
-                cancelledRentals: result.stats?.cancelledRentals || 0,
-                averageRating: result.stats?.averageRating || null,
-                responseRate: result.stats?.responseRate || null,
-                responseTime: result.stats?.responseTime || null,
-                acceptanceRate: result.stats?.acceptanceRate || null,
-              },
-              trailerStats: {
-                totalTrailers: result.trailerStats?.totalTrailers || 0,
-                activeTrailers: result.trailerStats?.activeTrailers || 0,
-                utilizationRate: result.trailerStats?.utilizationRate || 0,
-                averagePrice: result.trailerStats?.averagePrice || 0,
-                trailersNeedingMaintenance:
-                  result.trailerStats?.trailersNeedingMaintenance || 0,
-                overdueMaintenanceTrailers:
-                  result.trailerStats?.overdueMaintenanceTrailers || 0,
-              },
-              revenueStats: {
-                currentMonthRevenue:
-                  result.revenueStats?.currentMonthRevenue || 0,
-                lastMonthRevenue: result.revenueStats?.lastMonthRevenue || 0,
-                revenueChange: result.revenueStats?.revenueChange || 0,
-                currentMonthRentals:
-                  result.revenueStats?.currentMonthRentals || 0,
-                lastMonthRentals: result.revenueStats?.lastMonthRentals || 0,
-              },
-              topPerformingTrailers: result.topPerformingTrailers || [],
-              mostViewedTrailers: result.mostViewedTrailers || [],
-              upcomingRentals: result.upcomingRentals || [],
-            };
-
-            // Store data in ref to avoid re-renders
-            dataRef.current = safeData;
-
-            // Force a single render update
-            setRenderCount((count) => count + 1);
-            setIsLoading(false);
-          }
-        } catch (err) {
-          if (err.name !== "AbortError" && isMounted) {
-            console.error("Error fetching dashboard data:", err);
-            setError(err.message || "Failed to load dashboard data");
-            setIsLoading(false);
-          }
-        }
-      };
-
-      fetchData();
-
-      // Cleanup function
-      return () => {
-        isMounted = false;
-        if (controller) controller.abort();
-      };
+  // Fetch function that respects cache
+  const fetchDashboardData = useCallback(async () => {
+    // Check if cache is still valid
+    if (dataCache && Date.now() - dataCache.timestamp < CACHE_DURATION) {
+      setData(dataCache.data);
+      setIsLoading(false);
+      return;
     }
-  }, [isLoading, error]);
 
-  // Use the data from the ref
-  const data = dataRef.current;
+    setIsLoading(true);
+    setError(null);
 
-  // Determine if we should show the loading skeleton
-  const shouldShowSkeleton = isLoading && renderCount === 0;
+    try {
+      const response = await fetch("/api/user/profile/lessor-dashboard", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-  // Show loading state only on first render
-  if (shouldShowSkeleton) {
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      // Update cache
+      dataCache = { data: result, timestamp: Date.now() };
+
+      setData(result);
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to load dashboard data"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Only fetch if we don't have data
+  useEffect(() => {
+    if (!data) {
+      fetchDashboardData();
+    }
+  }, [data, fetchDashboardData]);
+
+  // Manual refresh function
+  const handleRefresh = useCallback(() => {
+    // Clear cache to force fresh fetch
+    dataCache = null;
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  // Memoized computed values
+  const stats = useMemo(() => data?.stats || {}, [data?.stats]);
+  const trailerStats = useMemo(
+    () => data?.trailerStats || {},
+    [data?.trailerStats]
+  );
+  const revenueStats = useMemo(
+    () => data?.revenueStats || {},
+    [data?.revenueStats]
+  );
+  const topPerformingTrailers = useMemo(
+    () => data?.topPerformingTrailers || [],
+    [data?.topPerformingTrailers]
+  );
+  const mostViewedTrailers = useMemo(
+    () => data?.mostViewedTrailers || [],
+    [data?.mostViewedTrailers]
+  );
+  const upcomingRentals = useMemo(
+    () => data?.upcomingRentals || [],
+    [data?.upcomingRentals]
+  );
+
+  // Show loading state only if no data
+  if (isLoading && !data) {
     return (
       <div className="space-y-6">
         <div>
@@ -270,7 +361,7 @@ export default function LessorDashboard() {
     );
   }
 
-  if (error) {
+  if (error && !data) {
     return (
       <div className="space-y-6">
         <div>
@@ -285,7 +376,7 @@ export default function LessorDashboard() {
           <p className="text-destructive mb-4">
             {t("lessorDashboard.error.message", { message: error })}
           </p>
-          <Button onClick={() => setIsLoading(true)}>
+          <Button onClick={handleRefresh}>
             {t("lessorDashboard.error.tryAgain")}
           </Button>
         </div>
@@ -295,13 +386,15 @@ export default function LessorDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl mb-1 font-semibold text-[#222222] tracking-tight">
-          {t("lessorDashboard.title")}
-        </h2>
-        <p className="text-muted-foreground text-base">
-          {t("lessorDashboard.description")}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl mb-1 font-semibold text-[#222222] tracking-tight">
+            {t("lessorDashboard.title")}
+          </h2>
+          <p className="text-muted-foreground text-base">
+            {t("lessorDashboard.description")}
+          </p>
+        </div>
       </div>
 
       {/* Trailer Status and Performance */}
@@ -309,132 +402,83 @@ export default function LessorDashboard() {
         <StatCard
           icon={Truck}
           title={t("lessorDashboard.trailerOverview.title")}
-          value={data.trailerStats.totalTrailers}
+          value={trailerStats.totalTrailers || 0}
           subtitle={t("lessorDashboard.trailerOverview.subtitle")}
         />
 
         <StatCard
           icon={Euro}
           title={t("lessorDashboard.avgDailyPrice.title")}
-          value={formatCurrency(data.trailerStats.averagePrice)}
+          value={formatCurrency(trailerStats.averagePrice || 0)}
           subtitle={t("lessorDashboard.avgDailyPrice.subtitle")}
         />
 
         <StatCard
           icon={BarChart3}
           title={t("lessorDashboard.rentalStats.title")}
-          value={data.stats.totalRentals}
+          value={stats.totalRentals || 0}
           subtitle={t("lessorDashboard.rentalStats.subtitle")}
         />
       </div>
 
       {/* Key Performance Metrics */}
       <div className="grid grid-cols-3 flex-1 border rounded-lg">
-        <div className="border-r p-4">
-          <p className="text-[13px] font-medium">
-            {t("lessorDashboard.acceptanceRate.title")}
-          </p>
-          <div className="flex items-center mt-7">
-            <p className="text-xl font-medium">
-              {data.stats.acceptanceRate?.toFixed(0) || 0}%
-            </p>
-            {getChangeIndicator(10, true)}
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-1">
-            {t("lessorDashboard.acceptanceRate.subtitle")}
-          </p>
-        </div>
+        <MetricCard
+          title={t("lessorDashboard.acceptanceRate.title")}
+          value={`${stats.acceptanceRate?.toFixed(0) || 0}%`}
+          change={10}
+          subtitle={t("lessorDashboard.acceptanceRate.subtitle")}
+        />
 
-        <div className="border-r p-4">
-          <p className="text-[13px] font-medium">
-            {t("lessorDashboard.responseRate.title")}
-          </p>
-          <div className="flex items-center mt-7">
-            <p className="text-xl font-medium">
-              {data.stats.responseRate?.toFixed(0) || 0}%
-            </p>
-            {getChangeIndicator(15, true)}
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-1">
-            {t("lessorDashboard.responseRate.subtitle")}
-          </p>
-        </div>
+        <MetricCard
+          title={t("lessorDashboard.responseRate.title")}
+          value={`${stats.responseRate?.toFixed(0) || 0}%`}
+          change={15}
+          subtitle={t("lessorDashboard.responseRate.subtitle")}
+        />
 
-        <div className="p-4">
-          <p className="text-[13px] font-medium">
-            {t("lessorDashboard.responseTime.title")}
-          </p>
-          <div className="flex items-center mt-7">
-            <p className="text-xl font-medium">
-              {data.stats.responseTime
-                ? `${data.stats.responseTime} min`
-                : "N/A"}
-            </p>
-            {getChangeIndicator(-12, true)}
-          </div>
-          <p className="text-[11px] text-muted-foreground mt-1">
-            {t("lessorDashboard.responseTime.subtitle")}
-          </p>
-        </div>
+        <MetricCard
+          title={t("lessorDashboard.responseTime.title")}
+          value={stats.responseTime ? `${stats.responseTime} min` : "N/A"}
+          change={-12}
+          subtitle={t("lessorDashboard.responseTime.subtitle")}
+          isLast={true}
+        />
 
         {/* Second row of metrics */}
-        <Card className="h-fit shadow-none rounded-bl-lg rounded-br-none rounded-t-none border-t border-l-0 border-b-0 p-4">
-          <CardContent className="p-0 flex-1 flex flex-col">
-            <div className="flex items-center">
-              <p className="text-[13px] me-auto font-medium text-[#222222]">
-                {t("lessorDashboard.monthlyRevenue.title")}
-              </p>
-            </div>
-            <div className="text-xl font-medium flex items-center text-[#222222] mt-5">
-              {formatCurrency(data.revenueStats.currentMonthRevenue)}
-              {getChangeIndicator(data.revenueStats.revenueChange, true)}
-            </div>
-            <p className="text-[11px] text-muted-foreground mt-1">
-              {t("lessorDashboard.monthlyRevenue.subtitle", {
-                amount: formatCurrency(data.revenueStats.lastMonthRevenue),
-              })}
-            </p>
-          </CardContent>
-        </Card>
+        <MetricCard
+          title={t("lessorDashboard.monthlyRevenue.title")}
+          value={formatCurrency(revenueStats.currentMonthRevenue || 0)}
+          change={revenueStats.revenueChange || 0}
+          subtitle={t("lessorDashboard.monthlyRevenue.subtitle", {
+            amount: formatCurrency(revenueStats.lastMonthRevenue || 0),
+          })}
+          isBottomRow={true}
+        />
 
-        <Card className="h-fit shadow-none rounded-none border-t border-l-0 border-b-0 p-4">
-          <CardContent className="p-0 flex-1 flex flex-col">
-            <div className="flex items-center">
-              <p className="text-[13px] me-auto font-medium text-[#222222]">
-                {t("lessorDashboard.utilizationRate.title")}
-              </p>
-            </div>
-            <div className="text-xl font-medium text-[#222222] mt-5">
-              {(data.trailerStats.utilizationRate || 0).toFixed(1)}%
-            </div>
-            <p className="text-[11px] text-muted-foreground mt-1">
-              {t("lessorDashboard.utilizationRate.subtitle")}
-            </p>
-          </CardContent>
-        </Card>
+        <MetricCard
+          title={t("lessorDashboard.utilizationRate.title")}
+          value={`${(trailerStats.utilizationRate || 0).toFixed(1)}%`}
+          subtitle={t("lessorDashboard.utilizationRate.subtitle")}
+          isBottomRow={true}
+        />
 
-        <Card className="h-fit shadow-none rounded-none border-t border-l-0 border-b-0 border-r-0 rounded-br-lg p-4">
-          <CardContent className="p-0 flex-1 flex flex-col">
-            <div className="flex items-center">
-              <p className="text-[13px] me-auto font-medium text-[#222222]">
-                {t("lessorDashboard.averageRating.title")}
-              </p>
-            </div>
-            <div className="text-xl flex items-center font-medium text-[#222222] mt-5">
-              {data.stats.averageRating ? (
-                <>
-                  <Star className="size-5 mr-1" />
-                  {data.stats.averageRating.toFixed(1)}
-                </>
-              ) : (
-                "N/A"
-              )}
-            </div>
-            <p className="text-[11px] text-muted-foreground mt-1">
-              {t("lessorDashboard.averageRating.subtitle")}
-            </p>
-          </CardContent>
-        </Card>
+        <MetricCard
+          title={t("lessorDashboard.averageRating.title")}
+          value={
+            stats.averageRating ? (
+              <>
+                <Star className="size-5 mr-1 inline" />
+                {stats.averageRating.toFixed(1)}
+              </>
+            ) : (
+              "N/A"
+            )
+          }
+          subtitle={t("lessorDashboard.averageRating.subtitle")}
+          isBottomRow={true}
+          isLast={true}
+        />
       </div>
 
       <Separator className="mt-8 mb-8" />
@@ -462,33 +506,17 @@ export default function LessorDashboard() {
               />
             </div>
             <div className="space-y-4">
-              {(data.topPerformingTrailers || []).map((trailer, index) => (
-                <div
-                  key={trailer.id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 min-w-6 rounded-full bg-white flex items-center justify-center text-sm font-medium">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <p className="text-sm max-w-[160px] truncate font-medium">
-                        {trailer.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {trailer.totalRentals}{" "}
-                        {t("lessorDashboard.topPerformingTrailers.rentals")}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 ms-auto bg-[#222222] text-white text-xs rounded-full px-2 py-1 font-medium">
-                    {formatCurrency(trailer.totalRevenue)}
-                  </div>
-                </div>
-              ))}
-
-              {(!data.topPerformingTrailers ||
-                data.topPerformingTrailers.length === 0) && (
+              {topPerformingTrailers.length > 0 ? (
+                topPerformingTrailers.map((trailer, index) => (
+                  <TrailerListItem
+                    key={trailer.id}
+                    trailer={trailer}
+                    index={index}
+                    formatCurrency={formatCurrency}
+                    type="performance"
+                  />
+                ))
+              ) : (
                 <p className="text-center text-sm text-muted-foreground">
                   {t("lessorDashboard.topPerformingTrailers.noData")}
                 </p>
@@ -518,35 +546,17 @@ export default function LessorDashboard() {
               />
             </div>
             <div className="space-y-4">
-              {(data.mostViewedTrailers || []).map((trailer, index) => (
-                <div
-                  key={trailer.id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 min-w-6 rounded-full bg-white flex items-center justify-center text-sm font-medium">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <p className="text-sm max-w-[160px] truncate font-medium">
-                        {trailer.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t(
-                          "lessorDashboard.mostViewedTrailers.clicksFavorites"
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 ms-auto bg-[#222222] text-white text-xs rounded-full px-2 py-1">
-                    <EyeIcon strokeWidth={1.5} className="size-3 text-white" />
-                    <span className="font-medium">{trailer.views}</span>
-                  </div>
-                </div>
-              ))}
-
-              {(!data.mostViewedTrailers ||
-                data.mostViewedTrailers.length === 0) && (
+              {mostViewedTrailers.length > 0 ? (
+                mostViewedTrailers.map((trailer, index) => (
+                  <TrailerListItem
+                    key={trailer.id}
+                    trailer={trailer}
+                    index={index}
+                    formatCurrency={formatCurrency}
+                    type="views"
+                  />
+                ))
+              ) : (
                 <p className="text-center text-sm text-muted-foreground">
                   {t("lessorDashboard.mostViewedTrailers.noData")}
                 </p>
@@ -568,43 +578,15 @@ export default function LessorDashboard() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="space-y-4">
-            {(data.upcomingRentals || []).length > 0 ? (
-              data.upcomingRentals.map((rental) => (
-                <div
+            {upcomingRentals.length > 0 ? (
+              upcomingRentals.map((rental) => (
+                <RentalItem
                   key={rental.id}
-                  className="flex items-center justify-start border-b pb-3 last:border-0"
-                >
-                  <img
-                    className="size-12 rounded-full object-cover me-4"
-                    alt={rental.trailerTitle}
-                    src={rental?.images?.[0]?.url || "/images/placeholder.jpg"}
-                    onError={(e) => {
-                      e.currentTarget.src = "/images/placeholder.jpg";
-                    }}
-                  />
-                  <div className="me-auto">
-                    <p className="text-sm font-medium">{rental.trailerTitle}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {t("lessorDashboard.upcomingRentals.renter", {
-                        name: rental.renterName,
-                      })}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatDate(rental.startDate)} -{" "}
-                      {formatDate(rental.endDate)}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">
-                      {formatCurrency(rental.totalPrice)}
-                    </p>
-                    <Badge variant="outline" className="mt-1">
-                      {new Date(rental.startDate) > new Date()
-                        ? t("lessorDashboard.upcomingRentals.status.pending")
-                        : t("lessorDashboard.upcomingRentals.status.active")}
-                    </Badge>
-                  </div>
-                </div>
+                  rental={rental}
+                  formatDate={formatDate}
+                  formatCurrency={formatCurrency}
+                  t={t}
+                />
               ))
             ) : (
               <p className="text-sm text-muted-foreground bg-[#f6f8f9] text-center py-12 rounded-xl">

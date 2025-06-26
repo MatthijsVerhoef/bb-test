@@ -1,195 +1,226 @@
+// app/api/user/profile/lessor-history/route.ts
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+// Cache configuration
+const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes (shorter than dashboard for more real-time updates)
+const cache = new Map<string, { data: any; timestamp: number }>();
+
 export async function GET(request: Request) {
   try {
-    const startTime = performance.now();
-    
-    // Get authenticated user session
     const session = await getServerSession(authOptions);
     
-    if (!session || !session.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     const userId = session.user.id;
-    const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100);
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const offset = (page - 1) * limit;
     
-    const whereClause: any = {
-      OR: [
-        {
-          trailer: {
-            ownerId: userId
-          }
-        },
-        {
-          lessorId: userId
-        }
-      ]
-    };
+    // Check cache first
+    const cacheKey = `lessor-history-${userId}`;
+    const cached = cache.get(cacheKey);
     
-    if (status && status !== 'all') {
-      whereClause.status = status;
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return NextResponse.json(cached.data);
     }
-    
-    // Execute both queries in parallel using transaction
-    const [rentals, totalCount] = await prisma.$transaction([
-      prisma.rental.findMany({
-        where: whereClause,
-        select: {
-          id: true,
-          startDate: true,
-          endDate: true,
-          status: true,
-          totalPrice: true,
-          trailerId: true,
-          renterId: true,
-          lessorId: true,
-          pickupLocation: true,
-          returnLocation: true,
-          serviceFee: true,
-          insuranceFee: true,
-          deliveryFee: true,
-          securityDeposit: true,
-          actualReturnDate: true,
-          needsDelivery: true,
-          specialNotes: true,
-          cancellationReason: true,
-          cancellationDate: true,
-          
-          // Select only needed trailer fields
-          trailer: {
-            select: {
-              id: true,
-              title: true,
-              ownerId: true,
-              type: true,
-              pricePerDay: true,
-              images: {
-                take: 1,
-                orderBy: {
-                  order: 'asc'
-                },
-                select: {
-                  url: true,
-                  title: true
-                }
-              }
-            }
+
+    // Fetch rentals with all necessary data in a single query
+    const rentals = await prisma.rental.findMany({
+      where: { lessorId: userId },
+      select: {
+        id: true,
+        startDate: true,
+        endDate: true,
+        status: true,
+        totalPrice: true,
+        trailerId: true,
+        pickupLocation: true,
+        returnLocation: true,
+        pickupTime: true,
+        returnTime: true,
+        serviceFee: true,
+        insuranceFee: true,
+        deliveryFee: true,
+        securityDeposit: true,
+        actualReturnDate: true,
+        needsDelivery: true,
+        specialNotes: true,
+        cancellationReason: true,
+        cancellationDate: true,
+        lessorId: true,
+        renterId: true,
+        createdAt: true,
+        updatedAt: true,
+        trailer: {
+          select: {
+            id: true,
+            title: true,
+            type: true,
+            licensePlate: true,
+            images: {
+              select: { 
+                url: true,
+                type: true,
+              },
+              take: 1,
+              orderBy: { order: 'asc' },
+            },
           },
-          
-          // Select only needed renter fields
-          renter: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              phone: true,
-              profilePicture: true,
-              email: true
-            }
-          },
-          
-          // Include lessor info
-          lessor: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              phone: true,
-              email: true
-            }
-          }
         },
-        orderBy: [
-          { status: 'asc' },
-          { startDate: 'desc' }
-        ],
-        take: limit,
-        skip: offset
-      }),
-      
-      prisma.rental.count({
-        where: whereClause
-      })
-    ]);
-    
-    // Transform data efficiently
-    const formattedRentals = rentals.map(rental => ({
-      id: rental.id,
-      startDate: rental.startDate,
-      endDate: rental.endDate,
-      status: rental.status,
-      totalPrice: rental.totalPrice,
-      trailerId: rental.trailerId,
-      trailerTitle: rental.trailer.title,
-      trailerType: rental.trailer.type,
-      trailerImage: rental.trailer.images[0]?.url || null,
-      pickupLocation: rental.pickupLocation,
-      dropoffLocation: rental.returnLocation,
-      renter: rental.renter ? {
-        id: rental.renter.id,
-        firstName: rental.renter.firstName || '',
-        lastName: rental.renter.lastName || '',
-        phoneNumber: rental.renter.phone,
-        email: rental.renter.email,
-        profilePicture: rental.renter.profilePicture
-      } : null,
-      lessor: rental.lessor ? {
-        id: rental.lessor.id,
-        firstName: rental.lessor.firstName || '',
-        lastName: rental.lessor.lastName || '',
-        phoneNumber: rental.lessor.phone,
-        email: rental.lessor.email
-      } : null,
-      renterId: rental.renterId,
-      lessorId: rental.lessorId || rental.trailer.ownerId,
-      // Additional fields that might be needed
-      serviceFee: rental.serviceFee,
-      insuranceFee: rental.insuranceFee,
-      deliveryFee: rental.deliveryFee,
-      securityDeposit: rental.securityDeposit,
-      actualReturnDate: rental.actualReturnDate,
-      needsDelivery: rental.needsDelivery,
-      specialNotes: rental.specialNotes,
-      cancellationReason: rental.cancellationReason,
-      cancellationDate: rental.cancellationDate
-    }));
-    
-    const executionTime = Math.round(performance.now() - startTime);
-    
-    const response = NextResponse.json({
-      rentals: formattedRentals,
-      pagination: {
-        total: totalCount,
-        page,
-        limit,
-        pages: Math.ceil(totalCount / limit),
+        renter: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            phone: true,
+            email: true,
+            profilePicture: true,
+            isVerified: true,
+          },
+        },
+        payment: {
+          select: {
+            id: true,
+            status: true,
+            amount: true,
+            paymentMethod: true,
+            paymentDate: true,
+          },
+        },
+        damageReports: {
+          select: {
+            id: true,
+            description: true,
+            damageStatus: true,
+            repairCost: true,
+            reportedById: true,
+            createdAt: true,
+          },
+        },
+        insuranceClaims: {
+          select: {
+            id: true,
+            status: true,
+            amount: true,
+          },
+        },
+        rentalExtensions: {
+          select: {
+            id: true,
+            newEndDate: true,
+            approved: true,
+            additionalCost: true,
+          },
+        },
       },
-      _debug: process.env.NODE_ENV === 'development' ? {
-        executionTime,
-        userId,
-        rentalCount: rentals.length
-      } : undefined
+      orderBy: { startDate: 'desc' },
     });
-    
-    // Set cache headers for better performance
-    response.headers.set('Cache-Control', 'private, max-age=10, stale-while-revalidate=30');
-    
-    return response;
-    
+
+    // Get counts in parallel with a more efficient query
+    const countsByStatus = await prisma.rental.groupBy({
+      by: ['status'],
+      where: { lessorId: userId },
+      _count: { _all: true },
+    });
+
+    // Process counts
+    const counts = {
+      upcoming: 0,
+      current: 0,
+      past: 0,
+    };
+
+    countsByStatus.forEach(({ status, _count }) => {
+      if (status === 'PENDING' || status === 'CONFIRMED') {
+        counts.upcoming += _count._all;
+      } else if (status === 'ACTIVE' || status === 'LATE_RETURN' || status === 'DISPUTED') {
+        counts.current += _count._all;
+      } else if (status === 'COMPLETED' || status === 'CANCELLED') {
+        counts.past += _count._all;
+      }
+    });
+
+    // Format rentals for frontend
+    const formattedRentals = rentals.map(rental => ({
+      ...rental,
+      trailerTitle: rental.trailer.title,
+      trailerImage: rental.trailer.images[0]?.url || null,
+      renter: rental.renter,
+    }));
+
+    const responseData = {
+      rentals: formattedRentals,
+      counts,
+      lastUpdated: new Date().toISOString(),
+    };
+
+    // Update cache
+    cache.set(cacheKey, {
+      data: responseData,
+      timestamp: Date.now(),
+    });
+
+    // Clean old cache entries
+    if (cache.size > 100) {
+      const now = Date.now();
+      for (const [key, value] of cache.entries()) {
+        if (now - value.timestamp > CACHE_DURATION * 2) {
+          cache.delete(key);
+        }
+      }
+    }
+
+    return NextResponse.json(responseData);
   } catch (error) {
+    console.error('Error fetching lessor history:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch lessor rental history' },
+      { error: 'Failed to fetch rental history' },
+      { status: 500 }
+    );
+  }
+}
+
+// Separate endpoint for counts only (for quick updates)
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+
+    // Get counts only
+    const countsByStatus = await prisma.rental.groupBy({
+      by: ['status'],
+      where: { lessorId: userId },
+      _count: { _all: true },
+    });
+
+    const counts = {
+      upcoming: 0,
+      current: 0,
+      past: 0,
+    };
+
+    countsByStatus.forEach(({ status, _count }) => {
+      if (status === 'PENDING' || status === 'CONFIRMED') {
+        counts.upcoming += _count._all;
+      } else if (status === 'ACTIVE' || status === 'LATE_RETURN' || status === 'DISPUTED') {
+        counts.current += _count._all;
+      } else if (status === 'COMPLETED' || status === 'CANCELLED') {
+        counts.past += _count._all;
+      }
+    });
+
+    return NextResponse.json(counts);
+  } catch (error) {
+    console.error('Error fetching lessor counts:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch counts' },
       { status: 500 }
     );
   }
