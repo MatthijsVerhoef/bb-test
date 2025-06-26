@@ -1,9 +1,9 @@
-// src/stores/auth.store.ts
 "use client";
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import { signIn, signOut } from 'next-auth/react';
 import { ApiClient } from '@/lib/api-client';
 
 export interface User {
@@ -39,6 +39,7 @@ interface AuthActions {
   resendVerificationEmail: (email: string) => Promise<void>;
   clearError: () => void;
   initializeAuth: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 interface AuthStore extends AuthState {
@@ -62,28 +63,31 @@ export const useAuthStore = create<AuthStore>()(
               state.error = null;
             });
 
-            const data = await ApiClient.fetch<{ user: User }>('/api/auth/login', {
-              method: 'POST',
-              body: JSON.stringify({ email, password }),
+            // Use NextAuth signIn
+            const result = await signIn('credentials', {
+              email,
+              password,
+              redirect: false,
+            });
+
+            if (result?.error) {
+              throw new Error(result.error);
+            }
+
+            // Get user data after successful login
+            const userData = await ApiClient.fetch<{ user: User }>('/api/auth/me', {
+              method: 'GET',
               cacheConfig: { ttl: 0 },
             });
 
-            localStorage.setItem(
-              "userSession",
-              JSON.stringify({
-                user: data.user,
-                expiry: Date.now() + 30 * 60 * 1000,
-              })
-            );
-
             set(state => {
-              state.user = data.user;
+              state.user = userData.user;
               state.loading = false;
               state.initialized = true;
               state.error = null;
             });
 
-            return data.user;
+            return userData.user;
           } catch (error: any) {
             set(state => {
               state.loading = false;
@@ -99,12 +103,8 @@ export const useAuthStore = create<AuthStore>()(
               state.loading = true;
             });
 
-            await ApiClient.fetch('/api/auth/logout', {
-              method: 'POST',
-              cacheConfig: { ttl: 0 },
-            });
-
-            localStorage.removeItem("userSession");
+            // Use NextAuth signOut
+            await signOut({ redirect: false });
             
             set(state => {
               state.user = null;
@@ -167,20 +167,6 @@ export const useAuthStore = create<AuthStore>()(
               state.error = null;
             });
             
-            // Update local storage
-            const userSession = localStorage.getItem("userSession");
-            if (userSession) {
-              const parsedSession = JSON.parse(userSession);
-              localStorage.setItem(
-                "userSession",
-                JSON.stringify({
-                  user: response.user,
-                  expiry: parsedSession.expiry,
-                  profileComplete: true,
-                })
-              );
-            }
-            
             return response.user;
           } catch (error: any) {
             set(state => {
@@ -221,36 +207,41 @@ export const useAuthStore = create<AuthStore>()(
           });
         },
 
-        initializeAuth: () => {
+        refreshUser: async () => {
           try {
-            const localSession = localStorage.getItem("userSession");
-            if (localSession) {
-              const parsedSession = JSON.parse(localSession);
-              const sessionExpiry = parsedSession.expiry || 0;
+            const userData = await ApiClient.fetch<{ user: User }>('/api/auth/me', {
+              method: 'GET',
+              cacheConfig: { ttl: 0 },
+            });
 
-              if (sessionExpiry > Date.now()) {
-                set(state => {
-                  state.user = parsedSession.user;
-                  state.loading = false;
-                  state.initialized = true;
-                });
-              } else {
-                localStorage.removeItem("userSession");
-                set(state => {
-                  state.user = null;
-                  state.loading = false;
-                  state.initialized = true;
-                });
-              }
-            } else {
-              set(state => {
-                state.user = null;
-                state.loading = false;
-                state.initialized = true;
-              });
-            }
-          } catch (e) {
-            console.warn("Error loading session:", e);
+            set(state => {
+              state.user = userData.user;
+              state.loading = false;
+              state.initialized = true;
+            });
+          } catch (error) {
+            set(state => {
+              state.user = null;
+              state.loading = false;
+              state.initialized = true;
+            });
+          }
+        },
+
+        initializeAuth: async () => {
+          try {
+            // Get current user from NextAuth session
+            const userData = await ApiClient.fetch<{ user: User }>('/api/auth/me', {
+              method: 'GET',
+              cacheConfig: { ttl: 0 },
+            });
+
+            set(state => {
+              state.user = userData.user;
+              state.loading = false;
+              state.initialized = true;
+            });
+          } catch (error) {
             set(state => {
               state.user = null;
               state.loading = false;
@@ -266,7 +257,7 @@ export const useAuthStore = create<AuthStore>()(
   )
 );
 
-// Convenience hook for backward compatibility
+// Convenience hook
 export const useAuth = () => {
   const { user, loading, error, initialized, actions } = useAuthStore();
   
@@ -283,5 +274,6 @@ export const useAuth = () => {
     resetPassword: actions.resetPassword,
     resendVerificationEmail: actions.resendVerificationEmail,
     clearError: actions.clearError,
+    refreshUser: actions.refreshUser,
   };
 };

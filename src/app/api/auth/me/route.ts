@@ -1,24 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getToken } from "next-auth/jwt";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const token = await getToken({ 
+    const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET 
+      secret: process.env.NEXTAUTH_SECRET!,
     });
 
-    console.log("ME ROUTE: Token details:", token);
-
-    if (!token || !token.email) {
-      console.log("ME ROUTE: No valid token found");
+    if (!token?.email) {
       return NextResponse.json(
-        { error: "You must be logged in to access this endpoint" },
+        { error: "Unauthorized" },
         { status: 401 }
       );
     }
 
+    // Get fresh user data
     const user = await prisma.user.findUnique({
       where: { email: token.email },
       select: {
@@ -32,10 +30,13 @@ export async function GET(request: Request) {
         memberSince: true,
         city: true,
         country: true,
+        phone: true,
+        address: true,
+        postalCode: true,
+        bio: true,
+        lastActive: true,
       },
     });
-
-    console.log("ME ROUTE: User found:", user);
 
     if (!user) {
       return NextResponse.json(
@@ -43,6 +44,12 @@ export async function GET(request: Request) {
         { status: 404 }
       );
     }
+
+    // Update last active timestamp asynchronously
+    prisma.user.update({
+      where: { id: user.id },
+      data: { lastActive: new Date() },
+    }).catch(console.error);
 
     return NextResponse.json({ user });
   } catch (error) {
