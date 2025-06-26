@@ -1047,13 +1047,13 @@ model Blog {
   published       Boolean   @default(false)
   publishedAt     DateTime?
   authorName      String
-  authorId        String? // Optioneel: link naar een gebruiker als die de auteur is
+  authorId        String?
   metaTitle       String?
   metaDescription String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  categories BlogCategory[]
+  categories BlogCategoryRelation[]
 }
 
 model BlogCategory {
@@ -1062,7 +1062,19 @@ model BlogCategory {
   slug        String  @unique
   description String?
 
-  posts Blog[]
+  posts BlogCategoryRelation[]
+}
+
+model BlogCategoryRelation {
+  id         String       @id @default(uuid())
+  blog       Blog         @relation(fields: [blogId], references: [id])
+  blogId     String
+  category   BlogCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  @@unique([blogId, categoryId])
+  @@index([blogId])
+  @@index([categoryId])
 }
 
 model EmailTemplate {
