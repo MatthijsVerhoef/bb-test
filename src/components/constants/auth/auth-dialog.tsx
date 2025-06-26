@@ -1,20 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   LoginForm,
   RegisterForm,
@@ -40,103 +27,72 @@ export default function AuthDialog({
   const [isMobile, setIsMobile] = useState(false);
   const [errorState, setErrorState] = useState<string | null>(null);
 
-  // Effect to check screen size and handle viewport for iOS
+  // Effect to check screen size
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
     };
 
-    // Check on mount
     checkScreenSize();
-
-    // Add resize listener
     window.addEventListener("resize", checkScreenSize);
-
-    // iOS-specific viewport handling
-    const isIOS =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-
-    // When dialog is open on mobile, handle body scrolling and viewport
-    if (isMobile && isOpen) {
-      // Save current scroll position
-      const scrollY = window.scrollY;
-
-      // Apply a fixed position to the body to prevent scrolling
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
-
-      // iOS-specific viewport handling to prevent jumps
-      if (isIOS) {
-        // Create a meta tag to control viewport
-        const viewportMeta = document.createElement("meta");
-        viewportMeta.name = "viewport";
-        viewportMeta.content =
-          "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no";
-        viewportMeta.id = "viewport-meta-auth-dialog";
-
-        // Remove any existing viewport meta tags and add the new one
-        const existingMeta = document.head.querySelector(
-          'meta[name="viewport"]'
-        );
-        if (existingMeta) {
-          document.head.removeChild(existingMeta);
-        }
-        document.head.appendChild(viewportMeta);
-      }
-
-      // Return cleanup function
-      return () => {
-        // Restore body scrolling when dialog closes
-        document.body.style.position = "";
-        document.body.style.top = "";
-        document.body.style.width = "";
-
-        // Restore scroll position
-        window.scrollTo(0, scrollY);
-
-        // Restore original viewport meta tag for iOS
-        if (isIOS) {
-          const authViewportMeta = document.getElementById(
-            "viewport-meta-auth-dialog"
-          );
-          if (authViewportMeta) {
-            document.head.removeChild(authViewportMeta);
-
-            // Restore default viewport
-            const defaultViewportMeta = document.createElement("meta");
-            defaultViewportMeta.name = "viewport";
-            defaultViewportMeta.content = "width=device-width, initial-scale=1";
-            document.head.appendChild(defaultViewportMeta);
-          }
-        }
-
-        // Clean up resize event
-        window.removeEventListener("resize", checkScreenSize);
-      };
-    }
 
     return () => {
       window.removeEventListener("resize", checkScreenSize);
     };
+  }, []);
+
+  // Simplified body scroll handling without viewport manipulation
+  useEffect(() => {
+    if (isMobile && isOpen) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+
+      // Create a style element to prevent scrolling without changing layout
+      const style = document.createElement("style");
+      style.textContent = `
+        body {
+          overflow: hidden !important;
+          position: relative !important;
+          height: 100% !important;
+        }
+      `;
+      style.id = "auth-dialog-scroll-lock";
+      document.head.appendChild(style);
+
+      // Add padding to compensate for scrollbar if needed
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
+
+      return () => {
+        // Remove the style element
+        const styleElement = document.getElementById("auth-dialog-scroll-lock");
+        if (styleElement) {
+          document.head.removeChild(styleElement);
+        }
+
+        // Remove padding
+        document.body.style.paddingRight = "";
+
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+      };
+    }
   }, [isMobile, isOpen]);
 
   const handleClose = () => {
     onClose();
   };
 
-  // When auth is successful, close the dialog and possibly redirect
   const handleSuccess = () => {
-    // Clear any errors when successful
     setErrorState(null);
     onClose();
 
-    // If we're on the verhuren page, redirect to the add trailer form
     if (window.location.pathname.includes("/verhuren")) {
       window.location.href = "/plaatsen";
-    }
-    // If we're on the login page, redirect to home to avoid showing login again
-    else if (
+    } else if (
       window.location.pathname.includes("/login") ||
       window.location.pathname.includes("/register")
     ) {
@@ -167,7 +123,6 @@ export default function AuthDialog({
             <div className="px-2 overflow-hidden min-h-[350px]">
               <ForgotPasswordForm
                 onSuccess={() => {
-                  // After success, we can either go back to login or close the dialog
                   setTimeout(() => {
                     setShowForgotPassword(false);
                   }, 3000);
@@ -254,7 +209,8 @@ export default function AuthDialog({
 
     return (
       <div
-        className="fixed inset-0 bg-black/50 z-[99] flex flex-col justify-end"
+        className="fixed inset-0 z-[99] flex flex-col justify-end"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
         onClick={(e) => {
           if (e.target === e.currentTarget) {
             handleClose();
@@ -262,7 +218,8 @@ export default function AuthDialog({
         }}
       >
         <div
-          className="bg-white rounded-t-xl w-full max-h-[92vh] overflow-hidden"
+          className="bg-white rounded-t-xl w-full overflow-hidden"
+          style={{ maxHeight: "92vh" }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Fixed position header */}
@@ -280,7 +237,11 @@ export default function AuthDialog({
 
           <div
             className="overflow-auto"
-            style={{ height: "calc(92vh - 60px)", maxHeight: "80vh" }}
+            style={{
+              height: "calc(92vh - 60px)",
+              maxHeight: "80vh",
+              WebkitOverflowScrolling: "touch",
+            }}
           >
             <div className="p-4 pt-6 pb-40">
               <AuthContent />
