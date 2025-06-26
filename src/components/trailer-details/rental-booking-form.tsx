@@ -129,8 +129,8 @@ export default function RentalBookingForm({
       blockedPeriodsData,
       weeklyAvailabilityData,
       trailerId,
-      pickupTimeOptions, // <-- Now passing the actual options
-      returnTimeOptions, // <-- Now passing the actual options
+      pickupTimeOptions,
+      returnTimeOptions,
     });
 
   // Initialize user data

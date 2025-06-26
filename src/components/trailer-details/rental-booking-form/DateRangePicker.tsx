@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { CalendarIcon, Calendar as CalendarIc } from "lucide-react";
+import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
@@ -15,12 +14,19 @@ import {
   isSameDay,
   getDay,
   addDays,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  addMonths,
+  subMonths,
+  isWithinInterval,
 } from "date-fns";
 import { nl, enUS, de } from "date-fns/locale";
 import { useTranslation } from "@/lib/i18n/client";
+import { cn } from "@/lib/utils";
 import {
   formatDateRange as formatDateRangeUtil,
-  getAvailableTimeOptions,
   DAY_MAP,
   isDateDisabled as isDateDisabledUtil,
 } from "@/lib/utils/date-availability";
@@ -67,6 +73,10 @@ export default function DateRangePicker({
   const { t, locale } = useTranslation("trailer");
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
+
+  const dateLocale = locale === "nl" ? nl : locale === "de" ? de : enUS;
 
   useEffect(() => {
     if (
@@ -143,6 +153,7 @@ export default function DateRangePicker({
 
         // Update the dates through the parent component
         onDateChange(firstAvailableDate, calculatedEndDate);
+        setCurrentMonth(firstAvailableDate);
         setHasInitialized(true);
       } else {
         setHasInitialized(true);
@@ -165,15 +176,15 @@ export default function DateRangePicker({
 
   const formatDateRange = () => {
     if (startDate && endDate) {
-      return formatDateRangeUtil(startDate, endDate, locale, {
-        selectDates: t("booking.dates.select"),
+      const startFormatted = format(startDate, "d MMM", { locale: dateLocale });
+      const endFormatted = format(endDate, "d MMM yyyy", {
+        locale: dateLocale,
       });
+      return `${startFormatted} — ${endFormatted}`;
     } else if (startDate && !endDate) {
       return (
         <>
-          {format(startDate, "d MMM yyyy", {
-            locale: locale === "nl" ? nl : locale === "de" ? de : enUS,
-          })}
+          {format(startDate, "d MMM yyyy", { locale: dateLocale })}
           {" — "}
           <span className="text-gray-400">
             {t("booking.dates.selectEndDate") || "Select end date"}
@@ -251,52 +262,135 @@ export default function DateRangePicker({
     return false;
   };
 
-  const handleDateSelect = (range: { from?: Date; to?: Date } | undefined) => {
-    if (!range) {
-      onDateChange(undefined, undefined);
-      return;
-    }
+  const handleDateClick = (date: Date) => {
+    if (isDateDisabled(date)) return;
 
-    if (range.from && !range.to) {
-      onDateChange(range.from, undefined);
-      return;
-    }
+    if (!startDate || (startDate && endDate)) {
+      // Starting a new selection
+      onDateChange(date, undefined);
+    } else {
+      // Completing the range
+      if (isBefore(date, startDate)) {
+        // If clicked date is before start, reset to new start
+        onDateChange(date, undefined);
+      } else {
+        // Check for blocked dates in range
+        let currentDate = new Date(startDate);
+        currentDate.setHours(0, 0, 0, 0);
 
-    if (range.from && range.to) {
-      // Check for blocked dates in range
-      let currentDate = new Date(range.from);
-      currentDate.setHours(0, 0, 0, 0);
+        const endDateCheck = new Date(date);
+        endDateCheck.setHours(0, 0, 0, 0);
 
-      const endDate = new Date(range.to);
-      endDate.setHours(0, 0, 0, 0);
-
-      currentDate = addDays(currentDate, 1);
-
-      let hasBlockedDate = false;
-
-      while (isBefore(currentDate, endDate)) {
-        if (isDateDisabled(currentDate)) {
-          hasBlockedDate = true;
-          break;
-        }
         currentDate = addDays(currentDate, 1);
-      }
 
-      if (hasBlockedDate) {
-        onDateChange(range.to, undefined);
-        return;
-      }
+        let hasBlockedDate = false;
 
-      onDateChange(range.from, range.to);
+        while (isBefore(currentDate, endDateCheck)) {
+          if (isDateDisabled(currentDate)) {
+            hasBlockedDate = true;
+            break;
+          }
+          currentDate = addDays(currentDate, 1);
+        }
+
+        if (hasBlockedDate) {
+          // Start new selection from clicked date
+          onDateChange(date, undefined);
+        } else {
+          // Complete the range
+          onDateChange(startDate, date);
+        }
+      }
     }
   };
 
+  const isDateInRange = (date: Date) => {
+    if (!startDate || !endDate) return false;
+    return isWithinInterval(date, { start: startDate, end: endDate });
+  };
+
+  const isDateRangeStart = (date: Date) => {
+    return startDate && isSameDay(date, startDate);
+  };
+
+  const isDateRangeEnd = (date: Date) => {
+    return endDate && isSameDay(date, endDate);
+  };
+
+  const isDateHovered = (date: Date) => {
+    if (!startDate || endDate || !hoveredDate) return false;
+    if (isBefore(hoveredDate, startDate)) return false;
+    return isWithinInterval(date, { start: startDate, end: hoveredDate });
+  };
+
+  const getDayClass = (date: Date) => {
+    const isDisabled = isDateDisabled(date);
+    const isToday = isSameDay(date, new Date());
+    const isRangeStart = isDateRangeStart(date);
+    const isRangeEnd = isDateRangeEnd(date);
+    const isInRange = isDateInRange(date);
+    const isHovered = isDateHovered(date);
+    const isSelected = isRangeStart || isRangeEnd;
+
+    return cn(
+      "relative h-9 w-9 p-0 font-normal text-sm rounded-md transition-all",
+      "hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/20",
+      {
+        // Base states
+        "text-gray-900": !isDisabled && !isSelected,
+        "text-gray-300 cursor-not-allowed hover:bg-transparent": isDisabled,
+
+        // Today
+        "font-semibold": isToday,
+
+        // Selected dates
+        "bg-primary text-white hover:bg-primary/90": isSelected,
+
+        // Range states
+        "bg-primary/10 hover:bg-primary/20 rounded-none":
+          isInRange && !isSelected,
+        "rounded-l-md": isRangeStart && endDate,
+        "rounded-r-md": isRangeEnd && startDate,
+
+        // Hover range preview
+        "bg-gray-100": isHovered && !isInRange,
+
+        // Outside current month
+        "text-gray-300": !isSameMonth(date, currentMonth),
+      }
+    );
+  };
+
+  // Generate calendar days
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const startDate_ = startOfMonth(monthStart);
+  const endDate_ = endOfMonth(monthEnd);
+
+  // Adjust to start on Sunday
+  startDate_.setDate(startDate_.getDate() - startDate_.getDay());
+  // Adjust to end on Saturday
+  endDate_.setDate(endDate_.getDate() + (6 - endDate_.getDay()));
+
+  const days = eachDayOfInterval({ start: startDate_, end: endDate_ });
+
+  const weekDays =
+    locale === "nl"
+      ? ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"]
+      : locale === "de"
+      ? ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
+      : ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
   return (
     <div className="space-y-2">
-      <Label htmlFor="date-range" className="flex items-center gap-2 mb-3">
+      <Label
+        htmlFor="date-range"
+        className="flex items-center gap-2 text-sm font-medium"
+      >
         <CalendarIcon className="h-4 w-4" strokeWidth={1.5} />
         {t("booking.rentalDates")}
       </Label>
+
       <Popover
         open={isDatePickerOpen}
         onOpenChange={(open) => {
@@ -304,6 +398,7 @@ export default function DateRangePicker({
             handleOpenDatePicker();
           } else {
             setIsDatePickerOpen(false);
+            setHoveredDate(null);
           }
         }}
       >
@@ -311,80 +406,133 @@ export default function DateRangePicker({
           <Button
             id="date-range"
             variant="outline"
-            className={`w-full h-10 rounded-lg shadow-none justify-start text-left font-normal ${
-              validationError ? "border-red-500" : ""
-            }`}
+            className={cn(
+              "w-full h-12 px-4 rounded-lg border-gray-200 justify-between text-left font-normal",
+              "hover:border-gray-300 transition-colors",
+              validationError && "border-red-500",
+              !startDate && "text-gray-500"
+            )}
             disabled={!available || isLoading}
           >
-            {isLoading ? t("booking.dates.loading") : formatDateRange()}
-            <CalendarIc strokeWidth={1.5} />
+            <span className="truncate">
+              {isLoading ? t("booking.dates.loading") : formatDateRange()}
+            </span>
+            <CalendarIcon
+              className="h-4 w-4 text-gray-400 flex-shrink-0 ml-2"
+              strokeWidth={1.5}
+            />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 shadow-none" align="start">
-          <Calendar
-            mode="range"
-            selected={{
-              from: startDate,
-              to: endDate,
-            }}
-            onSelect={handleDateSelect}
-            disabled={isDateDisabled}
-            initialFocus
-            footer={
-              <div className="p-3 border-t">
-                <div className="mb-2 text-sm text-center">
+
+        <PopoverContent
+          className="w-auto p-0 bg-white shadow-lg rounded-lg border"
+          align="start"
+        >
+          <div className="p-4">
+            {/* Calendar Header */}
+            <div className="flex items-center justify-between mb-4">
+              <button
+                onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
+                aria-label="Previous month"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+
+              <h2 className="text-sm font-semibold text-gray-900">
+                {format(currentMonth, "MMMM yyyy", { locale: dateLocale })}
+              </h2>
+
+              <button
+                onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
+                aria-label="Next month"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {weekDays.map((day) => (
+                <div
+                  key={day}
+                  className="h-9 w-9 flex items-center justify-center text-xs font-medium text-gray-500"
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-7 gap-1">
+              {days.map((day, dayIdx) => (
+                <button
+                  key={dayIdx}
+                  onClick={() => handleDateClick(day)}
+                  onMouseEnter={() => setHoveredDate(day)}
+                  onMouseLeave={() => setHoveredDate(null)}
+                  disabled={isDateDisabled(day)}
+                  className={getDayClass(day)}
+                >
+                  <time dateTime={format(day, "yyyy-MM-dd")}>
+                    {format(day, "d")}
+                  </time>
+                </button>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="flex justify-between items-center text-sm">
+                <div className="text-gray-600">
                   {startDate && endDate ? (
-                    <span className="font-medium">
-                      {format(startDate, "d MMM", {
-                        locale:
-                          locale === "nl" ? nl : locale === "de" ? de : enUS,
-                      })}
+                    <span>
+                      {format(startDate, "d MMM", { locale: dateLocale })}
                       {" — "}
-                      {format(endDate, "d MMM yyyy", {
-                        locale:
-                          locale === "nl" ? nl : locale === "de" ? de : enUS,
-                      })}
+                      {format(endDate, "d MMM yyyy", { locale: dateLocale })}
                     </span>
                   ) : startDate ? (
-                    <span>
-                      {format(startDate, "d MMM", {
-                        locale:
-                          locale === "nl" ? nl : locale === "de" ? de : enUS,
-                      })}
-                      <span className="text-primary font-medium">
-                        {" "}
-                        {t("Select end date")}
-                      </span>
+                    <span className="text-primary">
+                      {t("booking.dates.selectEndDate")}
                     </span>
                   ) : (
-                    <span>{t("Select start date")}</span>
+                    <span>{t("booking.dates.selectStartDate")}</span>
                   )}
                 </div>
+
                 <Button
-                  variant="default"
                   size="sm"
-                  className="w-full"
                   onClick={() => setIsDatePickerOpen(false)}
+                  disabled={!startDate}
+                  className="h-8 px-3"
                 >
                   {t("booking.dates.apply")}
                 </Button>
               </div>
-            }
-          />
+            </div>
+          </div>
         </PopoverContent>
       </Popover>
+
       {validationError && (
         <p className="text-xs text-red-500 mt-1">{validationError}</p>
       )}
-      <div className="flex text-xs text-gray-500 gap-2">
-        {minRentalDuration && minRentalDuration >= 1 && (
-          <span>{t("booking.dates.minDays", { days: minRentalDuration })}</span>
-        )}
-        {minRentalDuration && maxRentalDuration && <span>-</span>}
-        {maxRentalDuration && (
-          <span>{t("booking.dates.maxDays", { days: maxRentalDuration })}</span>
-        )}
-      </div>
+
+      {(minRentalDuration || maxRentalDuration) && (
+        <div className="flex text-xs text-gray-500 gap-2">
+          {minRentalDuration && minRentalDuration >= 1 && (
+            <span>
+              {t("booking.dates.minDays", { days: minRentalDuration })}
+            </span>
+          )}
+          {minRentalDuration && maxRentalDuration && <span>•</span>}
+          {maxRentalDuration && (
+            <span>
+              {t("booking.dates.maxDays", { days: maxRentalDuration })}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
