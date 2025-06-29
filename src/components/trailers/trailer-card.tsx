@@ -4,10 +4,11 @@ import Link from "next/link";
 import { MapPin, Heart, Camera } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useFavoritesData } from "@/hooks/useFavoritesData";
 import { useTranslation } from "@/lib/i18n/client";
+import { trackNavigationStart } from "@/hooks/useNavigationPerformance";
 
 interface TrailerCardProps {
   trailer: {
@@ -23,7 +24,6 @@ interface TrailerCardProps {
 export default function TrailerCard({ trailer }: TrailerCardProps) {
   const { t } = useTranslation("home");
   const { isFavorite, addFavorite, removeFavorite } = useFavoritesData();
-  const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [isFavoriteState, setIsFavoriteState] = useState(() =>
     isFavorite(trailer.id)
@@ -33,6 +33,11 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
   if (isFavoriteState !== isFavorite(trailer.id)) {
     setIsFavoriteState(isFavorite(trailer.id));
   }
+
+  // Track when user clicks on a trailer
+  const handleClick = useCallback(() => {
+    trackNavigationStart();
+  }, []);
 
   // Handle favorite toggle with optimistic UI updates
   function handleFavorite(e: React.MouseEvent) {
@@ -66,6 +71,7 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
       <Link
         href={`/aanbod/${trailer.id}`}
         className="relative block overflow-hidden aspect-[6/4] rounded-md"
+        onClick={handleClick}
       >
         {isValidImageUrl ? (
           <Image
@@ -75,9 +81,10 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
             className="object-cover bg-gray-200 transition-transform duration-300 hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             onError={() => setImageError(true)}
+            priority={false}
+            loading="lazy"
           />
         ) : (
-          // Placeholder when image fails or is invalid
           <div className="w-full h-full bg-gray-200 flex items-center justify-center">
             <div className="text-center text-gray-500">
               <div className="text-2xl mb-2">
@@ -87,7 +94,6 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
           </div>
         )}
 
-        {/* Availability badge */}
         {trailer.available === false && (
           <Badge
             variant="destructive"
@@ -97,7 +103,6 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
           </Badge>
         )}
 
-        {/* Favorite heart icon */}
         <button
           className={cn(
             "absolute top-2 right-2 cursor-pointer p-2 rounded-full transition-colors",
@@ -120,9 +125,8 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
         </button>
       </Link>
 
-      {/* Content: title, location, price */}
       <CardContent className="-mt-[10px] p-0">
-        <Link href={`/aanbod/${trailer.id}`}>
+        <Link href={`/aanbod/${trailer.id}`} onClick={handleClick}>
           <h3 className="text-[15px] font-semibold text-gray-900 transition-colors line-clamp-1">
             {trailer.title}
           </h3>
