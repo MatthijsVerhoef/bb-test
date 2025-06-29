@@ -1,5 +1,4 @@
 "use client";
-
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/constants/header";
 import Footer from "@/components/constants/footer";
@@ -9,11 +8,12 @@ import { usePathname } from "next/navigation";
 import AppProvider from "@/providers/AppProvider";
 import { TranslationProvider } from "@/lib/i18n/client";
 import { Locale } from "@/lib/i18n/config";
+import { useEffect } from "react";
 
 interface ClientLayoutProps {
   children: React.ReactNode;
-  initialLocale: Locale;
-  initialTranslations: Record<string, any>;
+  initialLocale?: Locale;
+  initialTranslations?: Record<string, any>;
 }
 
 export default function ClientLayout({
@@ -22,6 +22,17 @@ export default function ClientLayout({
   initialTranslations,
 }: ClientLayoutProps) {
   const pathname = usePathname();
+
+  // Debug to see what's being passed
+  useEffect(() => {
+    console.log("[CLIENT] ClientLayout received:", {
+      initialLocale,
+      hasTranslations: !!initialTranslations,
+      translationKeys: initialTranslations
+        ? Object.keys(initialTranslations)
+        : [],
+    });
+  }, []);
 
   return (
     <SessionProvider>

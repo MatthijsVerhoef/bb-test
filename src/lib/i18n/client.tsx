@@ -19,27 +19,7 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType | null>(null);
 
-// Get locale from cookies on client side
-function getClientLocale(): Locale {
-  if (typeof window === "undefined") {
-    return defaultLocale;
-  }
-
-  // Try to get from cookie first
-  const cookieMatch = document.cookie.match(/preferred-locale=([^;]+)/);
-  if (cookieMatch && ["nl", "en", "de"].includes(cookieMatch[1])) {
-    return cookieMatch[1] as Locale;
-  }
-
-  // Fallback to localStorage
-  const storedLocale = localStorage.getItem("preferred-locale") as Locale;
-  if (storedLocale && ["nl", "en", "de"].includes(storedLocale)) {
-    return storedLocale;
-  }
-
-  return defaultLocale;
-}
-
+// Make sure this is exported!
 export function TranslationProvider({
   children,
   initialLocale,
@@ -49,37 +29,28 @@ export function TranslationProvider({
   initialLocale?: Locale;
   initialTranslations?: Record<string, any>;
 }) {
-  // Use server-provided values or defaults
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    return initialLocale || defaultLocale;
-  });
+  // Use server-provided values with defaults
+  const [locale, setLocaleState] = useState<Locale>(
+    initialLocale || defaultLocale
+  );
+  const [translations, setTranslations] = useState<Record<string, any>>(
+    initialTranslations || {}
+  );
 
-  const [translations, setTranslations] = useState<Record<string, any>>(() => {
-    return initialTranslations || {};
-  });
-
-  // Track mounted state
   const isMountedRef = useRef(true);
   const loadingNamespacesRef = useRef(new Set<string>());
 
-  // Cleanup on unmount
   useEffect(() => {
+    console.log("[CLIENT] TranslationProvider mounted with:", {
+      locale,
+      translationNamespaces: Object.keys(translations),
+      sampleTranslation: translations.common?.header,
+    });
+
     return () => {
       isMountedRef.current = false;
     };
   }, []);
-
-  // Check client locale preference after mount (hydration)
-  useEffect(() => {
-    // Only check client preference if we have initial translations
-    if (initialTranslations && Object.keys(initialTranslations).length > 0) {
-      const clientLocale = getClientLocale();
-      // Only update if different from server locale
-      if (clientLocale !== locale) {
-        setLocale(clientLocale);
-      }
-    }
-  }, []); // Run once on mount
 
   const loadTranslations = useCallback(async (newLocale: Locale) => {
     try {
@@ -133,18 +104,15 @@ export function TranslationProvider({
       if (newLocale === locale) return;
 
       setLocaleState(newLocale);
-
       if (typeof window !== "undefined") {
         localStorage.setItem("preferred-locale", newLocale);
         document.cookie = `preferred-locale=${newLocale};path=/;max-age=31536000;SameSite=Lax`;
       }
-
       await loadTranslations(newLocale);
     },
     [locale, loadTranslations]
   );
 
-  // Load missing namespace dynamically
   const loadMissingNamespace = useCallback(
     async (namespace: string) => {
       if (
@@ -166,10 +134,6 @@ export function TranslationProvider({
               [namespace]: data,
             }));
           }
-        } else {
-          console.warn(
-            `Failed to load namespace ${namespace}, status: ${response.status}`
-          );
         }
       } catch (err) {
         console.warn(`Failed to load namespace ${namespace}`, err);
@@ -189,7 +153,7 @@ export function TranslationProvider({
       const namespaceData = translations[namespace];
 
       if (!namespaceData) {
-        // Schedule loading for next tick to avoid render-time side effects
+        // Queue loading for next tick
         if (typeof window !== "undefined") {
           Promise.resolve().then(() => loadMissingNamespace(namespace));
         }
@@ -245,12 +209,11 @@ export function useTranslation(namespace: string = "common") {
     throw new Error("useTranslation must be used within a TranslationProvider");
   }
 
-  // Load namespace on mount if it's missing
+  // Load namespace if missing
   useEffect(() => {
     if (!context.translations[namespace] && typeof window !== "undefined") {
-      // Use the loadMissingNamespace function through the t function
-      // This will trigger loading on next tick
-      context.t("_load_", namespace);
+      // Use the t function to trigger loading
+      context.t("_trigger_load_", namespace);
     }
   }, [namespace, context]);
 
