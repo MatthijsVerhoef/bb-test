@@ -19,27 +19,6 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType | null>(null);
 
-// Get locale from cookies on client side
-function getClientLocale(): Locale {
-  if (typeof window === "undefined") {
-    return defaultLocale;
-  }
-
-  // Try to get from cookie first (server-side compatible)
-  const cookieMatch = document.cookie.match(/preferred-locale=([^;]+)/);
-  if (cookieMatch && ["nl", "en", "de"].includes(cookieMatch[1])) {
-    return cookieMatch[1] as Locale;
-  }
-
-  // Fallback to localStorage
-  const storedLocale = localStorage.getItem("preferred-locale") as Locale;
-  if (storedLocale && ["nl", "en", "de"].includes(storedLocale)) {
-    return storedLocale;
-  }
-
-  return defaultLocale;
-}
-
 export function TranslationProvider({
   children,
   initialLocale = defaultLocale,
@@ -49,15 +28,8 @@ export function TranslationProvider({
   initialLocale?: Locale;
   initialTranslations?: Record<string, any>;
 }) {
-  // Initialize with cookie value if available
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    // Use initialLocale from server on first render
-    if (typeof window === "undefined") {
-      return initialLocale;
-    }
-    return getClientLocale();
-  });
-
+  // IMPORTANT: Always use server-provided values to prevent flash
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [translations, setTranslations] = useState<Record<string, any>>(
     initialTranslations || {}
   );
@@ -65,6 +37,7 @@ export function TranslationProvider({
   // Use refs to track component mount status
   const isMountedRef = useRef(true);
   const loadingNamespacesRef = useRef(new Set<string>());
+  const hasInitializedRef = useRef(false);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -73,9 +46,44 @@ export function TranslationProvider({
     };
   }, []);
 
+  // Sync with client preferences after hydration
+  useEffect(() => {
+    // Only run this once after hydration
+    if (hasInitializedRef.current) return;
+    hasInitializedRef.current = true;
+
+    // Check if client has a different preference than server
+    const clientLocale = getClientLocale();
+    if (clientLocale !== initialLocale) {
+      // User has a different preference stored locally
+      setLocale(clientLocale);
+    }
+  }, []); // Run only once on mount
+
+  // Get locale from cookies on client side
+  function getClientLocale(): Locale {
+    if (typeof window === "undefined") {
+      return initialLocale;
+    }
+
+    // Try to get from cookie first
+    const cookieMatch = document.cookie.match(/preferred-locale=([^;]+)/);
+    if (cookieMatch && ["nl", "en", "de"].includes(cookieMatch[1])) {
+      return cookieMatch[1] as Locale;
+    }
+
+    // Fallback to localStorage
+    const storedLocale = localStorage.getItem("preferred-locale") as Locale;
+    if (storedLocale && ["nl", "en", "de"].includes(storedLocale)) {
+      return storedLocale;
+    }
+
+    return initialLocale;
+  }
+
   const loadTranslations = async (newLocale: Locale) => {
     try {
-      // Load multiple namespaces
+      // Remove duplicate 'auth' from namespaces
       const namespaces = [
         "common",
         "home",
@@ -85,7 +93,6 @@ export function TranslationProvider({
         "profile",
         "reservation",
         "trailerTypes",
-        "auth",
       ];
 
       const translationPromises = namespaces.map(async (namespace) => {
@@ -122,14 +129,10 @@ export function TranslationProvider({
     }
   };
 
-  // Load translations when locale changes
-  useEffect(() => {
-    if (locale !== initialLocale) {
-      loadTranslations(locale);
-    }
-  }, [locale]);
-
   const setLocale = async (newLocale: Locale) => {
+    // Don't reload if it's the same locale
+    if (newLocale === locale) return;
+
     setLocaleState(newLocale);
     if (typeof window !== "undefined") {
       localStorage.setItem("preferred-locale", newLocale);
@@ -236,8 +239,8 @@ export function useTranslation(namespace: string = "common") {
           );
           if (response.ok) {
             const data = await response.json();
-            // This is safe because it's in an effect
-            context.setLocale(context.locale); // This will reload all translations
+            // Update translations for this specific namespace
+            context.translations[namespace] = data;
           }
         } catch (err) {
           console.warn(`Failed to load namespace ${namespace}`, err);
@@ -246,7 +249,7 @@ export function useTranslation(namespace: string = "common") {
 
       loadNamespace();
     }
-  }, [namespace, context.locale]);
+  }, [namespace, context.locale, context.translations]);
 
   return {
     ...context,

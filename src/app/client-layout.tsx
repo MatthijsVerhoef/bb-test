@@ -12,8 +12,8 @@ import { Locale } from "@/lib/i18n/config";
 
 interface ClientLayoutProps {
   children: React.ReactNode;
-  initialLocale?: Locale;
-  initialTranslations?: Record<string, any>;
+  initialLocale: Locale;
+  initialTranslations: Record<string, any>;
 }
 
 export default function ClientLayout({
