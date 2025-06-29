@@ -6,9 +6,9 @@ import React, {
   useState,
   useEffect,
   useRef,
+  useCallback,
 } from "react";
 import { defaultLocale, Locale } from "./config";
-import { defaultTranslations } from "./default-translations";
 
 interface TranslationContextType {
   locale: Locale;
@@ -19,25 +19,48 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType | null>(null);
 
+// Get locale from cookies on client side
+function getClientLocale(): Locale {
+  if (typeof window === "undefined") {
+    return defaultLocale;
+  }
+
+  // Try to get from cookie first
+  const cookieMatch = document.cookie.match(/preferred-locale=([^;]+)/);
+  if (cookieMatch && ["nl", "en", "de"].includes(cookieMatch[1])) {
+    return cookieMatch[1] as Locale;
+  }
+
+  // Fallback to localStorage
+  const storedLocale = localStorage.getItem("preferred-locale") as Locale;
+  if (storedLocale && ["nl", "en", "de"].includes(storedLocale)) {
+    return storedLocale;
+  }
+
+  return defaultLocale;
+}
+
 export function TranslationProvider({
   children,
-  initialLocale = defaultLocale,
-  initialTranslations = defaultTranslations,
+  initialLocale,
+  initialTranslations,
 }: {
   children: React.ReactNode;
   initialLocale?: Locale;
   initialTranslations?: Record<string, any>;
 }) {
-  // IMPORTANT: Always use server-provided values to prevent flash
-  const [locale, setLocaleState] = useState<Locale>(initialLocale);
-  const [translations, setTranslations] = useState<Record<string, any>>(
-    initialTranslations || {}
-  );
+  // Use server-provided values or defaults
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    return initialLocale || defaultLocale;
+  });
 
-  // Use refs to track component mount status
+  const [translations, setTranslations] = useState<Record<string, any>>(() => {
+    return initialTranslations || {};
+  });
+
+  // Track mounted state
   const isMountedRef = useRef(true);
   const loadingNamespacesRef = useRef(new Set<string>());
-  const hasInitializedRef = useRef(false);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -46,44 +69,20 @@ export function TranslationProvider({
     };
   }, []);
 
-  // Sync with client preferences after hydration
+  // Check client locale preference after mount (hydration)
   useEffect(() => {
-    // Only run this once after hydration
-    if (hasInitializedRef.current) return;
-    hasInitializedRef.current = true;
-
-    // Check if client has a different preference than server
-    const clientLocale = getClientLocale();
-    if (clientLocale !== initialLocale) {
-      // User has a different preference stored locally
-      setLocale(clientLocale);
+    // Only check client preference if we have initial translations
+    if (initialTranslations && Object.keys(initialTranslations).length > 0) {
+      const clientLocale = getClientLocale();
+      // Only update if different from server locale
+      if (clientLocale !== locale) {
+        setLocale(clientLocale);
+      }
     }
-  }, []); // Run only once on mount
+  }, []); // Run once on mount
 
-  // Get locale from cookies on client side
-  function getClientLocale(): Locale {
-    if (typeof window === "undefined") {
-      return initialLocale;
-    }
-
-    // Try to get from cookie first
-    const cookieMatch = document.cookie.match(/preferred-locale=([^;]+)/);
-    if (cookieMatch && ["nl", "en", "de"].includes(cookieMatch[1])) {
-      return cookieMatch[1] as Locale;
-    }
-
-    // Fallback to localStorage
-    const storedLocale = localStorage.getItem("preferred-locale") as Locale;
-    if (storedLocale && ["nl", "en", "de"].includes(storedLocale)) {
-      return storedLocale;
-    }
-
-    return initialLocale;
-  }
-
-  const loadTranslations = async (newLocale: Locale) => {
+  const loadTranslations = useCallback(async (newLocale: Locale) => {
     try {
-      // Remove duplicate 'auth' from namespaces
       const namespaces = [
         "common",
         "home",
@@ -127,96 +126,114 @@ export function TranslationProvider({
     } catch (error) {
       console.error("Failed to load translations:", error);
     }
-  };
+  }, []);
 
-  const setLocale = async (newLocale: Locale) => {
-    // Don't reload if it's the same locale
-    if (newLocale === locale) return;
+  const setLocale = useCallback(
+    async (newLocale: Locale) => {
+      if (newLocale === locale) return;
 
-    setLocaleState(newLocale);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("preferred-locale", newLocale);
-      document.cookie = `preferred-locale=${newLocale};path=/;max-age=31536000`;
-    }
-    await loadTranslations(newLocale);
-  };
+      setLocaleState(newLocale);
 
-  // Load missing namespace - this function is called from useEffect
-  const loadMissingNamespace = async (namespace: string) => {
-    if (loadingNamespacesRef.current.has(namespace)) {
-      return; // Already loading this namespace
-    }
-
-    loadingNamespacesRef.current.add(namespace);
-
-    try {
-      const response = await fetch(`/locales/${locale}/${namespace}.json`);
-      if (response.ok) {
-        const data = await response.json();
-        if (isMountedRef.current) {
-          setTranslations((prev) => ({
-            ...prev,
-            [namespace]: data,
-          }));
-        }
-      } else {
-        console.warn(
-          `Failed to load namespace ${namespace}, status: ${response.status}`
-        );
+      if (typeof window !== "undefined") {
+        localStorage.setItem("preferred-locale", newLocale);
+        document.cookie = `preferred-locale=${newLocale};path=/;max-age=31536000;SameSite=Lax`;
       }
-    } catch (err) {
-      console.warn(`Failed to load namespace ${namespace}`, err);
-    } finally {
-      loadingNamespacesRef.current.delete(namespace);
-    }
-  };
 
-  const t = (
-    key: string,
-    namespace: string = "common",
-    params?: Record<string, any>
-  ): string => {
-    // Handle the case where namespace isn't loaded yet
-    if (!translations[namespace]) {
-      // Return the key as fallback - DO NOT trigger any state updates here
-      return key;
-    }
+      await loadTranslations(newLocale);
+    },
+    [locale, loadTranslations]
+  );
 
-    const keys = key.split(".");
-    let value: any = translations[namespace];
+  // Load missing namespace dynamically
+  const loadMissingNamespace = useCallback(
+    async (namespace: string) => {
+      if (
+        loadingNamespacesRef.current.has(namespace) ||
+        translations[namespace]
+      ) {
+        return;
+      }
 
-    if (!value) {
-      return key;
-    }
+      loadingNamespacesRef.current.add(namespace);
 
-    for (const k of keys) {
-      if (value && typeof value === "object" && k in value) {
-        value = value[k];
-      } else {
+      try {
+        const response = await fetch(`/locales/${locale}/${namespace}.json`);
+        if (response.ok) {
+          const data = await response.json();
+          if (isMountedRef.current) {
+            setTranslations((prev) => ({
+              ...prev,
+              [namespace]: data,
+            }));
+          }
+        } else {
+          console.warn(
+            `Failed to load namespace ${namespace}, status: ${response.status}`
+          );
+        }
+      } catch (err) {
+        console.warn(`Failed to load namespace ${namespace}`, err);
+      } finally {
+        loadingNamespacesRef.current.delete(namespace);
+      }
+    },
+    [locale, translations]
+  );
+
+  const t = useCallback(
+    (
+      key: string,
+      namespace: string = "common",
+      params?: Record<string, any>
+    ): string => {
+      const namespaceData = translations[namespace];
+
+      if (!namespaceData) {
+        // Schedule loading for next tick to avoid render-time side effects
+        if (typeof window !== "undefined") {
+          Promise.resolve().then(() => loadMissingNamespace(namespace));
+        }
         return key;
       }
-    }
 
-    if (typeof value !== "string") {
-      return key;
-    }
+      const keys = key.split(".");
+      let value: any = namespaceData;
 
-    if (params) {
-      let result = value;
-      Object.entries(params).forEach(([paramKey, paramValue]) => {
-        result = result.replace(
-          new RegExp(`{{${paramKey}}}`, "g"),
-          String(paramValue)
-        );
-      });
-      return result;
-    }
+      for (const k of keys) {
+        if (value && typeof value === "object" && k in value) {
+          value = value[k];
+        } else {
+          return key;
+        }
+      }
 
-    return value;
-  };
+      if (typeof value !== "string") {
+        return key;
+      }
+
+      if (params) {
+        let result = value;
+        Object.entries(params).forEach(([paramKey, paramValue]) => {
+          result = result.replace(
+            new RegExp(`{{${paramKey}}}`, "g"),
+            String(paramValue)
+          );
+        });
+        return result;
+      }
+
+      return value;
+    },
+    [translations, loadMissingNamespace]
+  );
+
+  const contextValue = React.useMemo(
+    () => ({ locale, translations, t, setLocale }),
+    [locale, translations, t, setLocale]
+  );
 
   return (
-    <TranslationContext.Provider value={{ locale, translations, t, setLocale }}>
+    <TranslationContext.Provider value={contextValue}>
       {children}
     </TranslationContext.Provider>
   );
@@ -231,29 +248,19 @@ export function useTranslation(namespace: string = "common") {
   // Load namespace on mount if it's missing
   useEffect(() => {
     if (!context.translations[namespace] && typeof window !== "undefined") {
-      // Load the namespace asynchronously without affecting render
-      const loadNamespace = async () => {
-        try {
-          const response = await fetch(
-            `/locales/${context.locale}/${namespace}.json`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            // Update translations for this specific namespace
-            context.translations[namespace] = data;
-          }
-        } catch (err) {
-          console.warn(`Failed to load namespace ${namespace}`, err);
-        }
-      };
-
-      loadNamespace();
+      // Use the loadMissingNamespace function through the t function
+      // This will trigger loading on next tick
+      context.t("_load_", namespace);
     }
-  }, [namespace, context.locale, context.translations]);
+  }, [namespace, context]);
 
   return {
-    ...context,
-    t: (key: string, params?: Record<string, any>) =>
-      context.t(key, namespace, params),
+    locale: context.locale,
+    setLocale: context.setLocale,
+    t: useCallback(
+      (key: string, params?: Record<string, any>) =>
+        context.t(key, namespace, params),
+      [context, namespace]
+    ),
   };
 }
