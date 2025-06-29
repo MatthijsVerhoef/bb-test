@@ -11,7 +11,7 @@ enum UserRole {
   ADMIN
   USER
   LESSOR
-  SUPPORT // Toegevoegd voor klantenservice-medewerkers
+  SUPPORT
 }
 
 enum TrailerType {
@@ -1090,7 +1090,7 @@ model EmailTemplate {
 
 model SEOSettings {
   id            String   @id @default(uuid())
-  pagePath      String   @unique // Bijv. "/trailers", "/profile"
+  pagePath      String   @unique
   title         String
   description   String
   keywords      Json

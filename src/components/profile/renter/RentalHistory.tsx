@@ -1,5 +1,6 @@
-// components/profile/renter/RentalHistory.tsx - Complete optimized version
-import { useState, useEffect, useCallback, useMemo } from "react";
+// components/profile/renter/RentalHistory.tsx - Optimized version
+import { useState, useCallback, useMemo, memo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,10 +15,10 @@ import {
   Clock,
   Loader2,
   ShoppingBag,
-  MessageCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { useTranslation } from "@/lib/i18n/client";
+import { ApiClient } from "@/lib/api-client";
 import {
   RentalDetailsDialog,
   RentalCancellationDialog,
@@ -27,6 +28,7 @@ import {
 import SendMessageDialog from "./SendMessageDialog";
 import TrailerReviewDialog from "./TrailerReviewDialog";
 
+// Types
 enum RentalStatus {
   PENDING = "PENDING",
   CONFIRMED = "CONFIRMED",
@@ -49,10 +51,12 @@ interface RentalData {
   pickupLocation?: string;
   dropoffLocation?: string;
   lessor?: {
+    id?: string;
     firstName: string;
     lastName: string;
     phoneNumber?: string;
     email?: string;
+    profilePicture?: string;
   };
   serviceFee?: number;
   insuranceFee?: number;
@@ -71,271 +75,83 @@ interface RentalData {
 
 interface RenterHistoryProps {
   userId: string;
-  initialRentals?: RentalData[];
-  onCancel?: (rentalId: string, reason: string) => Promise<void>;
-  onExtendRental?: (
-    rentalId: string,
-    newEndDate: Date,
-    note?: string
-  ) => Promise<void>;
-  onReportDamage?: (rentalId: string, damageReport: any) => Promise<void>;
-  onSubmitReview?: (reviewData: any) => Promise<void>;
 }
 
-export default function RenterHistory({
-  userId,
-  initialRentals = [],
-  onCancel = async () => {},
-  onExtendRental = async () => {},
-  onReportDamage = async () => {},
-  onSubmitReview = async () => {},
-}: RenterHistoryProps) {
-  const { t } = useTranslation("profile");
-  const [activeTab, setActiveTab] = useState("upcoming");
-  const [selectedRental, setSelectedRental] = useState<RentalData | null>(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [cancelOpen, setCancelOpen] = useState(false);
-  const [extendOpen, setExtendOpen] = useState(false);
-  const [damageReportOpen, setDamageReportOpen] = useState(false);
-  const [reviewOpen, setReviewOpen] = useState(false);
-  const [isCancelling, setIsCancelling] = useState(false);
+// Query key factory
+const rentalKeys = {
+  all: ["rentals"] as const,
+  renter: (userId: string) => [...rentalKeys.all, "renter", userId] as const,
+  detail: (rentalId: string) =>
+    [...rentalKeys.all, "detail", rentalId] as const,
+};
 
-  // Optimized state management
-  const [rentals, setRentals] = useState<RentalData[]>(initialRentals);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(
-    initialRentals.length > 0
-  );
+// Memoized subcomponents
+const RentalCard = memo(
+  ({
+    rental,
+    onAction,
+    userId,
+    isLastItem,
+  }: {
+    rental: RentalData;
+    onAction: (action: string, rental: RentalData) => void;
+    userId: string;
+    isLastItem: boolean;
+  }) => {
+    const { t } = useTranslation("profile");
 
-  // Memoized filtered rentals
-  const { upcomingRentals, activeRentals, pastRentals } = useMemo(() => {
-    const upcoming = rentals.filter(
-      (r) =>
-        r.status === RentalStatus.CONFIRMED || r.status === RentalStatus.PENDING
-    );
-    const active = rentals.filter(
-      (r) =>
-        r.status === RentalStatus.ACTIVE ||
-        r.status === RentalStatus.LATE_RETURN ||
-        r.status === RentalStatus.DISPUTED
-    );
-    const past = rentals.filter(
-      (r) =>
-        r.status === RentalStatus.COMPLETED ||
-        r.status === RentalStatus.CANCELLED
-    );
+    const formatCurrency = useCallback((amount: number) => {
+      return new Intl.NumberFormat("nl-NL", {
+        style: "currency",
+        currency: "EUR",
+      }).format(amount);
+    }, []);
 
-    return {
-      upcomingRentals: upcoming,
-      activeRentals: active,
-      pastRentals: past,
-    };
-  }, [rentals]);
+    const formatDate = useCallback((date: Date) => {
+      return new Intl.DateTimeFormat("nl-NL", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }).format(new Date(date));
+    }, []);
 
-  // Optimized fetch function
-  const fetchRentals = useCallback(async (showLoading = false) => {
-    try {
-      if (showLoading) setIsRefreshing(true);
-      setError(null);
+    const getDaysUntil = useCallback((date: Date) => {
+      const now = new Date();
+      const targetDate = new Date(date);
+      const diffTime = targetDate.getTime() - now.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    }, []);
 
-      const response = await fetch("/api/user/profile/renter-history", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to fetch rental history");
-      }
-
-      const data = await response.json();
-      setRentals(data.rentals);
-      setHasInitiallyLoaded(true);
-    } catch (err) {
-      console.error("Error fetching rental history:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch rental history"
-      );
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, []);
-
-  // Only fetch if we don't have initial data
-  useEffect(() => {
-    if (!hasInitiallyLoaded) {
-      fetchRentals(true);
-    } else {
-      // If we have initial data, do a background refresh after a delay
-      const timer = setTimeout(() => {
-        fetchRentals(false);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [hasInitiallyLoaded, fetchRentals]);
-
-  // Listen for cancellation dialog events
-  useEffect(() => {
-    const handleOpenCancellationDialog = (event: any) => {
-      const rentalId = event.detail.rentalId;
-      const rentalToCancel = rentals.find((r) => r.id === rentalId);
-      if (rentalToCancel) {
-        setSelectedRental(rentalToCancel);
-        setCancelOpen(true);
-      }
+    const getBadgeVariant = (status: string) => {
+      const variants: Record<
+        string,
+        "secondary" | "default" | "outline" | "destructive" | "warning"
+      > = {
+        [RentalStatus.COMPLETED]: "secondary",
+        [RentalStatus.ACTIVE]: "default",
+        [RentalStatus.CONFIRMED]: "outline",
+        [RentalStatus.PENDING]: "outline",
+        [RentalStatus.CANCELLED]: "destructive",
+        [RentalStatus.LATE_RETURN]: "destructive",
+        [RentalStatus.DISPUTED]: "warning",
+      };
+      return variants[status] || "outline";
     };
 
-    document.addEventListener(
-      "openCancellationDialog",
-      handleOpenCancellationDialog
-    );
-
-    return () => {
-      document.removeEventListener(
-        "openCancellationDialog",
-        handleOpenCancellationDialog
-      );
+    const getDisplayStatus = (status: string) => {
+      return t(`rentalHistory.status.${status}`, { defaultValue: status });
     };
-  }, [rentals]);
 
-  // Optimized handlers
-  const handleCancelRental = useCallback(
-    async (rentalId: string, reason: string) => {
-      try {
-        setIsCancelling(true);
-
-        const response = await fetch("/api/reservation/cancel", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            rentalId,
-            reason,
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to cancel rental");
-        }
-
-        // Optimistically update the UI
-        setRentals((prev) =>
-          prev.map((rental) =>
-            rental.id === rentalId
-              ? {
-                  ...rental,
-                  status: RentalStatus.CANCELLED,
-                  cancellationReason: reason,
-                  cancellationDate: new Date(),
-                }
-              : rental
-          )
-        );
-
-        // Background refresh to sync with server
-        setTimeout(() => fetchRentals(false), 500);
-
-        return await response.json();
-      } catch (error) {
-        console.error("Error cancelling rental:", error);
-        throw error;
-      } finally {
-        setIsCancelling(false);
-      }
-    },
-    [fetchRentals]
-  );
-
-  const handleSubmitReview = useCallback(
-    async (reviewData: any) => {
-      try {
-        const response = await fetch("/api/trailers/review", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(reviewData),
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to submit review");
-        }
-
-        // Background refresh
-        setTimeout(() => fetchRentals(false), 500);
-        return await response.json();
-      } catch (error) {
-        console.error("Error submitting review:", error);
-        throw error;
-      }
-    },
-    [fetchRentals]
-  );
-
-  // Memoized utility functions
-  const formatCurrency = useCallback((amount: number) => {
-    return new Intl.NumberFormat("nl-NL", {
-      style: "currency",
-      currency: "EUR",
-    }).format(amount);
-  }, []);
-
-  const formatDate = useCallback((date: Date) => {
-    return new Intl.DateTimeFormat("nl-NL", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }).format(new Date(date));
-  }, []);
-
-  const getDaysUntil = useCallback((date: Date) => {
-    const now = new Date();
-    const targetDate = new Date(date);
-    const diffTime = targetDate.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  }, []);
-
-  const getBadgeVariant = (status: string) => {
-    switch (status) {
-      case RentalStatus.COMPLETED:
-        return "secondary";
-      case RentalStatus.ACTIVE:
-        return "default";
-      case RentalStatus.CONFIRMED:
-        return "outline";
-      case RentalStatus.PENDING:
-        return "outline";
-      case RentalStatus.CANCELLED:
-        return "destructive";
-      case RentalStatus.LATE_RETURN:
-        return "destructive";
-      case RentalStatus.DISPUTED:
-        return "warning";
-      default:
-        return "outline";
-    }
-  };
-
-  const getDisplayStatus = (status: string) => {
-    return t(`rentalHistory.status.${status}`, { defaultValue: status });
-  };
-
-  const renderRentalCard = useCallback(
-    (rental: RentalData, index?: number, isLastItem?: boolean) => (
-      <Card key={rental.id} className="p-0 border-0 shadow-none">
+    return (
+      <Card className="p-0 border-0 shadow-none">
         <CardContent className="p-0">
           <div
             className={`flex flex-col ${
               !isLastItem ? "border-b pb-4" : ""
             } md:flex-row md:items-start relative`}
           >
+            {/* Image */}
             <div className="relative w-full md:w-42 h-30 mb-4 md:mb-0 md:mr-4 rounded-lg overflow-hidden">
               {rental.trailerImage ? (
                 <Image
@@ -344,7 +160,7 @@ export default function RenterHistory({
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 168px"
-                  priority={index === 0}
+                  loading="lazy"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-muted">
@@ -353,6 +169,7 @@ export default function RenterHistory({
               )}
             </div>
 
+            {/* Content */}
             <div className="flex-1">
               <h3 className="font-semibold">{rental.trailerTitle}</h3>
               {rental.lessor && (
@@ -408,17 +225,13 @@ export default function RenterHistory({
               {/* Action buttons */}
               <div className="flex flex-wrap mt-2 pb-0">
                 <div className="flex items-center justify-end ms-auto gap-2">
-                  {/* Show appropriate actions based on status */}
                   {(rental.status === RentalStatus.CONFIRMED ||
                     rental.status === RentalStatus.PENDING) && (
                     <Button
                       className="text-xs bg-[#222222] hover:bg-black/80"
                       variant="destructive"
                       size="sm"
-                      onClick={() => {
-                        setSelectedRental(rental);
-                        setCancelOpen(true);
-                      }}
+                      onClick={() => onAction("cancel", rental)}
                     >
                       {t("rentalHistory.rentalDetails.actions.cancel")}
                     </Button>
@@ -427,10 +240,7 @@ export default function RenterHistory({
                     className="text-xs"
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      setSelectedRental(rental);
-                      setDetailsOpen(true);
-                    }}
+                    onClick={() => onAction("details", rental)}
                   >
                     {t("rentalHistory.rentalDetails.actions.details")}
                   </Button>
@@ -443,10 +253,7 @@ export default function RenterHistory({
                         variant="default"
                         size="sm"
                         className="text-xs"
-                        onClick={() => {
-                          setSelectedRental(rental);
-                          setReviewOpen(true);
-                        }}
+                        onClick={() => onAction("review", rental)}
                       >
                         <Star className="h-3 w-3 mr-1" />
                         {t("rentalHistory.rentalDetails.actions.review")}
@@ -461,10 +268,7 @@ export default function RenterHistory({
                         className="text-xs"
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                          setSelectedRental(rental);
-                          setDamageReportOpen(true);
-                        }}
+                        onClick={() => onAction("damage", rental)}
                       >
                         {t("rentalHistory.rentalDetails.actions.reportDamage")}
                       </Button>
@@ -472,10 +276,7 @@ export default function RenterHistory({
                         className="text-xs"
                         variant="default"
                         size="sm"
-                        onClick={() => {
-                          setSelectedRental(rental);
-                          setExtendOpen(true);
-                        }}
+                        onClick={() => onAction("extend", rental)}
                       >
                         {t("rentalHistory.rentalDetails.actions.extend")}
                       </Button>
@@ -485,6 +286,7 @@ export default function RenterHistory({
               </div>
             </div>
 
+            {/* Status and price */}
             <div className="mt-4 md:mt-0 md:ml-4 flex flex-col items-end justify-between absolute h-fit top-0 end-0">
               <Badge variant={getBadgeVariant(rental.status)}>
                 {getDisplayStatus(rental.status)}
@@ -496,38 +298,112 @@ export default function RenterHistory({
           </div>
         </CardContent>
       </Card>
-    ),
-    [formatDate, formatCurrency, getDaysUntil, t, userId]
-  );
+    );
+  }
+);
 
-  const renderEmptyState = useCallback(
-    (type: "upcoming" | "active" | "past") => {
-      return (
-        <Card className="border-0 shadow-none bg-[#f6f8f9]">
-          <CardContent className="flex flex-col items-center justify-center h-[350px]">
-            <CalendarDays className="h-10 w-10 mb-4" strokeWidth={1.5} />
-            <h3 className="font-medium text-lg">
-              {t(`rentalHistory.emptyStates.${type}.title`)}
-            </h3>
-            <p className="text-muted-foreground text-center max-w-sm mt-1">
-              {t(`rentalHistory.emptyStates.${type}.message`)}
-            </p>
-            {t(`rentalHistory.emptyStates.${type}.action`, {
-              defaultValue: "",
-            }) !== "" && (
-              <Button className="mt-4">
-                {t(`rentalHistory.emptyStates.${type}.action`)}
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      );
+RentalCard.displayName = "RentalCard";
+
+// Main component
+export default function RenterHistory({ userId }: RenterHistoryProps) {
+  const { t } = useTranslation("profile");
+  const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("upcoming");
+  const [selectedRental, setSelectedRental] = useState<RentalData | null>(null);
+  const [dialogState, setDialogState] = useState({
+    details: false,
+    cancel: false,
+    extend: false,
+    damage: false,
+    review: false,
+  });
+
+  // Fetch rentals using React Query
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: rentalKeys.renter(userId),
+    queryFn: () =>
+      ApiClient.get<{ rentals: RentalData[] }>(
+        "/api/user/profile/renter-history"
+      ),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    refetchOnWindowFocus: false,
+  });
+
+  const rentals = data?.rentals || [];
+
+  // Cancel rental mutation
+  const cancelMutation = useMutation({
+    mutationFn: ({ rentalId, reason }: { rentalId: string; reason: string }) =>
+      ApiClient.post("/api/reservation/cancel", { rentalId, reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.renter(userId) });
+      setDialogState((prev) => ({ ...prev, cancel: false }));
     },
-    [t]
+  });
+
+  // Submit review mutation
+  const reviewMutation = useMutation({
+    mutationFn: (reviewData: any) =>
+      ApiClient.post("/api/trailers/review", reviewData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: rentalKeys.renter(userId) });
+      setDialogState((prev) => ({ ...prev, review: false }));
+    },
+  });
+
+  // Memoized filtered rentals
+  const { upcomingRentals, activeRentals, pastRentals } = useMemo(() => {
+    const upcoming = rentals.filter(
+      (r) =>
+        r.status === RentalStatus.CONFIRMED || r.status === RentalStatus.PENDING
+    );
+    const active = rentals.filter(
+      (r) =>
+        r.status === RentalStatus.ACTIVE ||
+        r.status === RentalStatus.LATE_RETURN ||
+        r.status === RentalStatus.DISPUTED
+    );
+    const past = rentals.filter(
+      (r) =>
+        r.status === RentalStatus.COMPLETED ||
+        r.status === RentalStatus.CANCELLED
+    );
+
+    return {
+      upcomingRentals: upcoming,
+      activeRentals: active,
+      pastRentals: past,
+    };
+  }, [rentals]);
+
+  // Handle dialog actions
+  const handleAction = useCallback((action: string, rental: RentalData) => {
+    setSelectedRental(rental);
+    setDialogState((prev) => ({ ...prev, [action]: true }));
+  }, []);
+
+  // Empty state component
+  const EmptyState = memo(
+    ({ type }: { type: "upcoming" | "active" | "past" }) => (
+      <Card className="border-0 shadow-none bg-[#f6f8f9]">
+        <CardContent className="flex flex-col items-center justify-center h-[350px]">
+          <CalendarDays className="h-10 w-10 mb-4" strokeWidth={1.5} />
+          <h3 className="font-medium text-lg">
+            {t(`rentalHistory.emptyStates.${type}.title`)}
+          </h3>
+          <p className="text-muted-foreground text-center max-w-sm mt-1">
+            {t(`rentalHistory.emptyStates.${type}.message`)}
+          </p>
+        </CardContent>
+      </Card>
+    )
   );
 
-  // Show loading state only if no initial data
-  if (!hasInitiallyLoaded && isRefreshing) {
+  EmptyState.displayName = "EmptyState";
+
+  // Loading state
+  if (isLoading) {
     return (
       <div className="space-y-6">
         <div>
@@ -546,7 +422,7 @@ export default function RenterHistory({
   }
 
   // Error state
-  if (error && rentals.length === 0) {
+  if (error) {
     return (
       <div className="space-y-6">
         <div>
@@ -565,12 +441,12 @@ export default function RenterHistory({
               {t("rentalHistory.error.title")}
             </h3>
             <p className="text-muted-foreground text-center max-w-sm mt-1">
-              {error}
+              {error instanceof Error ? error.message : "Something went wrong"}
             </p>
             <Button
               variant="outline"
               className="mt-4"
-              onClick={() => fetchRentals(true)}
+              onClick={() => refetch()}
             >
               {t("rentalHistory.error.tryAgain")}
             </Button>
@@ -579,6 +455,12 @@ export default function RenterHistory({
       </div>
     );
   }
+
+  const tabContent = {
+    upcoming: upcomingRentals,
+    active: activeRentals,
+    past: pastRentals,
+  };
 
   return (
     <div className="space-y-6">
@@ -591,12 +473,6 @@ export default function RenterHistory({
             {t("rentalHistory.description")}
           </p>
         </div>
-        {isRefreshing && rentals.length > 0 && (
-          <div className="flex items-center text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-            {t("rentalHistory.updating")}
-          </div>
-        )}
       </div>
 
       <Tabs
@@ -628,98 +504,102 @@ export default function RenterHistory({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="upcoming" className="mt-4">
-          {upcomingRentals.length > 0 ? (
-            <div className="space-y-4">
-              {upcomingRentals.map((rental, index) =>
-                renderRentalCard(
-                  rental,
-                  index,
-                  index === upcomingRentals.length - 1
-                )
-              )}
-            </div>
-          ) : (
-            renderEmptyState("upcoming")
-          )}
-        </TabsContent>
-
-        <TabsContent value="active" className="mt-4">
-          {activeRentals.length > 0 ? (
-            <div className="space-y-4">
-              {activeRentals.map((rental, index) =>
-                renderRentalCard(
-                  rental,
-                  index,
-                  index === activeRentals.length - 1
-                )
-              )}
-            </div>
-          ) : (
-            renderEmptyState("active")
-          )}
-        </TabsContent>
-
-        <TabsContent value="past" className="mt-4">
-          {pastRentals.length > 0 ? (
-            <div className="space-y-4">
-              {pastRentals.map((rental, index) =>
-                renderRentalCard(
-                  rental,
-                  index,
-                  index === pastRentals.length - 1
-                )
-              )}
-            </div>
-          ) : (
-            renderEmptyState("past")
-          )}
-        </TabsContent>
+        {Object.entries(tabContent).map(([key, items]) => (
+          <TabsContent key={key} value={key} className="mt-4">
+            {items.length > 0 ? (
+              <div className="space-y-4">
+                {items.map((rental, index) => (
+                  <RentalCard
+                    key={rental.id}
+                    rental={rental}
+                    onAction={handleAction}
+                    userId={userId}
+                    isLastItem={index === items.length - 1}
+                  />
+                ))}
+              </div>
+            ) : (
+              <EmptyState type={key as "upcoming" | "active" | "past"} />
+            )}
+          </TabsContent>
+        ))}
       </Tabs>
 
       {/* Dialogs */}
       {selectedRental && (
         <>
-          <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+          <Dialog
+            open={dialogState.details}
+            onOpenChange={(open) =>
+              setDialogState((prev) => ({ ...prev, details: open }))
+            }
+          >
             <RentalDetailsDialog
               rental={selectedRental}
               role="USER"
-              onClose={() => setDetailsOpen(false)}
+              onClose={() =>
+                setDialogState((prev) => ({ ...prev, details: false }))
+              }
             />
           </Dialog>
 
-          <AlertDialog open={cancelOpen} onOpenChange={setCancelOpen}>
+          <AlertDialog
+            open={dialogState.cancel}
+            onOpenChange={(open) =>
+              setDialogState((prev) => ({ ...prev, cancel: open }))
+            }
+          >
             <RentalCancellationDialog
               rental={selectedRental}
               role="USER"
-              onClose={() => setCancelOpen(false)}
-              onCancel={handleCancelRental}
+              onClose={() =>
+                setDialogState((prev) => ({ ...prev, cancel: false }))
+              }
+              onCancel={(rentalId, reason) =>
+                cancelMutation.mutate({ rentalId, reason })
+              }
             />
           </AlertDialog>
 
-          <Dialog open={extendOpen} onOpenChange={setExtendOpen}>
+          <Dialog
+            open={dialogState.extend}
+            onOpenChange={(open) =>
+              setDialogState((prev) => ({ ...prev, extend: open }))
+            }
+          >
             <RentalExtensionDialog
               rental={selectedRental}
               role="USER"
-              onClose={() => setExtendOpen(false)}
-              onExtend={onExtendRental}
+              onClose={() =>
+                setDialogState((prev) => ({ ...prev, extend: false }))
+              }
+              onExtend={async () => {}} // Implement extension mutation
             />
           </Dialog>
 
-          <Dialog open={damageReportOpen} onOpenChange={setDamageReportOpen}>
+          <Dialog
+            open={dialogState.damage}
+            onOpenChange={(open) =>
+              setDialogState((prev) => ({ ...prev, damage: open }))
+            }
+          >
             <DamageReportDialog
               rental={selectedRental}
               role="USER"
-              onClose={() => setDamageReportOpen(false)}
-              onSubmitDamage={onReportDamage}
+              onClose={() =>
+                setDialogState((prev) => ({ ...prev, damage: false }))
+              }
+              onSubmitDamage={async () => {}} // Implement damage report mutation
             />
           </Dialog>
 
           <TrailerReviewDialog
             rental={selectedRental}
-            open={reviewOpen}
-            onOpenChange={setReviewOpen}
-            onSubmitReview={handleSubmitReview}
+            open={dialogState.review}
+            onOpenChange={(open) =>
+              setDialogState((prev) => ({ ...prev, review: open }))
+            }
+            onSubmitReview={(data) => reviewMutation.mutate(data)}
           />
         </>
       )}

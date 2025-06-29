@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import TranslationsLayout from "./translations-layout";
+import { ThemeProvider } from "@/components/theme-provider";
 
 // Font definitions
 const geistSans = Geist({
@@ -28,8 +28,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
-        {/* <PerformanceMonitor /> */}
-        <TranslationsLayout>{children}</TranslationsLayout>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <TranslationsLayout>{children}</TranslationsLayout>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -109,16 +109,20 @@ export default function FavoritesSection() {
                 {favorite.city && (
                   <span className="text-[13px] text-gray-500 flex items-center mt-1">
                     <MapPin className="h-3 w-3 mr-1" />
-                    <span className="sr-only">{t('favorites.location')}:</span>
+                    <span className="sr-only">{t("favorites.location")}:</span>
                     {favorite.city}
                   </span>
                 )}
 
                 <div className="flex flex-wrap mt-6">
-                  <span className="font-medium text-xs">{t('favorites.availability')}:</span>
+                  <span className="font-medium text-xs">
+                    {t("favorites.availability")}:
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  <Badge variant="outline">{t('favorites.dailyAvailable')}</Badge>
+                  <Badge variant="outline">
+                    {t("favorites.dailyAvailable")}
+                  </Badge>
                 </div>
 
                 {/* Action buttons */}
@@ -131,7 +135,7 @@ export default function FavoritesSection() {
                       onClick={() => handleRemove(favorite.id)}
                       disabled={removingId === favorite.id}
                     >
-                      {t('favorites.actions.remove')}
+                      {t("favorites.actions.remove")}
                     </Button>
                     <Button
                       className="text-xs"
@@ -139,7 +143,7 @@ export default function FavoritesSection() {
                       size="sm"
                       onClick={() => handleViewDetails(favorite.id)}
                     >
-                      {t('favorites.actions.view')}
+                      {t("favorites.actions.view")}
                     </Button>
                   </div>
                 </div>
@@ -152,11 +156,13 @@ export default function FavoritesSection() {
                     className="h-3.5 w-3.5 mr-1 text-primary fill-primary"
                     strokeWidth={1.5}
                   />
-                  {t('favorites.badge')}
+                  {t("favorites.badge")}
                 </Badge>
                 <div className="font-medium text-sm mt-2">
                   {formatCurrency(favorite.pricePerDay)}
-                  <span className="text-xs text-muted-foreground">{t('favorites.perDay')}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {t("favorites.perDay")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -173,12 +179,12 @@ export default function FavoritesSection() {
       <Card className="border-0 shadow-none bg-[#f6f8f9] min-h-[350px]">
         <CardContent className="flex flex-col items-center justify-center h-100 py-10">
           <Heart className="h-10 w-10 text-muted-foreground mb-4" />
-          <h3 className="font-medium text-lg">{t('favorites.empty.title')}</h3>
+          <h3 className="font-medium text-lg">{t("favorites.empty.title")}</h3>
           <p className="text-muted-foreground text-center max-w-sm mt-1">
-            {t('favorites.empty.description')}
+            {t("favorites.empty.description")}
           </p>
           <Link href="/aanbod">
-            <Button className="mt-4">{t('favorites.empty.button')}</Button>
+            <Button className="mt-4">{t("favorites.empty.button")}</Button>
           </Link>
         </CardContent>
       </Card>
@@ -255,10 +261,10 @@ export default function FavoritesSection() {
     <div className="space-y-6" ref={containerRef}>
       <div>
         <h2 className="text-2xl font-semibold text-[#222222] tracking-tight">
-          {t('favorites.title')}
+          {t("favorites.title")}
         </h2>
         <p className="text-muted-foreground mt-1">
-          {t('favorites.description')}
+          {t("favorites.description")}
         </p>
       </div>
 
@@ -292,7 +298,10 @@ export default function FavoritesSection() {
           {/* Show total count if we're not showing all items yet */}
           {visibleItems < sortedFavorites.length && (
             <div className="text-center text-sm text-muted-foreground">
-              {t('favorites.showing', { visible: visibleItems, total: sortedFavorites.length })}
+              {t("favorites.showing", {
+                visible: visibleItems,
+                total: sortedFavorites.length,
+              })}
             </div>
           )}
         </div>

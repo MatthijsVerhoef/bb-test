@@ -1,89 +1,84 @@
 // app/api/favorites/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth"; // Adjust path as needed
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
-// GET /api/favorites - Get all favorites for the logged-in user
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: "Authentication required" },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
+    // Optimized query with only necessary data
     const favorites = await prisma.favorite.findMany({
-      where: {
-        userId: session.user.id,
-      },
-      include: {
+      where: { userId: session.user.id },
+      select: {
+        id: true,
+        createdAt: true,
         trailer: {
           select: {
             id: true,
             title: true,
             city: true,
-            createdAt: true,
             pricePerDay: true,
             available: true,
+            status: true,
             images: {
-              take: 1,
               select: {
                 url: true,
               },
-            },
-          },
-        },
+              take: 1,
+              orderBy: { order: 'asc' }
+            }
+          }
+        }
       },
+      orderBy: { createdAt: 'desc' },
     });
 
-    // Transform data to match the expected format
-    const formattedFavorites = favorites.map((fav) => ({
-      id: fav.trailer.id,
-      title: fav.trailer.title,
-      city: fav.trailer.city,
-      pricePerDay: fav.trailer.pricePerDay,
-      createdAt: fav.trailer.createdAt,
-      available: fav.trailer.available,
-      mainImage: fav.trailer.images[0]?.url || "/images/default-trailer.jpg",
-      note: fav.note || "",
-    }));
+    // Transform to flat structure
+    const formattedFavorites = favorites
+      .filter(fav => fav.trailer.available && fav.trailer.status === 'ACTIVE')
+      .map(fav => ({
+        id: fav.trailer.id,
+        title: fav.trailer.title,
+        city: fav.trailer.city,
+        pricePerDay: fav.trailer.pricePerDay,
+        mainImage: fav.trailer.images[0]?.url || '',
+        createdAt: fav.createdAt.toISOString(),
+      }));
 
-    // Add cache headers to improve performance
-    // stale-while-revalidate pattern allows serving stale data while fetching fresh data in background
     return NextResponse.json(
       { favorites: formattedFavorites },
-      { 
+      {
         headers: {
-          // Can be cached for 5 minutes, but used for up to 1 hour while revalidating
-          'Cache-Control': 'max-age=300, stale-while-revalidate=3600',
-          // Add ETag for additional validation
-          'ETag': `W/"favorites-${session.user.id}-${Date.now()}"`,
-          // Indicate this response can be cached
-          'Vary': 'Authorization, Cookie'
+          'Cache-Control': 'private, max-age=60',
         }
       }
     );
+
   } catch (error) {
-    console.error("Error fetching favorites:", error);
+    console.error('Error fetching favorites:', error);
     return NextResponse.json(
-      { error: "Failed to fetch favorites" },
+      { error: 'Failed to fetch favorites' },
       { status: 500 }
     );
   }
 }
 
-// POST /api/favorites - Add a trailer to favorites
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
       return NextResponse.json(
-        { error: "Authentication required" },
+        { error: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -92,67 +87,70 @@ export async function POST(request: NextRequest) {
 
     if (!trailerId) {
       return NextResponse.json(
-        { error: "Trailer ID is required" },
+        { error: 'Trailer ID is required' },
         { status: 400 }
       );
     }
 
-    // Check if the trailer exists
+    // Check if trailer exists and is available
     const trailer = await prisma.trailer.findUnique({
       where: { id: trailerId },
+      select: { id: true, available: true, status: true }
     });
 
-    if (!trailer) {
+    if (!trailer || !trailer.available || trailer.status !== 'ACTIVE') {
       return NextResponse.json(
-        { error: "Trailer not found" },
-        { status: 404 }
+        { error: 'Trailer not available' },
+        { status: 400 }
       );
     }
 
-    // Check if already in favorites
-    const existingFavorite = await prisma.favorite.findUnique({
+    // Create favorite (upsert to handle duplicates)
+    const favorite = await prisma.favorite.upsert({
       where: {
         userId_trailerId: {
           userId: session.user.id,
-          trailerId,
-        },
+          trailerId: trailerId,
+        }
       },
-    });
-
-    if (existingFavorite) {
-      return NextResponse.json(
-        { message: "Trailer already in favorites" },
-        { status: 200 }
-      );
-    }
-
-    // Add to favorites
-    const favorite = await prisma.favorite.create({
-      data: {
+      update: {}, // Do nothing if exists
+      create: {
         userId: session.user.id,
-        trailerId,
+        trailerId: trailerId,
       },
+      include: {
+        trailer: {
+          select: {
+            id: true,
+            title: true,
+            city: true,
+            pricePerDay: true,
+            images: {
+              select: { url: true },
+              take: 1,
+              orderBy: { order: 'asc' }
+            }
+          }
+        }
+      }
     });
 
-    return NextResponse.json(
-      { message: "Trailer added to favorites", favorite },
-      { status: 201 }
-    );
+    return NextResponse.json({
+      favorite: {
+        id: favorite.trailer.id,
+        title: favorite.trailer.title,
+        city: favorite.trailer.city,
+        pricePerDay: favorite.trailer.pricePerDay,
+        mainImage: favorite.trailer.images[0]?.url || '',
+        createdAt: favorite.createdAt.toISOString(),
+      }
+    });
+
   } catch (error) {
-    console.error("Error adding favorite:", error);
+    console.error('Error adding favorite:', error);
     return NextResponse.json(
-      { error: "Failed to add favorite" },
+      { error: 'Failed to add favorite' },
       { status: 500 }
     );
   }
-}
-
-// Explicitly define what methods are allowed
-export async function OPTIONS(request: NextRequest) {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Allow': 'GET, POST, OPTIONS',
-    },
-  });
 }
