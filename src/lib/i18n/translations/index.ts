@@ -27,7 +27,8 @@ import deReservation from '../../../../public/locales/de/reservation.json';
 import deAddTrailer from '../../../../public/locales/de/addTrailer.json';
 import deTrailerTypes from '../../../../public/locales/de/trailerTypes.json';
 
-export const translations = {
+
+export const bundledTranslations = {
   nl: {
     common: nlCommon,
     home: nlHome,
@@ -59,12 +60,3 @@ export const translations = {
     trailerTypes: deTrailerTypes,
   },
 } as const;
-
-export type TranslationNamespace = keyof typeof translations.nl;
-export type Translations = typeof translations;
-
-// Type helper to get translation keys
-export type TranslationKeys<
-  Namespace extends TranslationNamespace,
-  Locale extends keyof Translations = 'nl'
-> = keyof Translations[Locale][Namespace];
