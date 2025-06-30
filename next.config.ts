@@ -38,6 +38,7 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer, dev }) => {
     // Fix for socket.io-client
     if (!isServer) {
+      config.resolve = config.resolve || {};
       config.resolve.alias = {
         ...config.resolve.alias,
         'socket.io-client': require.resolve('socket.io-client'),
