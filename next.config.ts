@@ -4,11 +4,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  
   eslint: {
     ignoreDuringBuilds: true,
   },
-
   images: {
     remotePatterns: [
       {
@@ -22,32 +20,23 @@ const nextConfig: NextConfig = {
     ],
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 60,
-    dangerouslyAllowSVG: false, 
+    dangerouslyAllowSVG: false,
   },
-
   compiler: {
     removeConsole: false,
   },
-
   experimental: {
     optimizeCss: true,
     optimizePackageImports: [
       'lucide-react',
-      '@radix-ui/react-icons', 
+      '@radix-ui/react-icons',
       'date-fns',
       'lodash'
     ],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
+    // REMOVED turbo configuration - it's causing issues
   },
-
   webpack: (config, { isServer, dev }) => {
+    // Fix for socket.io-client
     if (!isServer) {
       config.resolve.alias = {
         ...config.resolve.alias,
@@ -55,39 +44,61 @@ const nextConfig: NextConfig = {
       };
     }
 
-    if (!dev) {
-      config.optimization = {
-        ...config.optimization,
-        usedExports: true,
-        sideEffects: false,
-      };
-
-      if (process.env.ANALYZE === 'true') {
-        const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-        config.plugins.push(
-          new BundleAnalyzerPlugin({
-            analyzerMode: 'static',
-            openAnalyzer: false,
-          })
-        );
-      }
+    // REMOVED aggressive optimization that breaks RSC
+    // These optimizations can break Next.js internals
+    
+    // Bundle analyzer (only when needed)
+    if (!dev && process.env.ANALYZE === 'true') {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+        })
+      );
     }
 
     return config;
   },
-
-  generateBuildId: async () => {
-    if (process.env.NODE_ENV === 'development') {
-      return 'development';
-    }
-    return null;
-  },
-
+  // REMOVED generateBuildId override - this can break Next.js caching
+  // Let Next.js handle build IDs automatically
+  
   trailingSlash: false,
   swcMinify: true,
   poweredByHeader: false,
   compress: true,
   optimizeFonts: true,
+  
+  // Add headers for better error tracking
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          }
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
