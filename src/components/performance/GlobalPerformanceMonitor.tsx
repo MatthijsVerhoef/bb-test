@@ -98,9 +98,9 @@ export function GlobalPerformanceMonitor() {
       }
 
       // Track specific page types
-      if (pathname.startsWith("/aanbod/")) {
+      if (pathname?.startsWith("/aanbod/")) {
         trackTrailerPagePerformance();
-      } else if (pathname === "/") {
+      } else if (pathname && pathname === "/") {
         trackHomePagePerformance();
       }
     };

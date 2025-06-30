@@ -90,11 +90,11 @@ export default function AuthDialog({
     setErrorState(null);
     onClose();
 
-    if (window.location.pathname.includes("/verhuren")) {
+    if (window.location.pathname?.includes("/verhuren")) {
       window.location.href = "/plaatsen";
     } else if (
-      window.location.pathname.includes("/login") ||
-      window.location.pathname.includes("/register")
+      window.location.pathname?.includes("/login") ||
+      window.location.pathname?.includes("/register")
     ) {
       window.location.href = "/";
     }
