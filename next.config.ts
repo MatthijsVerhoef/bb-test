@@ -27,6 +27,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizeCss: true,
+    isrMemoryCacheSize: 0,
     optimizePackageImports: [
       'lucide-react',
       '@radix-ui/react-icons',
