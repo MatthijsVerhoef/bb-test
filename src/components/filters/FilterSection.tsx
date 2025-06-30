@@ -1,12 +1,6 @@
-// components/filters/FilterSection.tsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { ChevronUp } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-
-const filterSectionVariants = {
-  hidden: { opacity: 0, height: 0, overflow: "hidden" },
-  visible: { opacity: 1, height: "auto", overflow: "visible" },
-};
+import { motion } from "framer-motion";
 
 interface FilterSectionProps {
   title: string;
@@ -21,41 +15,8 @@ export const FilterSection = ({
   defaultOpen = true,
   sectionId,
 }: FilterSectionProps) => {
-  const initialRenderRef = useRef(true);
-  const [mounted, setMounted] = useState(false);
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  useEffect(() => {
-    setMounted(true);
-
-    try {
-      const savedState = localStorage.getItem("filterSectionStates");
-      if (savedState) {
-        const states = JSON.parse(savedState);
-        if (states[sectionId] !== undefined) {
-          setIsOpen(states[sectionId]);
-        }
-      }
-    } catch (e) {
-      console.error("Error reading filter state from localStorage:", e);
-    }
-  }, [sectionId]);
-
-  useEffect(() => {
-    if (!mounted || initialRenderRef.current) {
-      initialRenderRef.current = false;
-      return;
-    }
-
-    try {
-      const savedState = localStorage.getItem("filterSectionStates");
-      const states = savedState ? JSON.parse(savedState) : {};
-      states[sectionId] = isOpen;
-      localStorage.setItem("filterSectionStates", JSON.stringify(states));
-    } catch (e) {
-      console.error("Error saving filter state to localStorage:", e);
-    }
-  }, [isOpen, sectionId, mounted]);
+  // Always start with true, no localStorage check
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div className="pb-4">
@@ -71,20 +32,17 @@ export const FilterSection = ({
           <ChevronUp size={16} />
         </motion.div>
       </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={filterSectionVariants}
-            transition={{ duration: 0.2 }}
-          >
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <motion.div
+        initial={false}
+        animate={{
+          height: isOpen ? "auto" : 0,
+          opacity: isOpen ? 1 : 0,
+        }}
+        transition={{ duration: 0.2 }}
+        style={{ overflow: "hidden" }}
+      >
+        {children}
+      </motion.div>
     </div>
   );
 };
