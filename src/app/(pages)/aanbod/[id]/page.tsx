@@ -3,10 +3,7 @@ import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import TrailerDetailClientWrapper from "@/components/trailer-details/rental-success-wrapper";
 import TrailerDetailClient from "./page-client";
-import {
-  PerformanceLogger,
-  logServerPerformance,
-} from "@/lib/performance-logger";
+import { PerformanceLogger, logServerPerformance } from "@/lib/logger";
 
 export const revalidate = 300;
 
