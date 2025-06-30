@@ -1,3 +1,4 @@
+// app/client-layout.tsx - Add debug components here
 "use client";
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/constants/header";
@@ -8,12 +9,13 @@ import { usePathname } from "next/navigation";
 import AppProvider from "@/providers/AppProvider";
 import { TranslationProvider } from "@/lib/i18n/client";
 import { Locale } from "@/lib/i18n/config";
-import { useEffect } from "react";
+import { ClientDebugger } from "@/components/debug/ClientDebugger";
+import { NavigationTimer } from "@/components/debug/NavigationTimer";
 
 interface ClientLayoutProps {
   children: React.ReactNode;
-  initialLocale?: Locale;
-  initialTranslations?: Record<string, any>;
+  initialLocale: Locale;
+  initialTranslations: Record<string, any>;
 }
 
 export default function ClientLayout({
@@ -22,17 +24,6 @@ export default function ClientLayout({
   initialTranslations,
 }: ClientLayoutProps) {
   const pathname = usePathname();
-
-  // Debug to see what's being passed
-  useEffect(() => {
-    console.log("[CLIENT] ClientLayout received:", {
-      initialLocale,
-      hasTranslations: !!initialTranslations,
-      translationKeys: initialTranslations
-        ? Object.keys(initialTranslations)
-        : [],
-    });
-  }, []);
 
   return (
     <SessionProvider>
@@ -50,6 +41,10 @@ export default function ClientLayout({
           )}
           {!pathname.startsWith("/admin") && <MobileBottomNav />}
           <Toaster position="top-right" />
+
+          {/* Debug components */}
+          <ClientDebugger />
+          <NavigationTimer />
         </AppProvider>
       </TranslationProvider>
     </SessionProvider>

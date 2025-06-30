@@ -8,6 +8,7 @@ import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useFavoritesData } from "@/hooks/useFavoritesData";
 import { useTranslation } from "@/lib/i18n/client";
+import { startNavigationTimer } from "../debug/NavigationTimer";
 
 interface TrailerCardProps {
   trailer: {
@@ -32,6 +33,11 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
   if (isFavoriteState !== isFavorite(trailer.id)) {
     setIsFavoriteState(isFavorite(trailer.id));
   }
+
+  // Track when user clicks on a trailer
+  const handleClick = useCallback(() => {
+    startNavigationTimer();
+  }, []);
 
   // Handle favorite toggle with optimistic UI updates
   function handleFavorite(e: React.MouseEvent) {
@@ -65,6 +71,7 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
       <Link
         href={`/aanbod/${trailer.id}`}
         className="relative block overflow-hidden aspect-[6/4] rounded-md"
+        onClick={handleClick}
       >
         {isValidImageUrl ? (
           <Image
@@ -119,7 +126,7 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
       </Link>
 
       <CardContent className="-mt-[10px] p-0">
-        <Link href={`/aanbod/${trailer.id}`}>
+        <Link href={`/aanbod/${trailer.id}`} onClick={handleClick}>
           <h3 className="text-[15px] font-semibold text-gray-900 transition-colors line-clamp-1">
             {trailer.title}
           </h3>
