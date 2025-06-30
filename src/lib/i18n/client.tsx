@@ -1,3 +1,4 @@
+// lib/i18n/client.tsx
 "use client";
 
 import React, {
@@ -19,7 +20,6 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType | null>(null);
 
-// Make sure this is exported!
 export function TranslationProvider({
   children,
   initialLocale,
@@ -43,8 +43,8 @@ export function TranslationProvider({
   useEffect(() => {
     console.log("[CLIENT] TranslationProvider mounted with:", {
       locale,
-      translationNamespaces: Object.keys(translations),
-      sampleTranslation: translations.common?.header,
+      translationNamespaces: Object.keys(translations || {}),
+      sampleTranslation: translations?.common?.header,
     });
 
     return () => {
@@ -115,9 +115,11 @@ export function TranslationProvider({
 
   const loadMissingNamespace = useCallback(
     async (namespace: string) => {
+      // Add null/undefined checks
       if (
+        !namespace ||
         loadingNamespacesRef.current.has(namespace) ||
-        translations[namespace]
+        translations?.[namespace]
       ) {
         return;
       }
@@ -150,6 +152,17 @@ export function TranslationProvider({
       namespace: string = "common",
       params?: Record<string, any>
     ): string => {
+      // Add comprehensive null/undefined checks
+      if (!key || typeof key !== "string") {
+        console.warn("[Translation] Invalid key provided:", key);
+        return "";
+      }
+
+      if (!translations || typeof translations !== "object") {
+        console.warn("[Translation] Translations not loaded");
+        return key;
+      }
+
       const namespaceData = translations[namespace];
 
       if (!namespaceData) {
@@ -160,6 +173,7 @@ export function TranslationProvider({
         return key;
       }
 
+      // Safe split with validation
       const keys = key.split(".");
       let value: any = namespaceData;
 
@@ -175,13 +189,15 @@ export function TranslationProvider({
         return key;
       }
 
-      if (params) {
+      if (params && typeof params === "object") {
         let result = value;
         Object.entries(params).forEach(([paramKey, paramValue]) => {
-          result = result.replace(
-            new RegExp(`{{${paramKey}}}`, "g"),
-            String(paramValue)
-          );
+          if (paramKey && paramValue !== undefined) {
+            result = result.replace(
+              new RegExp(`{{${paramKey}}}`, "g"),
+              String(paramValue)
+            );
+          }
         });
         return result;
       }
@@ -211,7 +227,7 @@ export function useTranslation(namespace: string = "common") {
 
   // Load namespace if missing
   useEffect(() => {
-    if (!context.translations[namespace] && typeof window !== "undefined") {
+    if (!context.translations?.[namespace] && typeof window !== "undefined") {
       // Use the t function to trigger loading
       context.t("_trigger_load_", namespace);
     }
