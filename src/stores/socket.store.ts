@@ -65,7 +65,20 @@ export const useSocketStore = create<SocketState & SocketActions>((set, get) => 
     set({ isConnecting: true, connectionError: null });
 
     try {
-      const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+      const getSocketUrl = () => {
+        if (typeof window !== 'undefined') {
+          // In production, connect to the same domain
+          if (window.location.hostname !== 'localhost') {
+            return window.location.origin;
+          }
+        }
+        // In development, use your separate socket server
+        return process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+      };
+      
+      const socketUrl = getSocketUrl();
+      
+      console.log('[Socket] Connecting to:', socketUrl);
       const connectStartTime = Date.now();
 
       const socket = io(socketUrl, {

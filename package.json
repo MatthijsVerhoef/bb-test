@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && prisma db push && next build --no-lint",
-    "start": "next start",
+    "start": "node server-integrated.js",
+    "start:local": "node server.js",
     "lint": "next lint",
     "start:socket": "node server.js",
     "dev:socket": "nodemon server.js",
