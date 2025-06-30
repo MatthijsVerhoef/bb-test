@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
   },
 
   compiler: {
-    removeConsole: false;
+    removeConsole: false,
   },
 
   experimental: {
