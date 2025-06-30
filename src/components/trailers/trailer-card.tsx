@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useFavoritesData } from "@/hooks/useFavoritesData";
 import { useTranslation } from "@/lib/i18n/client";
 import { startNavigationTimer } from "../debug/NavigationTimer";
+import { startDetailedNavigation } from "@/components/debug/DetailedNavigationTracker";
 
 interface TrailerCardProps {
   trailer: {
@@ -34,10 +35,9 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
     setIsFavoriteState(isFavorite(trailer.id));
   }
 
-  // Track when user clicks on a trailer
   const handleClick = useCallback(() => {
-    startNavigationTimer();
-  }, []);
+    startDetailedNavigation(`/aanbod/${trailer.id}`);
+  }, [trailer.id]);
 
   // Handle favorite toggle with optimistic UI updates
   function handleFavorite(e: React.MouseEvent) {

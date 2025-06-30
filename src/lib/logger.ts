@@ -153,3 +153,6 @@ export async function reportPerformance(metrics: {
     (window as any).va('track', 'performance', metrics);
   }
 }
+
+// Default export for convenience (in case of import logger from './logger')
+export default logger;

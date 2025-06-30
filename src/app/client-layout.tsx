@@ -11,6 +11,7 @@ import { TranslationProvider } from "@/lib/i18n/client";
 import { Locale } from "@/lib/i18n/config";
 import { ClientDebugger } from "@/components/debug/ClientDebugger";
 import { NavigationTimer } from "@/components/debug/NavigationTimer";
+import { DetailedNavigationTracker } from "@/components/debug/DetailedNavigationTracker";
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -44,7 +45,7 @@ export default function ClientLayout({
 
           {/* Debug components */}
           <ClientDebugger />
-          <NavigationTimer />
+          <DetailedNavigationTracker />
         </AppProvider>
       </TranslationProvider>
     </SessionProvider>

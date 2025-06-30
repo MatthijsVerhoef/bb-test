@@ -3,9 +3,20 @@ import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import TrailerDetailClientWrapper from "@/components/trailer-details/rental-success-wrapper";
 import TrailerDetailClient from "./page-client";
-import { PerformanceLogger, logServerPerformance } from "@/lib/logger";
+import { PerformanceLogger, logServerPerformance, logger } from "@/lib/logger";
+import { headers } from "next/headers";
 
 export const revalidate = 300;
+
+// Helper to get request ID from headers
+async function getRequestId() {
+  try {
+    const headersList = await headers();
+    return headersList.get("x-request-id") || "no-id";
+  } catch {
+    return "no-id";
+  }
+}
 
 // Generate metadata for SEO
 export async function generateMetadata({
@@ -15,6 +26,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const metadataStart = Date.now();
   const { id } = await params;
+  const requestId = await getRequestId();
+
+  logger.log(
+    `[REQ ${requestId}] Starting metadata generation for trailer ${id}`
+  );
 
   // Optimize metadata query to be more efficient
   const trailer = await prisma.$transaction(async (tx) => {
@@ -29,6 +45,10 @@ export async function generateMetadata({
     });
   });
 
+  const duration = Date.now() - metadataStart;
+  logger.log(
+    `[REQ ${requestId}] Metadata generation completed in ${duration}ms`
+  );
   logServerPerformance(`Metadata generation for ${id}`, metadataStart);
 
   if (!trailer) {
@@ -51,32 +71,59 @@ export async function generateMetadata({
 
 async function getTrailerData(id: string) {
   const totalStart = Date.now();
-  const logger = new PerformanceLogger();
+  const requestId = await getRequestId();
+  const perfLogger = new PerformanceLogger(); // Renamed to avoid confusion
 
   try {
-    logger.start("Total getTrailerData");
+    perfLogger.start("Total getTrailerData");
+    logger.log(`[REQ ${requestId}] Starting getTrailerData for ${id}`);
 
     const startDateFilter = new Date();
     const endDateFilter = new Date(
       new Date().setMonth(startDateFilter.getMonth() + 6)
     );
 
+    // Log cache check
+    const cacheCheckStart = Date.now();
+    // If you have any caching mechanism, log it here
+    logger.log(
+      `[REQ ${requestId}] Cache check completed in ${
+        Date.now() - cacheCheckStart
+      }ms`
+    );
+
     // Optimize data fetching with prisma transaction
-    const data = await logger.measure("Prisma Transaction", async () => {
+    const data = await perfLogger.measure("Prisma Transaction", async () => {
+      const transactionStart = Date.now();
+      logger.log(`[REQ ${requestId}] Starting Prisma transaction`);
+
       return prisma.$transaction(async (tx) => {
         // First check if trailer exists (lightweight query)
-        const trailerExists = await logger.measure(
+        const trailerExists = await perfLogger.measure(
           "Check Trailer Exists",
           async () => {
-            return tx.trailer.findUnique({
+            const checkStart = Date.now();
+            const result = await tx.trailer.findUnique({
               where: { id },
               select: { id: true },
             });
+            logger.log(
+              `[REQ ${requestId}] Trailer exists check: ${
+                Date.now() - checkStart
+              }ms`
+            );
+            return result;
           }
         );
 
         // If trailer doesn't exist, return early
-        if (!trailerExists) return null;
+        if (!trailerExists) {
+          logger.log(`[REQ ${requestId}] Trailer ${id} not found`);
+          return null;
+        }
+
+        logger.log(`[REQ ${requestId}] Starting parallel data fetch`);
+        const parallelStart = Date.now();
 
         // Fetch all necessary data in parallel with specific selects
         const [
@@ -92,11 +139,12 @@ async function getTrailerData(id: string) {
           category,
           faqs,
           accessories,
-        ] = await logger.measure("Parallel Data Fetch", async () => {
+        ] = await perfLogger.measure("Parallel Data Fetch", async () => {
           return Promise.all([
             // Basic trailer info
-            logger.measure("Fetch Basic Trailer", () =>
-              tx.trailer.findUnique({
+            perfLogger.measure("Fetch Basic Trailer", async () => {
+              const start = Date.now();
+              const result = await tx.trailer.findUnique({
                 where: { id },
                 select: {
                   id: true,
@@ -150,12 +198,19 @@ async function getTrailerData(id: string) {
                   ownerId: true,
                   categoryId: true,
                 },
-              })
-            ),
+              });
+              logger.log(
+                `[REQ ${requestId}] Basic trailer fetched in ${
+                  Date.now() - start
+                }ms`
+              );
+              return result;
+            }),
 
             // Weekly availability
-            logger.measure("Fetch Weekly Availability", () =>
-              tx.weeklyAvailability.findMany({
+            perfLogger.measure("Fetch Weekly Availability", async () => {
+              const start = Date.now();
+              const result = await tx.weeklyAvailability.findMany({
                 where: { trailerId: id },
                 select: {
                   id: true,
@@ -172,12 +227,19 @@ async function getTrailerData(id: string) {
                   trailerId: true,
                 },
                 orderBy: { day: "asc" },
-              })
-            ),
+              });
+              logger.log(
+                `[REQ ${requestId}] Weekly availability fetched in ${
+                  Date.now() - start
+                }ms (${result.length} records)`
+              );
+              return result;
+            }),
 
             // Rentals
-            logger.measure("Fetch Rentals", () =>
-              tx.rental.findMany({
+            perfLogger.measure("Fetch Rentals", async () => {
+              const start = Date.now();
+              const result = await tx.rental.findMany({
                 where: {
                   trailerId: id,
                   status: { in: ["CONFIRMED", "ACTIVE"] },
@@ -199,12 +261,19 @@ async function getTrailerData(id: string) {
                   returnTime: true,
                 },
                 orderBy: { startDate: "asc" },
-              })
-            ),
+              });
+              logger.log(
+                `[REQ ${requestId}] Rentals fetched in ${
+                  Date.now() - start
+                }ms (${result.length} records)`
+              );
+              return result;
+            }),
 
             // Availability exceptions
-            logger.measure("Fetch Availability Exceptions", () =>
-              tx.availabilityException.findMany({
+            perfLogger.measure("Fetch Availability Exceptions", async () => {
+              const start = Date.now();
+              const result = await tx.availabilityException.findMany({
                 where: {
                   trailerId: id,
                   date: { gte: startDateFilter, lte: endDateFilter },
@@ -222,12 +291,19 @@ async function getTrailerData(id: string) {
                   eveningStart: true,
                   eveningEnd: true,
                 },
-              })
-            ),
+              });
+              logger.log(
+                `[REQ ${requestId}] Availability exceptions fetched in ${
+                  Date.now() - start
+                }ms (${result.length} records)`
+              );
+              return result;
+            }),
 
             // Blocked periods
-            logger.measure("Fetch Blocked Periods", () =>
-              tx.blockedPeriod.findMany({
+            perfLogger.measure("Fetch Blocked Periods", async () => {
+              const start = Date.now();
+              const result = await tx.blockedPeriod.findMany({
                 where: {
                   OR: [
                     { trailerId: id },
@@ -270,12 +346,19 @@ async function getTrailerData(id: string) {
                   afternoon: true,
                   evening: true,
                 },
-              })
-            ),
+              });
+              logger.log(
+                `[REQ ${requestId}] Blocked periods fetched in ${
+                  Date.now() - start
+                }ms (${result.length} records)`
+              );
+              return result;
+            }),
 
             // Images
-            logger.measure("Fetch Images", () =>
-              tx.media.findMany({
+            perfLogger.measure("Fetch Images", async () => {
+              const start = Date.now();
+              const result = await tx.media.findMany({
                 where: { trailerId: id },
                 select: {
                   id: true,
@@ -284,11 +367,18 @@ async function getTrailerData(id: string) {
                   order: true,
                 },
                 orderBy: { order: "asc" },
-              })
-            ),
+              });
+              logger.log(
+                `[REQ ${requestId}] Images fetched in ${
+                  Date.now() - start
+                }ms (${result.length} images)`
+              );
+              return result;
+            }),
 
             // Owner
-            logger.measure("Fetch Owner", async () => {
+            perfLogger.measure("Fetch Owner", async () => {
+              const start = Date.now();
               const ownerId = await tx.trailer
                 .findUnique({
                   where: { id },
@@ -296,7 +386,7 @@ async function getTrailerData(id: string) {
                 })
                 .then((t) => t?.ownerId || "");
 
-              return tx.user.findUnique({
+              const result = await tx.user.findUnique({
                 where: { id: ownerId },
                 select: {
                   id: true,
@@ -311,11 +401,16 @@ async function getTrailerData(id: string) {
                   responseTime: true,
                 },
               });
+              logger.log(
+                `[REQ ${requestId}] Owner fetched in ${Date.now() - start}ms`
+              );
+              return result;
             }),
 
             // Reviews
-            logger.measure("Fetch Reviews", () =>
-              tx.review.findMany({
+            perfLogger.measure("Fetch Reviews", async () => {
+              const start = Date.now();
+              const result = await tx.review.findMany({
                 where: { trailerId: id },
                 select: {
                   id: true,
@@ -337,11 +432,18 @@ async function getTrailerData(id: string) {
                 },
                 orderBy: { createdAt: "desc" },
                 take: 10,
-              })
-            ),
+              });
+              logger.log(
+                `[REQ ${requestId}] Reviews fetched in ${
+                  Date.now() - start
+                }ms (${result.length} reviews)`
+              );
+              return result;
+            }),
 
             // Reviewers
-            logger.measure("Fetch Reviewers", async () => {
+            perfLogger.measure("Fetch Reviewers", async () => {
+              const start = Date.now();
               const reviewerIds = await tx.review
                 .findMany({
                   where: { trailerId: id },
@@ -350,7 +452,7 @@ async function getTrailerData(id: string) {
                 })
                 .then((reviews) => reviews.map((r) => r.reviewerId));
 
-              return tx.user.findMany({
+              const result = await tx.user.findMany({
                 where: {
                   id: { in: reviewerIds },
                 },
@@ -361,10 +463,17 @@ async function getTrailerData(id: string) {
                   profilePicture: true,
                 },
               });
+              logger.log(
+                `[REQ ${requestId}] Reviewers fetched in ${
+                  Date.now() - start
+                }ms (${result.length} reviewers)`
+              );
+              return result;
             }),
 
             // Category
-            logger.measure("Fetch Category", async () => {
+            perfLogger.measure("Fetch Category", async () => {
+              const start = Date.now();
               const categoryId = await tx.trailer
                 .findUnique({
                   where: { id },
@@ -372,7 +481,7 @@ async function getTrailerData(id: string) {
                 })
                 .then((t) => t?.categoryId || "");
 
-              return tx.trailerCategory.findUnique({
+              const result = await tx.trailerCategory.findUnique({
                 where: { id: categoryId },
                 select: {
                   id: true,
@@ -385,11 +494,16 @@ async function getTrailerData(id: string) {
                   mainCategoryId: true,
                 },
               });
+              logger.log(
+                `[REQ ${requestId}] Category fetched in ${Date.now() - start}ms`
+              );
+              return result;
             }),
 
             // FAQs
-            logger.measure("Fetch FAQs", () =>
-              tx.trailerFAQ.findMany({
+            perfLogger.measure("Fetch FAQs", async () => {
+              const start = Date.now();
+              const result = await tx.trailerFAQ.findMany({
                 where: { trailerId: id },
                 select: {
                   id: true,
@@ -397,12 +511,19 @@ async function getTrailerData(id: string) {
                   answer: true,
                 },
                 orderBy: { createdAt: "asc" },
-              })
-            ),
+              });
+              logger.log(
+                `[REQ ${requestId}] FAQs fetched in ${Date.now() - start}ms (${
+                  result.length
+                } FAQs)`
+              );
+              return result;
+            }),
 
             // Accessories
-            logger.measure("Fetch Accessories", () =>
-              tx.accessory.findMany({
+            perfLogger.measure("Fetch Accessories", async () => {
+              const start = Date.now();
+              const result = await tx.accessory.findMany({
                 where: { trailerId: id },
                 select: {
                   id: true,
@@ -410,16 +531,32 @@ async function getTrailerData(id: string) {
                   description: true,
                   price: true,
                 },
-              })
-            ),
+              });
+              logger.log(
+                `[REQ ${requestId}] Accessories fetched in ${
+                  Date.now() - start
+                }ms (${result.length} accessories)`
+              );
+              return result;
+            }),
           ]);
         });
 
+        logger.log(
+          `[REQ ${requestId}] Parallel fetch completed in ${
+            Date.now() - parallelStart
+          }ms`
+        );
+
         // If trailer doesn't exist, return null
-        if (!trailerBasic) return null;
+        if (!trailerBasic) {
+          logger.log(`[REQ ${requestId}] Trailer basic data not found`);
+          return null;
+        }
 
         // Process and assemble data
         const processingStart = Date.now();
+        logger.log(`[REQ ${requestId}] Starting data processing`);
 
         // Create lookup for reviewers
         const reviewersById = reviewers.reduce((acc, reviewer) => {
@@ -449,7 +586,18 @@ async function getTrailerData(id: string) {
           accessories,
         };
 
+        logger.log(
+          `[REQ ${requestId}] Data processing completed in ${
+            Date.now() - processingStart
+          }ms`
+        );
         logServerPerformance("Data Processing", processingStart);
+
+        logger.log(
+          `[REQ ${requestId}] Transaction completed in ${
+            Date.now() - transactionStart
+          }ms`
+        );
 
         return {
           trailer,
@@ -461,12 +609,16 @@ async function getTrailerData(id: string) {
     });
 
     // If transaction returns null, return null
-    if (!data) return null;
+    if (!data) {
+      logger.log(`[REQ ${requestId}] Transaction returned null`);
+      return null;
+    }
 
     const { trailer, rentals, availabilityExceptions, blockedPeriods } = data;
 
     // Format dates for serialization
     const formattingStart = Date.now();
+    logger.log(`[REQ ${requestId}] Starting date formatting`);
 
     const formattedRentals = rentals.map((rental) => ({
       ...rental,
@@ -487,10 +639,20 @@ async function getTrailerData(id: string) {
       endDate: period.endDate.toISOString(),
     }));
 
+    logger.log(
+      `[REQ ${requestId}] Date formatting completed in ${
+        Date.now() - formattingStart
+      }ms`
+    );
     logServerPerformance("Date Formatting", formattingStart);
 
-    logger.end("Total getTrailerData");
-    logger.getSummary();
+    perfLogger.end("Total getTrailerData");
+    perfLogger.getSummary();
+
+    const totalDuration = Date.now() - totalStart;
+    logger.log(
+      `[REQ ${requestId}] Total getTrailerData completed in ${totalDuration}ms`
+    );
 
     return {
       trailer,
@@ -502,8 +664,9 @@ async function getTrailerData(id: string) {
       },
     };
   } catch (error) {
-    logger.end("Total getTrailerData");
-    logger.getSummary();
+    logger.error(`[REQ ${requestId}] Error in getTrailerData:`, error);
+    perfLogger.end("Total getTrailerData");
+    perfLogger.getSummary();
     throw error;
   } finally {
     logServerPerformance(`Total getTrailerData for ${id}`, totalStart);
@@ -521,12 +684,22 @@ export default async function TrailerDetailPage({
 }: TrailerDetailPageProps) {
   const pageStart = Date.now();
   const { id } = await params;
+  const requestId = await getRequestId();
+
+  logger.log(`[REQ ${requestId}] TrailerDetailPage started for ${id}`);
 
   // Fetch trailer data with optimized query
+  const dataFetchStart = Date.now();
   const result = await getTrailerData(id);
+  logger.log(
+    `[REQ ${requestId}] getTrailerData completed in ${
+      Date.now() - dataFetchStart
+    }ms`
+  );
 
   // If trailer not found, return 404
   if (!result || !result.trailer) {
+    logger.log(`[REQ ${requestId}] Trailer not found, returning 404`);
     notFound();
   }
 
@@ -562,7 +735,17 @@ export default async function TrailerDetailPage({
     imageUrls: trailerData.imageUrls,
   };
 
+  logger.log(
+    `[REQ ${requestId}] Page processing completed in ${
+      Date.now() - processingStart
+    }ms`
+  );
   logServerPerformance("Page Processing", processingStart);
+
+  const totalPageTime = Date.now() - pageStart;
+  logger.log(
+    `[REQ ${requestId}] Total page generation completed in ${totalPageTime}ms`
+  );
   logServerPerformance(`Total Page Load for ${id}`, pageStart);
 
   return (
