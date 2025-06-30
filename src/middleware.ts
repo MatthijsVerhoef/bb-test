@@ -50,6 +50,10 @@ const ROUTE_PERMISSIONS = {
 // Performance tracking
 const requestTimings = new Map<string, number>();
 
+// Token cache for performance
+const tokenCache = new Map<string, { token: any; expires: number }>();
+const CACHE_DURATION = 60 * 1000; // 1 minute
+
 function isPublicPath(path: string): boolean {
   // Check exact matches
   if (PUBLIC_PATHS.exact.has(path)) return true;
@@ -72,10 +76,52 @@ function hasRequiredRole(userRole: string, requiredRoles: string[]): boolean {
   return false;
 }
 
+async function getCachedToken(request: NextRequest) {
+  const sessionToken = request.cookies.get('next-auth.session-token')?.value || 
+                      request.cookies.get('__Secure-next-auth.session-token')?.value;
+  
+  if (!sessionToken) return null;
+  
+  // Check cache
+  const cached = tokenCache.get(sessionToken);
+  if (cached && cached.expires > Date.now()) {
+    return cached.token;
+  }
+  
+  // Get fresh token
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET!,
+  });
+  
+  // Cache it
+  if (token) {
+    tokenCache.set(sessionToken, {
+      token,
+      expires: Date.now() + CACHE_DURATION
+    });
+  }
+  
+  return token;
+}
+
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const requestId = crypto.randomUUID();
   const startTime = Date.now();
+
+  // Handle CORS preflight requests
+  if (request.method === 'OPTIONS') {
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Max-Age': '86400',
+      },
+    });
+  }
 
   // Store request start time
   requestTimings.set(requestId, startTime);
@@ -112,11 +158,8 @@ export async function middleware(request: NextRequest) {
     return createResponse(NextResponse.next());
   }
 
-  // Get token
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET!,
-  });
+  // Get token (cached)
+  const token = await getCachedToken(request);
 
   // Check authentication
   if (!token) {
@@ -170,6 +213,14 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     * - public files with extensions
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
   ],
 };

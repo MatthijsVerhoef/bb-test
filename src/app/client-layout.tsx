@@ -26,6 +26,11 @@ export default function ClientLayout({
 }: ClientLayoutProps) {
   const pathname = usePathname();
 
+  if (!pathname) {
+    console.error("Pathname is undefined in ClientLayout");
+    return null;
+  }
+
   return (
     <SessionProvider>
       <TranslationProvider
@@ -42,7 +47,6 @@ export default function ClientLayout({
           )}
           {!pathname.startsWith("/admin") && <MobileBottomNav />}
           <Toaster position="top-right" />
-
           {/* Debug components */}
           <ClientDebugger />
           <DetailedNavigationTracker />
