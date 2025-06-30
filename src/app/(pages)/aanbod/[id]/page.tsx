@@ -244,7 +244,7 @@ async function getTrailerData(id: string) {
                     {
                       trailerId: null,
                       user: {
-                        trailers: {
+                        listings: {
                           some: { id },
                         },
                       },
