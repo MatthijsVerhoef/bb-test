@@ -189,7 +189,7 @@ export default function ReservationClient({
         // Handle specific error for dates already blocked
         if (
           data.error &&
-          data.error.includes("dates are no longer available")
+          data?.error?.includes("dates are no longer available")
         ) {
           setError(t("checkReservation.errors.datesUnavailable"));
           return;

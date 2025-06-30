@@ -9,7 +9,9 @@ async function getServerLocale(): Promise<Locale> {
   const cookieStore = await cookies();
   const preferredLocale = cookieStore.get("preferred-locale")?.value as Locale;
 
-  if (preferredLocale && ["nl", "en", "de"].includes(preferredLocale)) {
+  const supportedLocales = ["nl", "en", "de"];
+
+  if (preferredLocale && supportedLocales?.includes(preferredLocale)) {
     return preferredLocale;
   }
 
