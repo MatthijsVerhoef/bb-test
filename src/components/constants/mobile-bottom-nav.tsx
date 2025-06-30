@@ -280,7 +280,7 @@ const MobileBottomNav = () => {
   }, []);
 
   // Don't show on detail pages that have their own bottom bars
-  const isDetailPage = pathname.includes("/aanbod/");
+  const isDetailPage = pathname?.includes("/aanbod/") || false;
 
   if (isDetailPage) {
     return null;

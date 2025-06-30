@@ -1,4 +1,4 @@
-// app/client-layout.tsx - Add debug components here
+// app/client-layout.tsx
 "use client";
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/constants/header";
@@ -10,7 +10,6 @@ import AppProvider from "@/providers/AppProvider";
 import { TranslationProvider } from "@/lib/i18n/client";
 import { Locale } from "@/lib/i18n/config";
 import { ClientDebugger } from "@/components/debug/ClientDebugger";
-import { NavigationTimer } from "@/components/debug/NavigationTimer";
 import { DetailedNavigationTracker } from "@/components/debug/DetailedNavigationTracker";
 
 interface ClientLayoutProps {
@@ -26,11 +25,6 @@ export default function ClientLayout({
 }: ClientLayoutProps) {
   const pathname = usePathname();
 
-  if (!pathname) {
-    console.error("Pathname is undefined in ClientLayout");
-    return null;
-  }
-
   return (
     <SessionProvider>
       <TranslationProvider
@@ -38,14 +32,14 @@ export default function ClientLayout({
         initialTranslations={initialTranslations}
       >
         <AppProvider>
-          {pathname !== "/plaatsen" && !pathname.startsWith("/admin") && (
+          {pathname !== "/plaatsen" && !pathname?.startsWith("/admin") && (
             <Header />
           )}
           {children}
-          {pathname !== "/plaatsen" && !pathname.startsWith("/admin") && (
+          {pathname !== "/plaatsen" && !pathname?.startsWith("/admin") && (
             <Footer />
           )}
-          {!pathname.startsWith("/admin") && <MobileBottomNav />}
+          {!pathname?.startsWith("/admin") && <MobileBottomNav />}
           <Toaster position="top-right" />
           {/* Debug components */}
           <ClientDebugger />
