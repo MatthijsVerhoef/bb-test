@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import TranslationsLayout from "./translations-layout";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Font definitions
 const geistSans = Geist({
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
+        <SpeedInsights />
         <TranslationsLayout>{children}</TranslationsLayout>
       </body>
     </html>
