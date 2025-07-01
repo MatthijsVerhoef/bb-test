@@ -7,14 +7,14 @@ import ClientLayout from "./client-layout";
 // Get locale from cookies (server-side)
 async function getServerLocale(): Promise<Locale> {
   const cookieStore = await cookies();
-  const preferredLocale = cookieStore.get("preferred-locale")?.value as Locale;
-
+  const cookieValue = cookieStore.get("preferred-locale")?.value;
+  
   const supportedLocales = ["nl", "en", "de"];
-
-  if (preferredLocale && supportedLocales?.includes(preferredLocale)) {
-    return preferredLocale;
+  
+  if (cookieValue && supportedLocales.includes(cookieValue)) {
+    return cookieValue as Locale;
   }
-
+  
   return defaultLocale;
 }
 

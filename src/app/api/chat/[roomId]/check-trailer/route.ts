@@ -90,10 +90,11 @@ export async function GET(
     // Check if any message mentions this trailer
     const mentionsTrailer = messages.some(
       (message) =>
-        message.message.includes(`ID: ${trailerId}`) ||
+        message.message &&
+        (message.message.includes(`ID: ${trailerId}`) ||
         message.message.includes(`trailerId: ${trailerId}`) ||
         message.message.includes(`trailer ${trailerId}`) ||
-        message.message.includes(`aanhanger ${trailerId}`)
+        message.message.includes(`aanhanger ${trailerId}`))
     );
 
     if (!mentionsTrailer) {
