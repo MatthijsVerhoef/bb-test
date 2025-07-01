@@ -1,12 +1,9 @@
 "use client";
 
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useLayoutEffect } from "react";
 import { FormSectionProps } from "../types";
 
-/**
- * Simplified form section component with smooth animations
- */
 export const FormSection: React.FC<FormSectionProps> = ({
   id,
   title,
@@ -19,34 +16,42 @@ export const FormSection: React.FC<FormSectionProps> = ({
   children,
 }) => {
   const contentRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState<string>("0px");
+  const [height, setHeight] = useState<string | undefined>(undefined);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Handle expand/collapse with simplified logic
-  useEffect(() => {
-    if (contentRef.current) {
+  useLayoutEffect(() => {
+    if (contentRef.current && !isInitialized) {
       if (isExpanded) {
-        // Get the actual height and set it
         const scrollHeight = contentRef.current.scrollHeight;
         setHeight(`${scrollHeight}px`);
       } else {
-        // Collapse to 0
         setHeight("0px");
       }
+      setIsInitialized(true);
     }
-  }, [isExpanded]);
+  }, [isExpanded, isInitialized]);
 
-  // Handle dynamic content changes when expanded
   useEffect(() => {
-    if (!isExpanded || !contentRef.current) return;
+    if (!isInitialized || !contentRef.current) return;
+
+    if (isExpanded) {
+      const scrollHeight = contentRef.current.scrollHeight;
+      setHeight(`${scrollHeight}px`);
+    } else {
+      setHeight("0px");
+    }
+  }, [isExpanded, isInitialized]);
+
+  useEffect(() => {
+    if (!isExpanded || !contentRef.current || !isInitialized) return;
 
     const updateHeight = () => {
-      if (contentRef.current) {
+      if (contentRef.current && isExpanded) {
         const scrollHeight = contentRef.current.scrollHeight;
         setHeight(`${scrollHeight}px`);
       }
     };
 
-    // Simple ResizeObserver for content changes
     const resizeObserver = new ResizeObserver(() => {
       updateHeight();
     });
@@ -56,7 +61,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [isExpanded]);
+  }, [isExpanded, isInitialized]);
 
   return (
     <div
@@ -98,7 +103,9 @@ export const FormSection: React.FC<FormSectionProps> = ({
       </button>
 
       <div
-        className="overflow-hidden transition-all duration-300 ease-in-out"
+        className={`overflow-hidden ${
+          isInitialized ? "transition-all duration-300 ease-in-out" : ""
+        }`}
         style={{
           height: height,
         }}

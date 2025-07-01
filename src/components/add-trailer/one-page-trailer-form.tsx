@@ -1,19 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/lib/i18n/client";
 import dynamic from "next/dynamic";
 import { useAuth } from "@/stores/auth.store";
 
 // Types
-import { SectionId, TrailerFormData } from "./types";
+import { SectionId, TrailerFormData, SectionsState } from "./types";
 
 // Utilities
 import {
-  initialFormData,
-  initialExpandedSections,
-  initialCompletedSections,
   updateFormField,
   updateNestedFormData,
   validateSection,
@@ -32,63 +29,171 @@ import { TypeSection } from "./sections/type-section";
 import { DetailsSection } from "./sections/details-section";
 import { PricingSection } from "./sections/pricing-section";
 
-// Heavy sections (lazy loaded) - only the content, not the wrapper
-const LocationSection = dynamic(
+// Components
+import { TermsSubmit } from "./components/terms-submit";
+
+// Define default states as constants outside component
+const DEFAULT_EXPANDED_SECTIONS: SectionsState = {
+  type: true, // First section open by default
+  details: false,
+  location: false,
+  availability: false,
+  pricing: false,
+  accessories: false,
+  photos: false,
+  extra: false,
+};
+
+const DEFAULT_COMPLETED_SECTIONS: SectionsState = {
+  type: false,
+  details: false,
+  location: false,
+  availability: false,
+  pricing: false,
+  accessories: false,
+  photos: false,
+  extra: false,
+};
+
+const DEFAULT_FORM_DATA: TrailerFormData = {
+  // Basic info
+  trailerType: "",
+  customType: "",
+  // Details
+  length: "",
+  width: "",
+  height: "",
+  weight: "",
+  capacity: "",
+  // Location
+  address: "",
+  city: "",
+  postalCode: "",
+  latitude: undefined,
+  longitude: undefined,
+  // Availability
+  availableDays: {
+    monday: true,
+    tuesday: true,
+    wednesday: true,
+    thursday: true,
+    friday: true,
+    saturday: true,
+    sunday: true,
+  },
+  timeSlots: {
+    monday: [{ active: true, from: "08:00", to: "20:00" }],
+    tuesday: [{ active: true, from: "08:00", to: "20:00" }],
+    wednesday: [{ active: true, from: "08:00", to: "20:00" }],
+    thursday: [{ active: true, from: "08:00", to: "20:00" }],
+    friday: [{ active: true, from: "08:00", to: "20:00" }],
+    saturday: [{ active: true, from: "08:00", to: "20:00" }],
+    sunday: [{ active: true, from: "08:00", to: "20:00" }],
+  },
+  timeFrom: "08:00",
+  timeTo: "20:00",
+  // Pricing
+  pricePerDay: "",
+  securityDeposit: "",
+  // Extra information
+  requiresDriversLicense: false,
+  licenseType: "none",
+  includesInsurance: false,
+  homeDelivery: false,
+  deliveryFee: "",
+  maxDeliveryDistance: "",
+  cancellationPolicy: "flexible",
+  minRentalDuration: "1",
+  maxRentalDuration: "14",
+  instructions: "",
+  // Arrays
+  accessories: [],
+  images: [],
+  // Terms
+  agreeToTerms: false,
+};
+
+// Lazy load heavy sections with loading states
+const LazyLocationSection = dynamic(
   () =>
     import("./sections/location-section").then((mod) => ({
       default: mod.LocationSection,
     })),
   {
-    ssr: false,
+    loading: () => <SectionSkeleton />,
+    ssr: true, // Enable SSR to prevent hydration issues
   }
 );
 
-const AvailabilitySection = dynamic(
+const LazyAvailabilitySection = dynamic(
   () =>
     import("./sections/availability-section-working").then((mod) => ({
       default: mod.AvailabilitySection,
     })),
   {
-    ssr: false,
+    loading: () => <SectionSkeleton />,
+    ssr: true,
   }
 );
 
-const AccessoriesSection = dynamic(
+const LazyAccessoriesSection = dynamic(
   () =>
     import("./sections/accessories-section-minimal").then((mod) => ({
       default: mod.AccessoriesSection,
     })),
   {
-    ssr: false,
+    loading: () => <SectionSkeleton />,
+    ssr: true,
   }
 );
 
-const PhotosSection = dynamic(
+const LazyPhotosSection = dynamic(
   () =>
     import("./sections/photos-section").then((mod) => ({
       default: mod.PhotosSection,
     })),
   {
-    ssr: false,
+    loading: () => <SectionSkeleton />,
+    ssr: true,
   }
 );
 
-const ExtraSection = dynamic(
+const LazyExtraSection = dynamic(
   () =>
     import("./sections/extra-section").then((mod) => ({
       default: mod.ExtraSection,
     })),
   {
-    ssr: false,
+    loading: () => <SectionSkeleton />,
+    ssr: true,
   }
 );
 
-// Components
-import { TermsSubmit } from "./components/terms-submit";
+// Loading skeleton for sections
+function SectionSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="h-16 bg-gray-100 rounded-lg mb-4"></div>
+      <div className="space-y-3">
+        <div className="h-4 bg-gray-100 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+      </div>
+    </div>
+  );
+}
 
 interface OnePageTrailerFormProps {
-  trailerId?: string; // If provided, form is in edit mode
+  trailerId?: string;
 }
+
+interface LessorSettings {
+  defaultMinRentalDuration: number;
+  defaultMaxRentalDuration: number;
+  defaultSecurityDeposit: number;
+  cancellationPolicy: string;
+}
+
+type AutoSaveStatus = "idle" | "saving" | "saved" | "error";
 
 export default function OnePageTrailerForm({
   trailerId,
@@ -98,35 +203,40 @@ export default function OnePageTrailerForm({
   const { t } = useTranslation("addTrailer");
   const { updateProfile } = useAuth();
 
-  // Determine if we're in edit mode
+  // Memoized values
   const isEditMode = Boolean(trailerId);
 
-  // State
-  const [isLoading, setIsLoading] = useState<boolean>(isEditMode); // Loading for edit mode
+  // Initialize state with functions to ensure consistency
+  const [isLoading, setIsLoading] = useState<boolean>(isEditMode);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [expandedSections, setExpandedSections] = useState(
-    initialExpandedSections
-  );
-  const [completedSections, setCompletedSections] = useState(
-    initialCompletedSections
-  );
-  const [formData, setFormData] = useState<TrailerFormData>(initialFormData);
 
-  // Draft-related state (disabled in edit mode)
-  const [currentDraft, setCurrentDraft] = useState<TrailerDraft | null>(null);
-  const [autoSaveStatus, setAutoSaveStatus] = useState<
-    "idle" | "saving" | "saved" | "error"
-  >("idle");
+  // Track if we're on client side
+  const [isClient, setIsClient] = useState(false);
+
+  // Track if the form has been initialized
+  const [isFormInitialized, setIsFormInitialized] = useState(false);
+
+  // Use functions for initial state to prevent hydration issues
+  const [expandedSections, setExpandedSections] = useState<SectionsState>(
+    () => ({ ...DEFAULT_EXPANDED_SECTIONS })
+  );
+  const [completedSections, setCompletedSections] = useState<SectionsState>(
+    () => ({ ...DEFAULT_COMPLETED_SECTIONS })
+  );
+  const [formData, setFormData] = useState<TrailerFormData>(() => ({
+    ...DEFAULT_FORM_DATA,
+  }));
+
+  // Draft-related state
+  const [currentDraft, setCurrentDraft] = useState<any | null>(null);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<AutoSaveStatus>("idle");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [lessorSettings, setLessorSettings] = useState<{
-    defaultMinRentalDuration: number;
-    defaultMaxRentalDuration: number;
-    defaultSecurityDeposit: number;
-    cancellationPolicy: string;
-  } | null>(null);
+  const [lessorSettings, setLessorSettings] = useState<LessorSettings | null>(
+    null
+  );
 
   // Fetch lessor settings
   useEffect(() => {
@@ -136,7 +246,7 @@ export default function OnePageTrailerForm({
         if (response.ok) {
           const data = await response.json();
 
-          const settings = {
+          const settings: LessorSettings = {
             defaultMinRentalDuration: data.rentalSettings.minRentalDuration,
             defaultMaxRentalDuration: data.rentalSettings.maxRentalDuration,
             defaultSecurityDeposit:
@@ -153,7 +263,6 @@ export default function OnePageTrailerForm({
               minRentalDuration: settings.defaultMinRentalDuration.toString(),
               maxRentalDuration: settings.defaultMaxRentalDuration.toString(),
               cancellationPolicy: settings.cancellationPolicy,
-              // Don't set security deposit here - it will be calculated based on price
             }));
           }
         }
@@ -162,13 +271,12 @@ export default function OnePageTrailerForm({
       }
     };
 
-    // Only fetch if user is authenticated
     if (!isEditMode) {
       fetchLessorSettings();
     }
   }, [isEditMode, currentDraft]);
 
-  // Auto-save function (works in both create and edit mode)
+  // Auto-save function
   const performAutoSave = useCallback(
     (data: TrailerFormData) => {
       if (!shouldTriggerAutoSave(data) || !draftService.isDraftSupported()) {
@@ -180,8 +288,7 @@ export default function OnePageTrailerForm({
       try {
         let autoGeneratedName = generateDraftAutoName(data);
 
-        // In edit mode, prefix with "Bewerken: " and append trailer ID for identification
-        if (isEditMode) {
+        if (isEditMode && trailerId) {
           autoGeneratedName = `Bewerken: ${autoGeneratedName} [${trailerId}]`;
         }
 
@@ -199,15 +306,12 @@ export default function OnePageTrailerForm({
         setAutoSaveStatus("saved");
         setHasUnsavedChanges(false);
 
-        // Reset status after a delay
         setTimeout(() => {
           setAutoSaveStatus("idle");
         }, 2000);
       } catch (error) {
         console.error("Auto-save failed:", error);
         setAutoSaveStatus("error");
-
-        // Reset status after a delay
         setTimeout(() => {
           setAutoSaveStatus("idle");
         }, 3000);
@@ -225,41 +329,31 @@ export default function OnePageTrailerForm({
 
       autoSaveTimeoutRef.current = setTimeout(() => {
         performAutoSave(data);
-      }, 3000); // Auto-save after 3 seconds of inactivity
+      }, 3000);
     },
     [performAutoSave]
   );
 
-  // Update form data handler (supports both direct values and functions)
-  const updateFormData = <T,>(
-    field: keyof TrailerFormData,
-    value: T | ((prev: T) => T)
-  ): void => {
-    let newFormData: TrailerFormData;
-
-    if (typeof value === "function") {
+  // Update form data handler
+  const updateFormData = useCallback(
+    <T extends any>(
+      field: keyof TrailerFormData,
+      value: T | ((prev: T) => T)
+    ): void => {
       setFormData((prev) => {
-        newFormData = {
-          ...prev,
-          [field]: (value as (prev: T) => T)(prev[field] as T),
-        };
-        return newFormData;
-      });
-    } else {
-      setFormData((prev) => {
-        newFormData = { ...prev, [field]: value };
-        return newFormData;
-      });
-    }
+        const newValue =
+          typeof value === "function" ? value(prev[field] as T) : value;
+        const newFormData = { ...prev, [field]: newValue };
 
-    // Trigger auto-save (in both create and edit mode)
-    setHasUnsavedChanges(true);
-    setTimeout(() => {
-      if (newFormData) {
+        // Schedule auto-save
+        setHasUnsavedChanges(true);
         scheduleAutoSave(newFormData);
-      }
-    }, 0);
-  };
+
+        return newFormData;
+      });
+    },
+    [scheduleAutoSave]
+  );
 
   // Function to load trailer data for edit mode
   const loadTrailerData = useCallback(async () => {
@@ -282,51 +376,32 @@ export default function OnePageTrailerForm({
         // Basic info
         trailerType: trailerData.type || "",
         customType: trailerData.customType || "",
-
-        // Details (flat structure matching TrailerFormData)
+        // Details
         length: trailerData.length ? String(trailerData.length) : "",
         width: trailerData.width ? String(trailerData.width) : "",
         height: trailerData.height ? String(trailerData.height) : "",
         weight: trailerData.weight ? String(trailerData.weight) : "",
         capacity: trailerData.capacity ? String(trailerData.capacity) : "",
-
-        // Location (flat structure)
+        // Location
         address: trailerData.address || "",
         city: trailerData.city || "",
         postalCode: trailerData.postalCode || "",
         latitude: trailerData.latitude || undefined,
         longitude: trailerData.longitude || undefined,
-
-        // Availability (flat structure)
-        availableDays: {
-          monday: true,
-          tuesday: true,
-          wednesday: true,
-          thursday: true,
-          friday: true,
-          saturday: true,
-          sunday: true,
+        // Availability
+        availableDays: trailerData.availableDays || {
+          ...DEFAULT_FORM_DATA.availableDays,
         },
-        timeSlots: {
-          monday: [{ active: true, from: "08:00", to: "20:00" }],
-          tuesday: [{ active: true, from: "08:00", to: "20:00" }],
-          wednesday: [{ active: true, from: "08:00", to: "20:00" }],
-          thursday: [{ active: true, from: "08:00", to: "20:00" }],
-          friday: [{ active: true, from: "08:00", to: "20:00" }],
-          saturday: [{ active: true, from: "08:00", to: "20:00" }],
-          sunday: [{ active: true, from: "08:00", to: "20:00" }],
-        },
-        timeFrom: "08:00",
-        timeTo: "20:00",
-
-        // Pricing (flat structure)
+        timeSlots: trailerData.timeSlots || { ...DEFAULT_FORM_DATA.timeSlots },
+        timeFrom: trailerData.timeFrom || "08:00",
+        timeTo: trailerData.timeTo || "20:00",
+        // Pricing
         pricePerDay: trailerData.pricePerDay
           ? String(trailerData.pricePerDay)
           : "",
         securityDeposit: trailerData.securityDeposit
           ? String(trailerData.securityDeposit)
           : "",
-
         // Extra information
         requiresDriversLicense: trailerData.requiresDriversLicense || false,
         licenseType: trailerData.licenseType || "none",
@@ -346,28 +421,26 @@ export default function OnePageTrailerForm({
           ? String(trailerData.maxRentalDuration)
           : "14",
         instructions: trailerData.instructions || "",
-
         // Arrays
         accessories: trailerData.accessories || [],
         images: trailerData.images
-          ? trailerData.images.map((img) => ({
+          ? trailerData.images.map((img: any) => ({
               id: img.id || Math.random().toString(36).substr(2, 9),
               name: img.title || "Uploaded image",
-              preview: img.url, // Use url as preview for existing images
+              preview: img.url,
               url: img.url,
-              uploaded: true, // Mark as already uploaded
-              size: "0", // Size not available for existing images
+              uploaded: true,
+              size: "0",
             }))
           : [],
-
-        // Terms (already agreed when creating)
+        // Terms
         agreeToTerms: true,
       };
 
       setFormData(convertedFormData);
 
-      // Validate each section to determine completion status
-      setCompletedSections({
+      // Validate sections
+      const newCompletedSections = {
         type: validateSection(SectionId.TYPE, convertedFormData),
         details: validateSection(SectionId.DETAILS, convertedFormData),
         location: validateSection(SectionId.LOCATION, convertedFormData),
@@ -379,7 +452,12 @@ export default function OnePageTrailerForm({
         accessories: validateSection(SectionId.ACCESSORIES, convertedFormData),
         photos: validateSection(SectionId.PHOTOS, convertedFormData),
         extra: validateSection(SectionId.EXTRA, convertedFormData),
-      });
+      };
+
+      setCompletedSections(newCompletedSections);
+
+      // Keep the default expanded state (first section open)
+      setExpandedSections(DEFAULT_EXPANDED_SECTIONS);
     } catch (error: any) {
       console.error("Error loading trailer data:", error);
       setError(error.message || "Kon trailer gegevens niet laden");
@@ -435,10 +513,8 @@ export default function OnePageTrailerForm({
     setError("");
 
     try {
-      // Format data for API
       const trailerData = formatTrailerDataForApi(formData);
 
-      // Send to API
       const url = isEditMode
         ? `/api/trailers/${trailerId}`
         : "/api/trailers/add";
@@ -452,7 +528,6 @@ export default function OnePageTrailerForm({
         body: JSON.stringify(trailerData),
       });
 
-      // Handle response
       const result = await response.json();
 
       if (!response.ok) {
@@ -473,15 +548,14 @@ export default function OnePageTrailerForm({
           await updateProfile({});
         } catch (error) {
           console.warn("Failed to refresh user profile:", error);
-          // Continue with redirect even if profile refresh fails
         }
       }
 
       // Redirect based on mode
       if (isEditMode) {
-        router.push(`/aanbod/${trailerId}`); // Go to trailer detail page
+        router.push(`/aanbod/${trailerId}`);
       } else {
-        router.push("/"); // Go to success page
+        router.push("/");
       }
     } catch (error: any) {
       console.error("Submission error:", error);
@@ -489,6 +563,15 @@ export default function OnePageTrailerForm({
       setIsSubmitting(false);
     }
   };
+
+  // Effect to handle initial render and client-side detection
+  useEffect(() => {
+    setIsClient(true);
+    // Use requestAnimationFrame to ensure DOM has been painted
+    requestAnimationFrame(() => {
+      setIsFormInitialized(true);
+    });
+  }, []);
 
   // Cleanup effect
   useEffect(() => {
@@ -499,18 +582,16 @@ export default function OnePageTrailerForm({
     };
   }, []);
 
-  // Load trailer data for edit mode or draft for create mode
+  // Load trailer data or draft
   useEffect(() => {
     if (isEditMode) {
-      // First check if there's an existing edit draft for this trailer
       const checkForEditDraft = () => {
         if (draftService.isDraftSupported() && trailerId) {
           const allDrafts = draftService.getDrafts();
 
           const editDraft = allDrafts.find(
-            (draft) =>
+            (draft: any) =>
               draft.autoGeneratedName.startsWith("Bewerken:") &&
-              // Check if this draft is for the current trailer by looking for the trailer ID in brackets
               draft.autoGeneratedName.includes(`[${trailerId}]`)
           );
 
@@ -520,7 +601,7 @@ export default function OnePageTrailerForm({
             setHasUnsavedChanges(false);
             setIsLoading(false);
 
-            setCompletedSections({
+            const newCompletedSections = {
               type: validateSection(SectionId.TYPE, editDraft.formData),
               details: validateSection(SectionId.DETAILS, editDraft.formData),
               location: validateSection(SectionId.LOCATION, editDraft.formData),
@@ -534,7 +615,13 @@ export default function OnePageTrailerForm({
                 editDraft.formData
               ),
               photos: validateSection(SectionId.PHOTOS, editDraft.formData),
-            });
+              extra: validateSection(SectionId.EXTRA, editDraft.formData),
+            };
+
+            setCompletedSections(newCompletedSections);
+
+            // Keep the default expanded state (first section open)
+            setExpandedSections(DEFAULT_EXPANDED_SECTIONS);
             return true;
           }
         }
@@ -545,31 +632,31 @@ export default function OnePageTrailerForm({
         loadTrailerData();
       }
     } else {
-      // Load draft from URL parameter (if resuming editing)
-      const urlParams = new URLSearchParams(window.location.search);
-      const draftId = urlParams.get("draft");
+      // Check for draft in URL (create mode)
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const draftId = urlParams.get("draft");
 
-      if (draftId && draftService.isDraftSupported()) {
-        try {
-          const draft = draftService.getDraft(draftId);
-          if (draft) {
-            setCurrentDraft(draft);
-            setFormData(draft.formData);
-            setHasUnsavedChanges(false);
+        if (draftId && draftService.isDraftSupported()) {
+          try {
+            const draft = draftService.getDraft(draftId);
+            if (draft) {
+              setCurrentDraft(draft);
+              setFormData(draft.formData);
+              setHasUnsavedChanges(false);
+            }
+          } catch (error) {
+            console.error("Failed to load draft:", error);
           }
-        } catch (error) {
-          console.error("Failed to load draft:", error);
         }
       }
     }
   }, [isEditMode, loadTrailerData, trailerId]);
 
-  // Toggle section wrapper - ensure one section is always open
-  const handleToggleSection = (section: SectionId) => {
-    const wasAlreadyExpanded = expandedSections[section];
-
+  // Toggle section handler
+  const handleToggleSection = useCallback((section: SectionId) => {
     setExpandedSections((prev) => {
-      // If the clicked section is already open, keep it open (don't allow closing)
+      // If the clicked section is already open, keep it open
       if (prev[section]) {
         return prev;
       }
@@ -583,19 +670,12 @@ export default function OnePageTrailerForm({
         {} as typeof prev
       );
 
-      // Open the clicked section
       newState[section] = true;
 
-      return newState;
-    });
-
-    // Only scroll if we're opening a new section (not if it was already open)
-    if (!wasAlreadyExpanded) {
-      // Wait for the animation to start before scrolling
+      // Scroll to section after state update
       setTimeout(() => {
         const sectionEl = document.getElementById(`section-${section}`);
         if (sectionEl) {
-          // Calculate offset to show section header with some breathing room
           const elementTop = sectionEl.offsetTop;
           const offset = 200;
           const scrollToPosition = elementTop - offset;
@@ -606,8 +686,35 @@ export default function OnePageTrailerForm({
           });
         }
       }, 300);
-    }
-  };
+
+      return newState;
+    });
+  }, []);
+
+  // Memoized auto-save status component
+  const autoSaveStatusIndicator = useMemo(() => {
+    // Only render on client side to prevent hydration mismatch
+    if (typeof window === "undefined") return null;
+
+    if (!draftService.isDraftSupported()) return null;
+
+    return (
+      <div className="flex items-center gap-2 text-sm">
+        {autoSaveStatus === "saving" && (
+          <span className="text-blue-600 flex items-center gap-1">
+            <div className="w-3 h-3 border border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            Opslaan...
+          </span>
+        )}
+        {autoSaveStatus === "saved" && (
+          <span className="text-green-600">✓ Concept opgeslagen</span>
+        )}
+        {autoSaveStatus === "error" && (
+          <span className="text-red-600">⚠ Opslaan mislukt</span>
+        )}
+      </div>
+    );
+  }, [autoSaveStatus]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -622,9 +729,7 @@ export default function OnePageTrailerForm({
             <h1 className="text-3xl font-semibold text-gray-900">
               {isEditMode ? "Trailer bewerken" : t("title")}
             </h1>
-
-            {/* Auto-save status indicator */}
-            {draftService.isDraftSupported() && (
+            {isClient && draftService.isDraftSupported() && (
               <div className="flex items-center gap-2 text-sm">
                 {autoSaveStatus === "saving" && (
                   <span className="text-blue-600 flex items-center gap-1">
@@ -654,7 +759,6 @@ export default function OnePageTrailerForm({
           </div>
         )}
 
-        {/* Loading state for edit mode */}
         {isLoading && isEditMode && (
           <div className="flex items-center justify-center py-12">
             <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
@@ -665,8 +769,13 @@ export default function OnePageTrailerForm({
         )}
 
         {(!isLoading || !isEditMode) && (
-          <form onSubmit={handleSubmit} className="space-y-0">
-            {/* Trailer Type Section - Always rendered */}
+          <form
+            onSubmit={handleSubmit}
+            className={`space-y-0 ${
+              !isFormInitialized ? "form-initial-load" : "form-loaded"
+            }`}
+          >
+            {/* Always rendered sections */}
             <TypeSection
               formData={formData}
               isExpanded={expandedSections.type}
@@ -677,7 +786,6 @@ export default function OnePageTrailerForm({
               setExpandedSections={setExpandedSections}
             />
 
-            {/* Details Section - Always rendered (lightweight) */}
             <DetailsSection
               formData={formData}
               isExpanded={expandedSections.details}
@@ -688,8 +796,8 @@ export default function OnePageTrailerForm({
               setExpandedSections={setExpandedSections}
             />
 
-            {/* Location Section - Lazy loaded component, always rendered */}
-            <LocationSection
+            {/* Lazy loaded sections */}
+            <LazyLocationSection
               formData={formData}
               isExpanded={expandedSections.location}
               isCompleted={completedSections.location}
@@ -699,8 +807,7 @@ export default function OnePageTrailerForm({
               setExpandedSections={setExpandedSections}
             />
 
-            {/* Availability Section - Lazy loaded component, always rendered */}
-            <AvailabilitySection
+            <LazyAvailabilitySection
               formData={formData}
               isExpanded={expandedSections.availability}
               isCompleted={completedSections.availability}
@@ -713,7 +820,6 @@ export default function OnePageTrailerForm({
               setExpandedSections={setExpandedSections}
             />
 
-            {/* Pricing Section - Always rendered (lightweight) */}
             <PricingSection
               formData={formData}
               isExpanded={expandedSections.pricing}
@@ -725,8 +831,7 @@ export default function OnePageTrailerForm({
               lessorSettings={lessorSettings}
             />
 
-            {/* Accessories Section - Lazy loaded component, always rendered */}
-            <AccessoriesSection
+            <LazyAccessoriesSection
               formData={formData}
               isExpanded={expandedSections.accessories}
               isCompleted={completedSections.accessories}
@@ -736,8 +841,7 @@ export default function OnePageTrailerForm({
               setExpandedSections={setExpandedSections}
             />
 
-            {/* Photos Section - Lazy loaded component, always rendered */}
-            <PhotosSection
+            <LazyPhotosSection
               formData={formData}
               isExpanded={expandedSections.photos}
               isCompleted={completedSections.photos}
@@ -748,7 +852,7 @@ export default function OnePageTrailerForm({
             />
 
             {isEditMode && (
-              <ExtraSection
+              <LazyExtraSection
                 formData={formData}
                 isExpanded={expandedSections.extra}
                 isCompleted={completedSections.extra}
@@ -759,7 +863,6 @@ export default function OnePageTrailerForm({
               />
             )}
 
-            {/* Terms and Submit */}
             <TermsSubmit
               formData={formData}
               isSubmitting={isSubmitting}

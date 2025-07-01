@@ -13,9 +13,8 @@ export const metadata = {
 export default async function AddTrailerPage() {
   const session = await getServerSession(authOptions);
 
-  // If not logged in, redirect to the pre-auth landing page
   if (!session) {
-    redirect('/verhuren');
+    redirect("/verhuren");
   }
 
   return (

@@ -8,7 +8,6 @@ const PUBLIC_PATHS = {
     "/",
     "/login",
     "/register",
-    "/verhuren",
     "/forgot-password",
     "/reset-password",
     "/verify-email",
@@ -28,10 +27,15 @@ const PUBLIC_PATHS = {
     "/reserveren/",
     "/_next",
     "/images",
-    "/api/auth/", // NextAuth routes
-    "/api/public/", // Public API routes
+    "/api/auth/", 
+    "/api/public/",
   ]
 };
+
+// Add verhuren as a special route that requires auth check
+const AUTH_AWARE_PUBLIC_PATHS = new Set([
+  "/verhuren"
+]);
 
 const ROLE_HIERARCHY = {
   ADMIN: 3,
@@ -63,6 +67,10 @@ function isPublicPath(path: string): boolean {
   
   // Check prefixes
   return PUBLIC_PATHS.prefixes.some(prefix => path.startsWith(prefix));
+}
+
+function isAuthAwarePublicPath(path: string): boolean {
+  return AUTH_AWARE_PUBLIC_PATHS.has(path);
 }
 
 function hasRequiredRole(userRole: string, requiredRoles: string[]): boolean {
@@ -126,9 +134,6 @@ export async function middleware(request: NextRequest) {
   // Store request start time
   requestTimings.set(requestId, startTime);
 
-  // Log incoming request
-  console.log(`[PERF] → ${request.method} ${path} [${requestId}]`);
-
   // Create response handler to log performance
   const createResponse = (response: NextResponse) => {
     const duration = Date.now() - startTime;
@@ -139,35 +144,30 @@ export async function middleware(request: NextRequest) {
     response.headers.set('X-Response-Time', `${duration}ms`);
     response.headers.set('Server-Timing', `total;dur=${duration}`);
     
-    // Log based on path type
-    if (path.startsWith('/api/')) {
-      console.log(`[PERF] ← API ${path} completed in ${duration}ms [${requestId}]`);
-    } else if (path.startsWith('/aanbod/')) {
-      console.log(`[PERF] ← Trailer detail ${path} completed in ${duration}ms [${requestId}]`);
-    } else if (path === '/') {
-      console.log(`[PERF] ← Home page completed in ${duration}ms [${requestId}]`);
-    } else if (!path.startsWith('/_next') && !path.includes('.')) {
-      console.log(`[PERF] ← Page ${path} completed in ${duration}ms [${requestId}]`);
-    }
-    
     return response;
   };
 
-  // Allow public paths
-  if (isPublicPath(path)) {
+  // Handle /verhuren specially - redirect to /plaatsen if authenticated
+  if (path === "/verhuren") {
+    const token = await getCachedToken(request);
+    if (token && token.isVerified) {
+      // User is authenticated, redirect to /plaatsen
+      return createResponse(NextResponse.redirect(new URL("/plaatsen", request.url)));
+    }
+    // Not authenticated, let them see the verhuren page
     return createResponse(NextResponse.next());
   }
 
-  // Get token (cached)
+  // Allow public paths (excluding auth-aware ones)
+  if (isPublicPath(path) && !isAuthAwarePublicPath(path)) {
+    return createResponse(NextResponse.next());
+  }
+
+  // Get token for protected routes
   const token = await getCachedToken(request);
 
-  // Check authentication
+  // Check authentication for protected routes
   if (!token) {
-    // Special handling for plaatsen route
-    if (path === "/plaatsen") {
-      return createResponse(NextResponse.redirect(new URL("/verhuren", request.url)));
-    }
-    
     // API routes should return 401
     if (path.startsWith("/api/")) {
       return createResponse(NextResponse.json(
@@ -213,14 +213,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     * - public files with extensions
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
   ],
 };
