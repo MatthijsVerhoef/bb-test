@@ -1,4 +1,3 @@
-// app/page.tsx
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
@@ -6,13 +5,9 @@ import { TrailerType } from "@prisma/client";
 
 import { EmailVerificationModal } from "@/components/constants/auth/email-verified-dialog";
 import HomePageClient from "@/components/home/home-page-client";
-import TrailerSeoContent from "@/components/seo/trailer-seo-content";
-import FAQSection from "@/components/seo/home-faq";
 
-// Cache results for 60 seconds instead of 10
 export const revalidate = 60;
 
-// Import structured data generators
 import {
   generateTrailerListingStructuredData,
   generateOrganizationStructuredData,
@@ -20,7 +15,6 @@ import {
   generateLocalBusinessStructuredData,
 } from "@/lib/structured-data";
 
-// Generate metadata with more rich structured data for SEO
 export async function generateMetadata(): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://buurbak.nl";
 
@@ -96,7 +90,6 @@ function getTrailerSizeCategory(trailer: any) {
     return "Gemiddeld";
   }
 
-  // Small trailers
   if (
     (trailer.weight && trailer.weight < 750) ||
     (trailer.length && trailer.length < 3.5) ||
@@ -105,7 +98,6 @@ function getTrailerSizeCategory(trailer: any) {
     return "Klein";
   }
 
-  // Large trailers
   if (
     (trailer.weight && trailer.weight > 1500) ||
     (trailer.length && trailer.length > 5) ||
@@ -115,7 +107,6 @@ function getTrailerSizeCategory(trailer: any) {
     return "Groot";
   }
 
-  // Medium trailers (default)
   return "Gemiddeld";
 }
 
@@ -596,8 +587,6 @@ export default async function TrailersPage({
         totalPages={totalPages}
         startDate={startDate}
       />
-      {/* <TrailerSeoContent />
-      <FAQSection /> */}
     </div>
   );
 }

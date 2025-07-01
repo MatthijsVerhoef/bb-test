@@ -1,15 +1,12 @@
 "use client";
 
-import { Suspense, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "@/lib/i18n/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import TrailerMap from "@/components/trailers/trailer-map";
-import LoadingSpinner from "@/components/trailers/loading-spinnter";
 import { TrailersPaginationList } from "@/components/trailers/infinite-list";
 import FilterSidebar from "@/components/trailers/trailer-filters";
 import AnimatedCityTitle from "@/components/trailers/animated-city-title";
-import TrailerSeoContent from "@/components/seo/trailer-seo-content";
-import FAQSection from "@/components/seo/home-faq";
 import ResetPasswordDialog from "@/components/constants/auth/reset-password-dialog";
 import { Button } from "../ui/button";
 import {
@@ -54,10 +51,12 @@ export default function HomePageClient({
   const [isNavVisible, setIsNavVisible] = useState(true);
   const lastScrollY = useRef(0);
   const scrollThreshold = 10;
-  
+
   // Reset password dialog state
   const resetToken = searchParams.get("resetToken");
-  const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(!!resetToken);
+  const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(
+    !!resetToken
+  );
 
   // Map between display names and enum values
   const trailerTypeMapping: { [key: string]: string } = {
@@ -79,12 +78,10 @@ export default function HomePageClient({
   };
 
   const handleFilterChange = (newFilters: any) => {
-    // Create a new URLSearchParams object from the current params
     const currentParams = new URLSearchParams(searchParams.toString());
 
     // First, identify which filters are being removed
     Object.keys(currentFilters).forEach((key) => {
-      // If a filter exists in currentFilters but not in newFilters, it was removed
       if (currentFilters[key] && (!newFilters[key] || newFilters[key] === "")) {
         currentParams.delete(key);
       }
@@ -92,7 +89,6 @@ export default function HomePageClient({
 
     // Handle category/type mapping
     if (newFilters.category && !newFilters.type) {
-      // If category is set but type isn't, look up the enum value
       const mappedType = trailerTypeMapping[newFilters.category];
       if (mappedType) {
         newFilters.type = mappedType;
@@ -102,22 +98,19 @@ export default function HomePageClient({
     // Update with new filter values
     Object.entries(newFilters).forEach(([key, value]) => {
       if (key === "accessories" && Array.isArray(value)) {
-        // Handle arrays (accessories)
         if (!value.length) {
           currentParams.delete(key);
         } else {
           currentParams.set(key, value.join(","));
         }
       } else if (value === "" || value == null) {
-        // Remove empty/null values
         currentParams.delete(key);
       } else {
-        // Set the value as string
         currentParams.set(key, String(value));
       }
     });
 
-    // Reset to page 1 when filters change to prevent "page not found" errors
+    // Reset to page 1 when filters change
     currentParams.set("page", "1");
 
     // Only update if params actually changed
@@ -125,10 +118,8 @@ export default function HomePageClient({
     const newString = currentParams.toString();
 
     if (oldString !== newString) {
-      // Navigate to the new URL with updated filters - use refresh to trigger server re-render
       const newUrl = `${window.location.pathname}?${newString}`;
       router.push(newUrl);
-      // Force refresh to ensure server component re-renders with new search params
       router.refresh();
     }
   };
@@ -144,17 +135,16 @@ export default function HomePageClient({
       onViewChange?.("list");
     }
   }, [searchParams, onViewChange]);
-  
-  // Update reset password dialog state when the resetToken query parameter changes
+
+  // Update reset password dialog state
   useEffect(() => {
     setShowResetPasswordDialog(!!resetToken);
   }, [resetToken]);
 
-  // Mobile header and navigation sync
+  // Mobile detection and scroll behavior
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileHeader, setShowMobileHeader] = useState(true);
 
-  // Check for mobile screen size
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -168,34 +158,26 @@ export default function HomePageClient({
     };
   }, []);
 
-  // Sync with header and mobile bottom nav scroll behavior
+  // Scroll behavior
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       const scrollDifference = Math.abs(currentScrollY - lastScrollY.current);
 
-      // Only trigger if scroll distance is above threshold
       if (scrollDifference < scrollThreshold) return;
 
       if (isMobile) {
-        // Mobile: sync with header behavior
         if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-          // Scrolling down - hide mobile header and nav
           setShowMobileHeader(false);
           setIsNavVisible(false);
         } else if (currentScrollY < lastScrollY.current) {
-          // Scrolling up - show mobile header and nav
           setShowMobileHeader(true);
           setIsNavVisible(true);
         }
       } else {
-        // Desktop: use mobile bottom nav logic (same as mobile bottom nav component)
-        // Show when scrolling up or at top of page
         if (currentScrollY < lastScrollY.current || currentScrollY < 100) {
           setIsNavVisible(true);
-        }
-        // Hide when scrolling down
-        else if (currentScrollY > lastScrollY.current) {
+        } else if (currentScrollY > lastScrollY.current) {
           setIsNavVisible(false);
         }
       }
@@ -203,16 +185,14 @@ export default function HomePageClient({
       lastScrollY.current = currentScrollY;
     };
 
-    // Add scroll event listener
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    // Cleanup
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [isMobile]);
 
-  // Handle view change with URL parameter update
+  // Handle view change
   const handleViewChange = (newView: string) => {
     setView(newView);
     onViewChange?.(newView);
@@ -224,20 +204,17 @@ export default function HomePageClient({
       params.delete("view");
     }
 
-    // Update URL without page reload
     const newUrl = params.toString() ? `/?${params.toString()}` : "/";
     router.replace(newUrl, { scroll: false });
   };
-  
-  // Handle closing the reset password dialog
+
+  // Handle reset password dialog close
   const handleResetPasswordDialogClose = () => {
     setShowResetPasswordDialog(false);
-    
-    // Remove the resetToken from the URL without page reload
+
     const params = new URLSearchParams(searchParams.toString());
     params.delete("resetToken");
-    
-    // Update URL without page reload, preserving other parameters
+
     const newUrl = params.toString() ? `/?${params.toString()}` : "/";
     router.replace(newUrl, { scroll: false });
   };
@@ -246,14 +223,14 @@ export default function HomePageClient({
     <>
       {/* Reset Password Dialog */}
       {resetToken && (
-        <ResetPasswordDialog 
-          isOpen={showResetPasswordDialog} 
-          onClose={handleResetPasswordDialogClose} 
+        <ResetPasswordDialog
+          isOpen={showResetPasswordDialog}
+          onClose={handleResetPasswordDialogClose}
           resetToken={resetToken}
         />
       )}
-      
-      {/* Desktop Layout - Exactly as original, hidden on mobile */}
+
+      {/* Desktop Layout */}
       <div className="hidden lg:block">
         <div className="flex items-start container mx-auto relative w-[1200px] mt-16">
           <div className="w-[320px] me-10 flex flex-col">
@@ -275,12 +252,12 @@ export default function HomePageClient({
               </select>
             </div>
 
-            {/* Client-side Filter */}
             <FilterSidebar
               currentFilters={currentFilters}
               onFilterChange={handleFilterChange}
             />
           </div>
+
           <div className="flex flex-col flex-1">
             <AnimatedCityTitle selectedCity={selectedCity} />
 
@@ -311,39 +288,35 @@ export default function HomePageClient({
               </div>
             </div>
 
-            <Suspense
-              key={`map-${selectedCity || "all"}-${startDate || ""}`}
-              fallback={<LoadingSpinner />}
+            {/* Map Container - Always rendered */}
+            <div
+              className={
+                view === "map"
+                  ? "fixed top-0 z-[9] left-0 h-screen min-h-screen w-screen"
+                  : ""
+              }
             >
-              <div
-                className={
-                  view === "map"
-                    ? "fixed top-0 z-[9] left-0 h-screen min-h-screen w-screen"
-                    : ""
-                }
-              >
-                {view === "map" && (
-                  <div className="flex h-11 px-1 items-center rounded-full bg-white absolute top-[80px] z-[10] right-4">
-                    <Button
-                      variant={"ghost"}
-                      className="me-1 rounded-full size-9"
-                      onClick={() => handleViewChange("list")}
-                    >
-                      <List className={view === "list" ? "text-primary" : ""} />
-                    </Button>
-                    <div className="w-[1px] h-[20px] bg-[#dddddd]" />
-                    <Button
-                      variant={"ghost"}
-                      className="ms-1 rounded-full size-9"
-                      onClick={() => handleViewChange("map")}
-                    >
-                      <Map className={view === "map" ? "text-primary" : ""} />
-                    </Button>
-                  </div>
-                )}
-                <TrailerMap markers={mapMarkers} zoom={16} view={view} />
-              </div>
-            </Suspense>
+              {view === "map" && (
+                <div className="flex h-11 px-1 items-center rounded-full bg-white absolute top-[80px] z-[10] right-4">
+                  <Button
+                    variant={"ghost"}
+                    className="me-1 rounded-full size-9"
+                    onClick={() => handleViewChange("list")}
+                  >
+                    <List className={view === "list" ? "text-primary" : ""} />
+                  </Button>
+                  <div className="w-[1px] h-[20px] bg-[#dddddd]" />
+                  <Button
+                    variant={"ghost"}
+                    className="ms-1 rounded-full size-9"
+                    onClick={() => handleViewChange("map")}
+                  >
+                    <Map className={view === "map" ? "text-primary" : ""} />
+                  </Button>
+                </div>
+              )}
+              <TrailerMap markers={mapMarkers} zoom={10} view={view} />
+            </div>
 
             <div className="mt-10">
               <TrailersPaginationList
@@ -357,7 +330,7 @@ export default function HomePageClient({
         </div>
       </div>
 
-      {/* Mobile Layout - New responsive version */}
+      {/* Mobile Layout */}
       <div className="lg:hidden container mx-auto relative px-4 sm:px-6 mt-0 md:mt-16 md:pb-24">
         <div className="flex flex-col w-full">
           <AnimatedCityTitle selectedCity={selectedCity} />
@@ -397,39 +370,35 @@ export default function HomePageClient({
             </div>
           </div>
 
-          <Suspense
-            key={`map-${selectedCity || "all"}-${startDate || ""}`}
-            fallback={<LoadingSpinner />}
+          {/* Mobile Map Container */}
+          <div
+            className={
+              view === "map"
+                ? "fixed top-0 z-[9] left-0 h-screen min-h-screen w-screen"
+                : "w-full"
+            }
           >
-            <div
-              className={
-                view === "map"
-                  ? "fixed top-0 z-[9] left-0 h-screen min-h-screen w-screen"
-                  : "w-full"
-              }
-            >
-              {view === "map" && (
-                <div className="flex h-11 px-1 items-center rounded-full bg-white absolute top-[80px] z-[10] right-4">
-                  <Button
-                    variant={"ghost"}
-                    className="me-1 rounded-full size-9"
-                    onClick={() => handleViewChange("list")}
-                  >
-                    <List className={view === "list" ? "text-primary" : ""} />
-                  </Button>
-                  <div className="w-[1px] h-[20px] bg-[#dddddd]" />
-                  <Button
-                    variant={"ghost"}
-                    className="ms-1 rounded-full size-9"
-                    onClick={() => handleViewChange("map")}
-                  >
-                    <Map className={view === "map" ? "text-primary" : ""} />
-                  </Button>
-                </div>
-              )}
-              <TrailerMap markers={mapMarkers} zoom={16} view={view} />
-            </div>
-          </Suspense>
+            {view === "map" && (
+              <div className="flex h-11 px-1 items-center rounded-full bg-white absolute top-[80px] z-[10] right-4">
+                <Button
+                  variant={"ghost"}
+                  className="me-1 rounded-full size-9"
+                  onClick={() => handleViewChange("list")}
+                >
+                  <List className={view === "list" ? "text-primary" : ""} />
+                </Button>
+                <div className="w-[1px] h-[20px] bg-[#dddddd]" />
+                <Button
+                  variant={"ghost"}
+                  className="ms-1 rounded-full size-9"
+                  onClick={() => handleViewChange("map")}
+                >
+                  <Map className={view === "map" ? "text-primary" : ""} />
+                </Button>
+              </div>
+            )}
+            <TrailerMap markers={mapMarkers} zoom={10} view={view} />
+          </div>
 
           <div className="mt-4 md:mt-10 w-full">
             <TrailersPaginationList
@@ -452,7 +421,7 @@ export default function HomePageClient({
           bottom: isMobile
             ? isNavVisible
               ? "64px"
-              : "16px" // 64px = 4rem (bottom-16), 16px = 1rem (bottom-4)
+              : "16px"
             : isNavVisible
             ? "64px"
             : "16px",
@@ -469,7 +438,7 @@ export default function HomePageClient({
                 <Filter className="h-4 w-4" />
                 Filters
                 {activeFilterCount > 0 && (
-                  <span className="bg-primary text-white text-xs rounded-full px-2 py-1 ml-1">
+                  <span className="bg-white text-primary text-xs rounded-full px-2 py-1 ml-1">
                     {activeFilterCount}
                   </span>
                 )}
@@ -489,7 +458,6 @@ export default function HomePageClient({
                 </div>
               </SheetHeader>
               <div className="p-6 overflow-y-auto h-[calc(100vh-80px)]">
-                {/* Mobile Sort */}
                 <div className="mb-6">
                   <span className="text-sm text-[#6B798B] mb-2 block">
                     {t("sortBy.label")}
@@ -514,7 +482,6 @@ export default function HomePageClient({
                   </select>
                 </div>
 
-                {/* Mobile Filter */}
                 <FilterSidebar
                   currentFilters={currentFilters}
                   onFilterChange={handleFilterChange}
