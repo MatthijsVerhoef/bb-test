@@ -18,7 +18,6 @@ export function TrailersPaginationList({
   limit,
   totalPages: initialTotalPages,
 }: PaginationListProps) {
-  // Use server data directly for display
   const trailers = initialTrailers;
   const page = initialPage;
   const totalPages = initialTotalPages;
@@ -27,45 +26,39 @@ export function TrailersPaginationList({
   const router = useRouter();
   const pathname = usePathname();
 
-
-  // Navigate to a specific page
   const handlePageChange = useCallback(
     (newPage: number) => {
       if (newPage < 1 || newPage > totalPages || newPage === page) return;
-      
-      // Create URL params
+
       const currentParams = new URLSearchParams(searchParams.toString());
       currentParams.set("page", newPage.toString());
-      
-      // Navigate to new page - this will trigger server component to re-render
-      router.push(`${pathname}?${currentParams.toString()}`);
+
+      const newUrl = `${pathname}?${currentParams.toString()}`;
+
+      window.history.pushState({}, "", newUrl);
+      router.push(newUrl, { scroll: false });
     },
     [page, totalPages, searchParams, router, pathname]
   );
 
-  // Generate pagination numbers
   const paginationNumbers = useMemo(() => {
     const pages = [];
     const maxVisiblePages = 5;
 
     if (totalPages <= maxVisiblePages) {
-      // Show all page numbers if total pages are few
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Show strategic page numbers for larger pagination
       const leftSide = Math.floor(maxVisiblePages / 2);
       const rightSide = maxVisiblePages - leftSide - 1;
 
-      // Always show first page
       pages.push(1);
 
       if (page > leftSide + 1) {
-        pages.push(null); // Represents ellipsis
+        pages.push(null);
       }
 
-      // Calculate the start and end for middle pages
       const startMiddle = Math.max(2, page - leftSide);
       const endMiddle = Math.min(totalPages - 1, page + rightSide);
 
@@ -74,10 +67,9 @@ export function TrailersPaginationList({
       }
 
       if (page < totalPages - rightSide) {
-        pages.push(null); // Represents ellipsis
+        pages.push(null);
       }
 
-      // Always show last page if it's not already included
       if (totalPages > 1 && !pages.includes(totalPages)) {
         pages.push(totalPages);
       }
@@ -86,13 +78,11 @@ export function TrailersPaginationList({
     return pages;
   }, [page, totalPages]);
 
-  // Render pagination
   const renderPagination = useCallback(() => {
     if (totalPages <= 1) return null;
 
     return (
       <div className="flex justify-center items-center mt-8 mb-12">
-        {/* Previous page button */}
         <button
           onClick={() => handlePageChange(page - 1)}
           disabled={page === 1}
@@ -102,7 +92,6 @@ export function TrailersPaginationList({
           <ChevronLeft size={20} />
         </button>
 
-        {/* Page numbers */}
         <div className="flex space-x-2">
           {paginationNumbers.map((pageNum, index) =>
             pageNum === null ? (
@@ -128,7 +117,6 @@ export function TrailersPaginationList({
           )}
         </div>
 
-        {/* Next page button */}
         <button
           onClick={() => handlePageChange(page + 1)}
           disabled={page === totalPages}
@@ -141,19 +129,23 @@ export function TrailersPaginationList({
     );
   }, [page, totalPages, paginationNumbers, handlePageChange]);
 
+  const handleResetFilters = useCallback(() => {
+    const newUrl = `${pathname}?page=1`;
+    window.history.pushState({}, "", newUrl);
+    router.push(newUrl, { scroll: false });
+  }, [pathname, router]);
+
   return (
     <div>
       {trailers && trailers.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-y-6 gap-x-5">
             {trailers.map((trailer) => {
-              // Ensure trailer.available is a proper boolean
               const trailerWithProperAvailability = {
                 ...trailer,
-                // If available is undefined/null, default to true
-                available: trailer.available === false ? false : true
+                available: trailer.available === false ? false : true,
               };
-              
+
               return (
                 <div key={trailer.id} className="transition-all duration-300">
                   <TrailerCard trailer={trailerWithProperAvailability} />
@@ -167,15 +159,12 @@ export function TrailersPaginationList({
       ) : (
         <div className="bg-gray-50 text-center p-12 rounded-md">
           <p className="text-gray-500">
-            Geen aanhangers gevonden met huidige filters. Reset je filters
-            of pas je zoekopdracht aan om resultaten te vinden.
+            Geen aanhangers gevonden met huidige filters. Reset je filters of
+            pas je zoekopdracht aan om resultaten te vinden.
           </p>
-          <Button 
+          <Button
             className="bg-primary rounded-full mt-6"
-            onClick={() => {
-              // Reset filters via URL to trigger reload
-              router.push(`${pathname}?page=1`);
-            }}
+            onClick={handleResetFilters}
           >
             Reset filter
           </Button>

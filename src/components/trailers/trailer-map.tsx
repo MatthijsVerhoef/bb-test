@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
-import { Minimize2 } from "lucide-react";
-import { createPortal } from "react-dom";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 
 // Declare google maps types
@@ -13,7 +11,7 @@ declare global {
   }
 }
 
-// Natural color style
+// Natural color style (keeping your existing style)
 const NATURAL_MAP_STYLE = [
   {
     elementType: "geometry",
@@ -104,28 +102,35 @@ interface TrailerMapProps {
   view: string;
 }
 
-// Global state to track script loading
+// Keep track of script loading state globally
 let isScriptLoading = false;
 let isScriptLoaded = false;
 const loadCallbacks: (() => void)[] = [];
 
 function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
-  const mapRef = useRef<HTMLDivElement>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapDivRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const markersRef = useRef<Map<string, google.maps.Marker>>(new Map());
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const [isReady, setIsReady] = useState(false);
-  const initAttempted = useRef(false);
+  const [mapInitialized, setMapInitialized] = useState(false);
+  const updateDebounceRef = useRef<NodeJS.Timeout>();
 
-  // Filter valid markers
-  const validMarkers = markers.filter((m) => m.latitude && m.longitude);
+  // Filter valid markers and memoize to prevent unnecessary updates
+  const validMarkers = useMemo(
+    () => markers.filter((m) => m.latitude && m.longitude),
+    [markers]
+  );
 
   // Initialize map when ready
   const initializeMap = useCallback(() => {
     if (
-      !mapRef.current ||
+      !mapContainerRef.current ||
+      !mapDivRef.current ||
       mapInstanceRef.current ||
-      !window.google?.maps?.Map
+      !window.google?.maps?.Map ||
+      mapInitialized
     ) {
       return;
     }
@@ -142,7 +147,7 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
       };
 
       mapInstanceRef.current = new window.google.maps.Map(
-        mapRef.current,
+        mapDivRef.current,
         mapOptions
       );
 
@@ -150,124 +155,176 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
       mapInstanceRef.current.addListener("click", () => {
         if (infoWindowRef.current) {
           infoWindowRef.current.close();
+          infoWindowRef.current = null;
         }
       });
 
-      // Update markers
-      updateMarkers();
+      setMapInitialized(true);
     } catch (error) {
       console.error("Failed to initialize map:", error);
     }
-  }, [zoom]);
+  }, [zoom, mapInitialized]);
 
-  // Update markers on the map
+  // Update markers on the map with debouncing
   const updateMarkers = useCallback(() => {
-    if (!mapInstanceRef.current || !window.google?.maps) return;
-
-    // Clear existing markers
-    markersRef.current.forEach((marker) => marker.setMap(null));
-    markersRef.current = [];
-
-    // Close existing info window
-    if (infoWindowRef.current) {
-      infoWindowRef.current.close();
+    if (updateDebounceRef.current) {
+      clearTimeout(updateDebounceRef.current);
     }
 
-    if (validMarkers.length === 0) return;
+    updateDebounceRef.current = setTimeout(() => {
+      if (!mapInstanceRef.current || !window.google?.maps) return;
 
-    const bounds = new window.google.maps.LatLngBounds();
+      // Create a set of current marker IDs for efficient lookup
+      const currentMarkerIds = new Set(validMarkers.map((m) => m.id));
 
-    validMarkers.forEach((markerData) => {
-      const position = {
-        lat: markerData.latitude!,
-        lng: markerData.longitude!,
-      };
-      bounds.extend(position);
-
-      const marker = new window.google.maps.Marker({
-        position,
-        map: mapInstanceRef.current!,
-        title: markerData.title,
-        label: {
-          text: `€${Math.round(markerData.price)}`,
-          color: "#ffffff",
-          fontSize: "12px",
-          fontWeight: "bold",
-        },
-        icon: {
-          path: "M 0,-16 A 16,16 0 1,1 0,16 A 16,16 0 1,1 0,-16 Z",
-          fillColor: "#f97316",
-          fillOpacity: 1,
-          strokeColor: "#ea580c",
-          strokeWeight: 2,
-          scale: 0.9,
-          anchor: new window.google.maps.Point(0, 0),
-          labelOrigin: new window.google.maps.Point(0, 0),
-        },
+      // Remove markers that no longer exist in the data
+      const markersToRemove: string[] = [];
+      markersRef.current.forEach((marker, id) => {
+        if (!currentMarkerIds.has(id)) {
+          markersToRemove.push(id);
+        }
       });
 
-      marker.addListener("click", () => {
-        if (infoWindowRef.current) {
-          infoWindowRef.current.close();
+      // Remove markers after iteration to avoid modifying the map during iteration
+      markersToRemove.forEach((id) => {
+        const marker = markersRef.current.get(id);
+        if (marker) {
+          try {
+            google.maps.event.clearInstanceListeners(marker);
+            marker.setMap(null);
+            markersRef.current.delete(id);
+          } catch (e) {
+            console.warn("Error removing marker:", e);
+          }
         }
+      });
 
-        const content = `
-          <div style="padding: 16px; min-width: 250px; font-family: system-ui, -apple-system, sans-serif;">
-            <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #111827;">
-              ${markerData.title}
-            </h3>
-            <p style="margin: 0 0 12px 0; font-size: 16px; color: #374151; font-weight: 500;">
-              €${markerData.price}/dag
-            </p>
-            ${
-              markerData.location
-                ? `
-              <p style="margin: 0 0 12px 0; color: #6b7280; font-size: 14px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: text-bottom; margin-right: 4px;">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                  <circle cx="12" cy="10" r="3"/>
-                </svg>
-                ${markerData.location}
-              </p>
-            `
-                : ""
+      // Add or update markers
+      validMarkers.forEach((markerData) => {
+        const existingMarker = markersRef.current.get(markerData.id);
+
+        if (!existingMarker) {
+          // Create new marker
+          const position = {
+            lat: markerData.latitude!,
+            lng: markerData.longitude!,
+          };
+
+          const marker = new window.google.maps.Marker({
+            position,
+            map: mapInstanceRef.current!,
+            title: markerData.title,
+            label: {
+              text: `€${Math.round(markerData.price)}`,
+              color: "#ffffff",
+              fontSize: "12px",
+              fontWeight: "bold",
+            },
+            icon: {
+              path: "M 0,-16 A 16,16 0 1,1 0,16 A 16,16 0 1,1 0,-16 Z",
+              fillColor: "#f97316",
+              fillOpacity: 1,
+              strokeColor: "#ea580c",
+              strokeWeight: 2,
+              scale: 0.9,
+              anchor: new window.google.maps.Point(0, 0),
+              labelOrigin: new window.google.maps.Point(0, 0),
+            },
+            optimized: false, // Prevent optimization to avoid DOM issues
+          });
+
+          marker.addListener("click", () => {
+            if (infoWindowRef.current) {
+              infoWindowRef.current.close();
             }
-            <a href="/aanbod/${markerData.id}" style="
-              display: inline-block;
-              background: #f97316;
-              color: white;
-              padding: 8px 16px;
-              border-radius: 8px;
-              text-decoration: none;
-              font-weight: 500;
-              font-size: 14px;
-              transition: background 0.2s;
-            " onmouseover="this.style.background='#ea580c'" onmouseout="this.style.background='#f97316'">
-              Bekijk details →
-            </a>
-          </div>
-        `;
 
-        infoWindowRef.current = new window.google.maps.InfoWindow({
-          content,
-          pixelOffset: new window.google.maps.Size(0, -10),
+            const content = `
+              <div style="padding: 16px; min-width: 250px; font-family: system-ui, -apple-system, sans-serif;">
+                <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #111827;">
+                  ${markerData.title}
+                </h3>
+                <p style="margin: 0 0 12px 0; font-size: 16px; color: #374151; font-weight: 500;">
+                  €${markerData.price}/dag
+                </p>
+                ${
+                  markerData.location
+                    ? `
+                  <p style="margin: 0 0 12px 0; color: #6b7280; font-size: 14px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: text-bottom; margin-right: 4px;">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                      <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    ${markerData.location}
+                  </p>
+                `
+                    : ""
+                }
+                <a href="/aanbod/${markerData.id}" style="
+                  display: inline-block;
+                  background: #f97316;
+                  color: white;
+                  padding: 8px 16px;
+                  border-radius: 8px;
+                  text-decoration: none;
+                  font-weight: 500;
+                  font-size: 14px;
+                  transition: background 0.2s;
+                " onmouseover="this.style.background='#ea580c'" onmouseout="this.style.background='#f97316'">
+                  Bekijk details →
+                </a>
+              </div>
+            `;
+
+            infoWindowRef.current = new window.google.maps.InfoWindow({
+              content,
+              pixelOffset: new window.google.maps.Size(0, -10),
+            });
+
+            infoWindowRef.current.open(mapInstanceRef.current, marker);
+          });
+
+          // Store the marker
+          markersRef.current.set(markerData.id, marker);
+        } else {
+          // Update existing marker if price changed
+          const newLabel = `€${Math.round(markerData.price)}`;
+          const currentLabel = existingMarker.getLabel();
+          if (
+            typeof currentLabel === "object" &&
+            currentLabel.text !== newLabel
+          ) {
+            existingMarker.setLabel({
+              text: newLabel,
+              color: "#ffffff",
+              fontSize: "12px",
+              fontWeight: "bold",
+            });
+          }
+        }
+      });
+
+      // Fit map to show all markers if we have any
+      if (validMarkers.length > 0 && mapInstanceRef.current) {
+        const bounds = new window.google.maps.LatLngBounds();
+        validMarkers.forEach((markerData) => {
+          bounds.extend({
+            lat: markerData.latitude!,
+            lng: markerData.longitude!,
+          });
         });
 
-        infoWindowRef.current.open(mapInstanceRef.current, marker);
-      });
-
-      markersRef.current.push(marker);
-    });
-
-    // Fit map to show all markers
-    if (validMarkers.length > 0) {
-      mapInstanceRef.current.fitBounds(bounds, {
-        top: 50,
-        right: 50,
-        bottom: 50,
-        left: 50,
-      });
-    }
+        try {
+          mapInstanceRef.current.fitBounds(bounds, {
+            top: 50,
+            right: 50,
+            bottom: 50,
+            left: 50,
+          });
+        } catch (e) {
+          console.warn("Error fitting bounds:", e);
+        }
+      }
+    }, 200); // 200ms debounce
   }, [validMarkers]);
 
   // Load Google Maps script
@@ -306,6 +363,13 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
               loadCallbacks.length = 0;
             }
           }, 100);
+
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            clearInterval(checkInterval);
+            isScriptLoading = false;
+            console.error("Google Maps script loading timeout");
+          }, 10000);
         }
         return;
       }
@@ -319,10 +383,14 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
       script.defer = true;
 
       script.onload = () => {
-        isScriptLoaded = true;
-        isScriptLoading = false;
-        loadCallbacks.forEach((cb) => cb());
-        loadCallbacks.length = 0;
+        // Wait a bit to ensure Google Maps is fully initialized
+        setTimeout(() => {
+          isScriptLoaded = true;
+          isScriptLoading = false;
+          setIsReady(true);
+          loadCallbacks.forEach((cb) => cb());
+          loadCallbacks.length = 0;
+        }, 100);
       };
 
       script.onerror = () => {
@@ -338,28 +406,94 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
 
   // Initialize map when ready
   useEffect(() => {
-    if (isReady && !initAttempted.current) {
-      initAttempted.current = true;
-      initializeMap();
+    if (isReady && !mapInitialized && mapDivRef.current) {
+      // Small delay to ensure DOM is ready
+      requestAnimationFrame(() => {
+        initializeMap();
+      });
     }
-  }, [isReady, initializeMap]);
+  }, [isReady, mapInitialized, initializeMap]);
 
-  // Update markers when they change
+  // Update markers when they change or map is initialized
   useEffect(() => {
-    if (isReady && mapInstanceRef.current) {
+    if (mapInitialized) {
       updateMarkers();
     }
-  }, [validMarkers, isReady, updateMarkers]);
+  }, [validMarkers, mapInitialized, updateMarkers]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Clear debounce timeout
+      if (updateDebounceRef.current) {
+        clearTimeout(updateDebounceRef.current);
+      }
+
+      // Clean up all markers
+      markersRef.current.forEach((marker) => {
+        try {
+          if (window.google?.maps?.event) {
+            google.maps.event.clearInstanceListeners(marker);
+          }
+          marker.setMap(null);
+        } catch (e) {
+          // Ignore errors during cleanup
+        }
+      });
+      markersRef.current.clear();
+
+      // Close info window
+      if (infoWindowRef.current) {
+        try {
+          infoWindowRef.current.close();
+        } catch (e) {
+          // Ignore errors during cleanup
+        }
+        infoWindowRef.current = null;
+      }
+
+      // Clear map instance
+      if (mapInstanceRef.current && window.google?.maps?.event) {
+        try {
+          google.maps.event.clearInstanceListeners(mapInstanceRef.current);
+        } catch (e) {
+          // Ignore errors during cleanup
+        }
+      }
+      mapInstanceRef.current = null;
+    };
+  }, []);
+
+  // Determine if we should show the map
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const shouldHideMap = view === "list" && isMobile;
 
   return (
     <div
       className={`w-full relative rounded-lg overflow-hidden transition-all duration-300 ${
-        view === "map" ? "h-screen" : "h-0 md:h-[300px]"
+        view === "map"
+          ? "h-screen fixed inset-0 z-10 rounded-none"
+          : "h-0 md:h-[300px]"
       }`}
+      style={{
+        opacity: shouldHideMap ? 0 : 1,
+        pointerEvents: shouldHideMap ? "none" : "auto",
+      }}
     >
-      <div ref={mapRef} className="w-full h-full">
-        {!isReady && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
+      <div
+        ref={mapContainerRef}
+        className="w-full h-full relative"
+        style={{ isolation: "isolate" }}
+      >
+        {/* Map div that Google Maps will use */}
+        <div
+          ref={mapDivRef}
+          className="w-full h-full absolute inset-0"
+          style={{ zIndex: 1 }}
+        />
+
+        {!mapInitialized && !shouldHideMap && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-50 z-10">
             <div className="h-8 w-8 border-2 border-gray-300 border-t-primary rounded-full animate-spin" />
           </div>
         )}
@@ -368,11 +502,10 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
   );
 }
 
-// Export with dynamic import to prevent SSR issues
 const TrailerMap = dynamic(() => Promise.resolve(TrailerMapComponent), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[300px] flex items-center justify-center bg-gray-50 rounded-lg">
+    <div className="w-full h-[300px] hidden md:flex items-center justify-center bg-gray-50 rounded-lg">
       <div className="h-8 w-8 border-2 border-gray-300 border-t-primary rounded-full animate-spin" />
     </div>
   ),

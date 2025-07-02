@@ -155,7 +155,10 @@ export default async function TrailersPage({
     endDate,
   } = sp ?? {};
 
-  const page = parseInt(pageParam, 10);
+  // FIX: Properly handle page parameter with validation
+  const parsedPage = parseInt(pageParam, 10);
+  const page = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+
   const limit = 27;
   const skip = (page - 1) * limit;
 
@@ -165,15 +168,15 @@ export default async function TrailersPage({
   // Build filter conditions
   const trailerWhere: any = {};
 
-  // Price filters
-  if (minPrice) {
+  // Price filters - validate numeric values
+  if (minPrice && !isNaN(parseFloat(minPrice))) {
     trailerWhere.pricePerDay = {
       ...trailerWhere.pricePerDay,
       gte: parseFloat(minPrice),
     };
   }
 
-  if (maxPrice) {
+  if (maxPrice && !isNaN(parseFloat(maxPrice))) {
     trailerWhere.pricePerDay = {
       ...trailerWhere.pricePerDay,
       lte: parseFloat(maxPrice),
@@ -192,22 +195,22 @@ export default async function TrailersPage({
     };
   }
 
-  // Dimension filters - Convert from cm to m for database queries
-  if (horizontalWidth) {
+  // Dimension filters - Convert from cm to m for database queries, validate numeric values
+  if (horizontalWidth && !isNaN(parseFloat(horizontalWidth))) {
     const lengthValue = parseFloat(horizontalWidth) / 100;
     trailerWhere.length = {
       gte: lengthValue,
     };
   }
 
-  if (verticalWidth) {
+  if (verticalWidth && !isNaN(parseFloat(verticalWidth))) {
     const widthValue = parseFloat(verticalWidth) / 100;
     trailerWhere.width = {
       gte: widthValue,
     };
   }
 
-  if (height) {
+  if (height && !isNaN(parseFloat(height))) {
     const heightValue = parseFloat(height) / 100;
     trailerWhere.height = {
       gte: heightValue,
@@ -321,38 +324,45 @@ export default async function TrailersPage({
     }
   }
 
-  // Date availability filters
+  // Date availability filters - validate dates
   if (startDate && endDate) {
-    const startDateTime = new Date(startDate);
-    const endDateTime = new Date(endDate);
+    try {
+      const startDateTime = new Date(startDate);
+      const endDateTime = new Date(endDate);
 
-    trailerWhere.rentals = {
-      none: {
-        AND: [
-          { status: { in: ["CONFIRMED", "ACTIVE"] } },
-          {
-            OR: [
+      // Only apply filter if dates are valid
+      if (!isNaN(startDateTime.getTime()) && !isNaN(endDateTime.getTime())) {
+        trailerWhere.rentals = {
+          none: {
+            AND: [
+              { status: { in: ["CONFIRMED", "ACTIVE"] } },
               {
-                startDate: {
-                  gte: startDateTime,
-                  lte: endDateTime,
-                },
-              },
-              {
-                endDate: {
-                  gte: startDateTime,
-                  lte: endDateTime,
-                },
-              },
-              {
-                startDate: { lte: startDateTime },
-                endDate: { gte: endDateTime },
+                OR: [
+                  {
+                    startDate: {
+                      gte: startDateTime,
+                      lte: endDateTime,
+                    },
+                  },
+                  {
+                    endDate: {
+                      gte: startDateTime,
+                      lte: endDateTime,
+                    },
+                  },
+                  {
+                    startDate: { lte: startDateTime },
+                    endDate: { gte: endDateTime },
+                  },
+                ],
               },
             ],
           },
-        ],
-      },
-    };
+        };
+      }
+    } catch (error) {
+      console.warn("Invalid date parameters:", error);
+    }
   }
 
   // OPTIMIZED QUERY: Fetch everything in a single query with includes

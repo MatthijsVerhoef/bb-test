@@ -7,16 +7,16 @@ export const useFilterState = (
   currentFilters: FilterProps['currentFilters'],
   onFilterChange: FilterProps['onFilterChange']
 ) => {
-  const isInitialMount = useRef(true);
   const prevFiltersRef = useRef(currentFilters);
+  const hasUserInteracted = useRef(false);
 
-  // Initialize state from props
+  // Initialize state from props WITHOUT adding defaults
   const [filterState, setFilterState] = useState<FilterState>({
     mainCategory: currentFilters.mainCategory || '',
     category: currentFilters.category || '',
     type: currentFilters.type || '',
-    minPrice: parseInt(currentFilters.minPrice || '0'),
-    maxPrice: parseInt(currentFilters.maxPrice || '1000'),
+    minPrice: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : 0,
+    maxPrice: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : 1000,
     length: typeof currentFilters.length === 'object' ? currentFilters.length.gte : currentFilters.length || '',
     width: typeof currentFilters.width === 'object' ? currentFilters.width.gte : currentFilters.width || '',
     height: typeof currentFilters.height === 'object' ? currentFilters.height.gte : currentFilters.height || '',
@@ -44,8 +44,8 @@ export const useFilterState = (
         mainCategory: currentFilters.mainCategory || '',
         category: currentFilters.category || '',
         type: currentFilters.type || '',
-        minPrice: parseInt(currentFilters.minPrice || '0'),
-        maxPrice: parseInt(currentFilters.maxPrice || '1000'),
+        minPrice: currentFilters.minPrice ? parseInt(currentFilters.minPrice) : 0,
+        maxPrice: currentFilters.maxPrice ? parseInt(currentFilters.maxPrice) : 1000,
         length: typeof currentFilters.length === 'object' ? currentFilters.length.gte : currentFilters.length || '',
         width: typeof currentFilters.width === 'object' ? currentFilters.width.gte : currentFilters.width || '',
         height: typeof currentFilters.height === 'object' ? currentFilters.height.gte : currentFilters.height || '',
@@ -55,8 +55,8 @@ export const useFilterState = (
         accessories: Array.isArray(currentFilters.accessories)
           ? currentFilters.accessories
           : currentFilters.accessories?.split(',') || [],
-        startDate: currentFilters.startDate ? new Date(currentFilters.startDate) : undefined,
-        endDate: currentFilters.endDate ? new Date(currentFilters.endDate) : undefined,
+          startDate: currentFilters.startDate ? new Date(currentFilters.startDate + 'T00:00:00') : undefined,
+          endDate: currentFilters.endDate ? new Date(currentFilters.endDate + 'T00:00:00') : undefined,
         licenseType: currentFilters.licenseType || 'none',
         homeDelivery: currentFilters.homeDelivery === 'true',
         includesInsurance: currentFilters.includesInsurance === 'true',
@@ -66,35 +66,50 @@ export const useFilterState = (
     }
   }, [currentFilters]);
 
-  // Debounced filter update
+  // Debounced filter update - ONLY trigger if user has interacted
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
+    // Don't trigger on initial mount or if user hasn't interacted
+    if (!hasUserInteracted.current) {
       return;
     }
 
     const timer = setTimeout(() => {
-      const newFilters = {
-        mainCategory: filterState.mainCategory,
-        category: filterState.category,
-        type: filterState.type,
-        minPrice: filterState.minPrice.toString(),
-        maxPrice: filterState.maxPrice.toString(),
-        accessories: filterState.accessories,
-        driverLicense: filterState.driverLicense,
-        length: filterState.length || undefined,
-        width: filterState.width || undefined,
-        height: filterState.height || undefined,
-        weight: filterState.weight || undefined,
-        capacity: filterState.capacity || undefined,
-        startDate: filterState.startDate ? format(filterState.startDate, 'yyyy-MM-dd') : '',
-        endDate: filterState.endDate ? format(filterState.endDate, 'yyyy-MM-dd') : '',
-        licenseType: filterState.licenseType,
-        homeDelivery: filterState.homeDelivery ? 'true' : '',
-        includesInsurance: filterState.includesInsurance ? 'true' : '',
-        minRentalDuration: filterState.minRentalDuration,
-        maxRentalDuration: filterState.maxRentalDuration,
-      };
+      const newFilters: any = {};
+      
+      // Only include values that are different from defaults
+      if (filterState.mainCategory) newFilters.mainCategory = filterState.mainCategory;
+      if (filterState.category) newFilters.category = filterState.category;
+      if (filterState.type) newFilters.type = filterState.type;
+      
+      // Only include price if different from defaults
+      if (filterState.minPrice !== 0) newFilters.minPrice = filterState.minPrice.toString();
+      if (filterState.maxPrice !== 1000) newFilters.maxPrice = filterState.maxPrice.toString();
+      
+      // Only include non-empty arrays
+      if (filterState.accessories.length > 0) newFilters.accessories = filterState.accessories;
+      
+      // Only include non-default values
+      if (filterState.driverLicense !== 'none') newFilters.driverLicense = filterState.driverLicense;
+      if (filterState.licenseType !== 'none') newFilters.licenseType = filterState.licenseType;
+      
+      // Only include non-empty dimensions
+      if (filterState.length) newFilters.horizontalWidth = filterState.length;
+      if (filterState.width) newFilters.verticalWidth = filterState.width;
+      if (filterState.height) newFilters.height = filterState.height;
+      if (filterState.weight) newFilters.weight = filterState.weight;
+      if (filterState.capacity) newFilters.capacity = filterState.capacity;
+      
+      // Only include dates if set
+      if (filterState.startDate) newFilters.startDate = format(filterState.startDate, 'yyyy-MM-dd');
+      if (filterState.endDate) newFilters.endDate = format(filterState.endDate, 'yyyy-MM-dd');
+      
+      // Only include true boolean values
+      if (filterState.homeDelivery) newFilters.homeDelivery = 'true';
+      if (filterState.includesInsurance) newFilters.includesInsurance = 'true';
+      
+      // Only include non-empty durations
+      if (filterState.minRentalDuration) newFilters.minRentalDuration = filterState.minRentalDuration;
+      if (filterState.maxRentalDuration) newFilters.maxRentalDuration = filterState.maxRentalDuration;
       
       onFilterChange(newFilters);
     }, 300);
@@ -106,10 +121,15 @@ export const useFilterState = (
     key: K,
     value: FilterState[K]
   ) => {
+    // Mark that user has interacted
+    hasUserInteracted.current = true;
     setFilterState(prev => ({ ...prev, [key]: value }));
   };
 
   const resetFilters = () => {
+    // Mark that user has interacted
+    hasUserInteracted.current = true;
+    
     setFilterState({
       mainCategory: '',
       category: '',
@@ -132,28 +152,8 @@ export const useFilterState = (
       maxRentalDuration: '',
     });
 
-    // Immediate reset
-    onFilterChange({
-      mainCategory: '',
-      category: '',
-      type: '',
-      minPrice: '0',
-      maxPrice: '1000',
-      accessories: [],
-      driverLicense: 'none',
-      length: undefined,
-      width: undefined,
-      height: undefined,
-      weight: undefined,
-      capacity: undefined,
-      startDate: '',
-      endDate: '',
-      licenseType: 'none',
-      homeDelivery: '',
-      includesInsurance: '',
-      minRentalDuration: '',
-      maxRentalDuration: '',
-    });
+    // Clear all filters from URL
+    onFilterChange({});
   };
 
   const getActiveFiltersCount = () => {

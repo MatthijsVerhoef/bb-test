@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "@/lib/i18n/client";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useShallowRouter } from "@/hooks/use-shallow-router";
 import TrailerMap from "@/components/trailers/trailer-map";
 import { TrailersPaginationList } from "@/components/trailers/infinite-list";
 import FilterSidebar from "@/components/trailers/trailer-filters";
@@ -46,19 +47,18 @@ export default function HomePageClient({
   const { t } = useTranslation("home");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const shallowRouter = useShallowRouter();
   const [view, setView] = useState("list");
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [isNavVisible, setIsNavVisible] = useState(true);
   const lastScrollY = useRef(0);
   const scrollThreshold = 10;
 
-  // Reset password dialog state
   const resetToken = searchParams.get("resetToken");
   const [showResetPasswordDialog, setShowResetPasswordDialog] = useState(
     !!resetToken
   );
 
-  // Map between display names and enum values
   const trailerTypeMapping: { [key: string]: string } = {
     "Open aanhanger": "OPEN_AANHANGER",
     "Gesloten aanhanger": "GESLOTEN_AANHANGER",
@@ -78,53 +78,41 @@ export default function HomePageClient({
   };
 
   const handleFilterChange = (newFilters: any) => {
-    const currentParams = new URLSearchParams(searchParams.toString());
+    shallowRouter.updateSearchParams((currentParams) => {
+      Object.keys(currentFilters).forEach((key) => {
+        if (
+          currentFilters[key] &&
+          (!newFilters[key] || newFilters[key] === "")
+        ) {
+          currentParams.delete(key);
+        }
+      });
 
-    // First, identify which filters are being removed
-    Object.keys(currentFilters).forEach((key) => {
-      if (currentFilters[key] && (!newFilters[key] || newFilters[key] === "")) {
-        currentParams.delete(key);
+      if (newFilters.category && !newFilters.type) {
+        const mappedType = trailerTypeMapping[newFilters.category];
+        if (mappedType) {
+          newFilters.type = mappedType;
+        }
       }
-    });
 
-    // Handle category/type mapping
-    if (newFilters.category && !newFilters.type) {
-      const mappedType = trailerTypeMapping[newFilters.category];
-      if (mappedType) {
-        newFilters.type = mappedType;
-      }
-    }
-
-    // Update with new filter values
-    Object.entries(newFilters).forEach(([key, value]) => {
-      if (key === "accessories" && Array.isArray(value)) {
-        if (!value.length) {
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (key === "accessories" && Array.isArray(value)) {
+          if (!value.length) {
+            currentParams.delete(key);
+          } else {
+            currentParams.set(key, value.join(","));
+          }
+        } else if (value === "" || value == null) {
           currentParams.delete(key);
         } else {
-          currentParams.set(key, value.join(","));
+          currentParams.set(key, String(value));
         }
-      } else if (value === "" || value == null) {
-        currentParams.delete(key);
-      } else {
-        currentParams.set(key, String(value));
-      }
+      });
+
+      currentParams.set("page", "1");
     });
-
-    // Reset to page 1 when filters change
-    currentParams.set("page", "1");
-
-    // Only update if params actually changed
-    const oldString = searchParams.toString();
-    const newString = currentParams.toString();
-
-    if (oldString !== newString) {
-      const newUrl = `${window.location.pathname}?${newString}`;
-      router.push(newUrl);
-      router.refresh();
-    }
   };
 
-  // Initialize view from URL parameter
   useEffect(() => {
     const urlView = searchParams.get("view");
     if (urlView === "map") {
@@ -136,12 +124,10 @@ export default function HomePageClient({
     }
   }, [searchParams, onViewChange]);
 
-  // Update reset password dialog state
   useEffect(() => {
     setShowResetPasswordDialog(!!resetToken);
   }, [resetToken]);
 
-  // Mobile detection and scroll behavior
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileHeader, setShowMobileHeader] = useState(true);
 
@@ -158,7 +144,6 @@ export default function HomePageClient({
     };
   }, []);
 
-  // Scroll behavior
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -192,36 +177,35 @@ export default function HomePageClient({
     };
   }, [isMobile]);
 
-  // Handle view change
   const handleViewChange = (newView: string) => {
     setView(newView);
     onViewChange?.(newView);
 
-    const params = new URLSearchParams(searchParams.toString());
-    if (newView === "map") {
-      params.set("view", "map");
-    } else {
-      params.delete("view");
-    }
-
-    const newUrl = params.toString() ? `/?${params.toString()}` : "/";
-    router.replace(newUrl, { scroll: false });
+    shallowRouter.updateSearchParams(
+      (params) => {
+        if (newView === "map") {
+          params.set("view", "map");
+        } else {
+          params.delete("view");
+        }
+      },
+      { replace: true }
+    );
   };
 
-  // Handle reset password dialog close
   const handleResetPasswordDialogClose = () => {
     setShowResetPasswordDialog(false);
 
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("resetToken");
-
-    const newUrl = params.toString() ? `/?${params.toString()}` : "/";
-    router.replace(newUrl, { scroll: false });
+    shallowRouter.updateSearchParams(
+      (params) => {
+        params.delete("resetToken");
+      },
+      { replace: true }
+    );
   };
 
   return (
     <>
-      {/* Reset Password Dialog */}
       {resetToken && (
         <ResetPasswordDialog
           isOpen={showResetPasswordDialog}
@@ -230,7 +214,6 @@ export default function HomePageClient({
         />
       )}
 
-      {/* Desktop Layout */}
       <div className="hidden lg:block">
         <div className="flex items-start container mx-auto relative w-[1200px] mt-16">
           <div className="w-[320px] me-10 flex flex-col">
@@ -288,30 +271,30 @@ export default function HomePageClient({
               </div>
             </div>
 
-            {/* Map Container - Always rendered */}
+            {/* Map Container - Desktop */}
             <div
-              className={
+              className={`transition-all duration-300 ${
                 view === "map"
-                  ? "fixed top-0 z-[9] left-0 h-screen min-h-screen w-screen"
-                  : ""
-              }
+                  ? "fixed top-0 left-0 w-full h-full z-[9]"
+                  : "relative w-full"
+              }`}
             >
               {view === "map" && (
-                <div className="flex h-11 px-1 items-center rounded-full bg-white absolute top-[80px] z-[10] right-4">
+                <div className="absolute top-[80px] right-4 z-[10] flex h-11 px-1 items-center rounded-full bg-white shadow-md">
                   <Button
-                    variant={"ghost"}
-                    className="me-1 rounded-full size-9"
+                    variant="ghost"
+                    className="rounded-full size-9"
                     onClick={() => handleViewChange("list")}
                   >
-                    <List className={view === "list" ? "text-primary" : ""} />
+                    <List className="text-gray-700" />
                   </Button>
-                  <div className="w-[1px] h-[20px] bg-[#dddddd]" />
+                  <div className="w-[1px] h-[20px] bg-gray-200" />
                   <Button
-                    variant={"ghost"}
-                    className="ms-1 rounded-full size-9"
+                    variant="ghost"
+                    className="rounded-full size-9"
                     onClick={() => handleViewChange("map")}
                   >
-                    <Map className={view === "map" ? "text-primary" : ""} />
+                    <Map className="text-primary" />
                   </Button>
                 </div>
               )}
@@ -372,28 +355,28 @@ export default function HomePageClient({
 
           {/* Mobile Map Container */}
           <div
-            className={
+            className={`transition-all duration-300 ${
               view === "map"
-                ? "fixed top-0 z-[9] left-0 h-screen min-h-screen w-screen"
-                : "w-full"
-            }
+                ? "fixed top-0 left-0 w-full h-full z-[9]"
+                : "relative w-full"
+            }`}
           >
             {view === "map" && (
-              <div className="flex h-11 px-1 items-center rounded-full bg-white absolute top-[80px] z-[10] right-4">
+              <div className="absolute top-[80px] right-4 z-[10] flex h-11 px-1 items-center rounded-full bg-white shadow-md">
                 <Button
-                  variant={"ghost"}
-                  className="me-1 rounded-full size-9"
+                  variant="ghost"
+                  className="rounded-full size-9"
                   onClick={() => handleViewChange("list")}
                 >
-                  <List className={view === "list" ? "text-primary" : ""} />
+                  <List className="text-gray-700" />
                 </Button>
-                <div className="w-[1px] h-[20px] bg-[#dddddd]" />
+                <div className="w-[1px] h-[20px] bg-gray-200" />
                 <Button
-                  variant={"ghost"}
-                  className="ms-1 rounded-full size-9"
+                  variant="ghost"
+                  className="rounded-full size-9"
                   onClick={() => handleViewChange("map")}
                 >
-                  <Map className={view === "map" ? "text-primary" : ""} />
+                  <Map className="text-primary" />
                 </Button>
               </div>
             )}

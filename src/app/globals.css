@@ -343,3 +343,42 @@ body {
   color: #3182ce;
   text-decoration: underline;
 }
+
+.map-container {
+  width: 100%;
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.map-preview {
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .map-preview {
+    height: 300px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.map-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  height: 100vh !important;
+  z-index: 10 !important;
+  border-radius: 0 !important;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body:has(.map-fullscreen) {
+  overflow: hidden;
+}
