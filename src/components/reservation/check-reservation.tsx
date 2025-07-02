@@ -27,6 +27,48 @@ import CheckoutForm from "./checkout-form";
 import { useBookingCalculations } from "@/hooks/useBookingCalculations";
 import { useTranslation } from "@/lib/i18n/client";
 
+interface BookingData {
+  trailerId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  driversLicense: string;
+  startDate: string;
+  endDate: string;
+  pickupTime: string;
+  returnTime: string;
+  rentalDays: number;
+  totalPrice: number;
+  basePrice: number;
+  needsDelivery?: boolean;
+  deliveryAddress?: string;
+  message?: string;
+  securityDeposit?: number;
+}
+
+interface TrailerData {
+  id: string;
+  title: string;
+  pricePerDay: number;
+  pricePerWeek?: number;
+  pricePerMonth?: number;
+  securityDeposit?: number;
+  deliveryFee?: number;
+  category?: {
+    name: string;
+  };
+
+  images?: Array<{
+    url: string;
+  }>;
+}
+
+interface ReservationClientProps {
+  trailerId: string | null;
+  trailerData: TrailerData;
+}
+
 export default function ReservationClient({
   trailerId,
   trailerData,
