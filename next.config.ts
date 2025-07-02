@@ -33,10 +33,8 @@ const nextConfig: NextConfig = {
       'date-fns',
       'lodash'
     ],
-    // REMOVED turbo configuration - it's causing issues
   },
   webpack: (config, { isServer, dev }) => {
-    // Fix for socket.io-client
     if (!isServer) {
       config.resolve = config.resolve || {};
       config.resolve.alias = {
@@ -45,10 +43,6 @@ const nextConfig: NextConfig = {
       };
     }
 
-    // REMOVED aggressive optimization that breaks RSC
-    // These optimizations can break Next.js internals
-    
-    // Bundle analyzer (only when needed)
     if (!dev && process.env.ANALYZE === 'true') {
       const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
       config.plugins.push(
@@ -61,16 +55,10 @@ const nextConfig: NextConfig = {
 
     return config;
   },
-  // REMOVED generateBuildId override - this can break Next.js caching
-  // Let Next.js handle build IDs automatically
-  
   trailingSlash: false,
-  swcMinify: true,
   poweredByHeader: false,
   compress: true,
-  optimizeFonts: true,
   
-  // Add headers for better error tracking
   async headers() {
     return [
       {
