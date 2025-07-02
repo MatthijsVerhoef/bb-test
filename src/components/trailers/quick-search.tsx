@@ -2,8 +2,26 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { MapPinIcon, Search, X } from "lucide-react";
-import { format } from "date-fns";
+import {
+  MapPinIcon,
+  Search,
+  X,
+  CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
+  isWithinInterval,
+  isBefore,
+} from "date-fns";
 import { nl, enUS, de } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,9 +30,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { useTranslation } from "@/lib/i18n/client";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface QuickSearchProps {
   location: string;
@@ -23,6 +41,202 @@ interface QuickSearchProps {
   setDateRange: (value: any) => void;
   showMobileHeader: boolean;
 }
+
+// Custom Calendar component with proper styling
+const CustomCalendar = ({
+  mode,
+  selected,
+  onSelect,
+  disabled,
+  numberOfMonths = 1,
+  locale: dateLocale,
+}: any) => {
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
+
+  const weekDays =
+    dateLocale === nl
+      ? ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"]
+      : dateLocale === de
+      ? ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"]
+      : ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+  const isDateDisabled = (date: Date) => {
+    if (disabled && typeof disabled === "function") {
+      return disabled(date);
+    }
+    return false;
+  };
+
+  const isDateInRange = (date: Date) => {
+    if (!selected?.from || !selected?.to) return false;
+    return isWithinInterval(date, { start: selected.from, end: selected.to });
+  };
+
+  const isDateRangeStart = (date: Date) => {
+    return selected?.from && isSameDay(date, selected.from);
+  };
+
+  const isDateRangeEnd = (date: Date) => {
+    return selected?.to && isSameDay(date, selected.to);
+  };
+
+  const isDateHovered = (date: Date) => {
+    if (!selected?.from || selected?.to || !hoveredDate) return false;
+    if (isBefore(hoveredDate, selected.from)) return false;
+    return isWithinInterval(date, { start: selected.from, end: hoveredDate });
+  };
+
+  const getDayClass = (date: Date, displayMonth: Date) => {
+    const isDisabled = isDateDisabled(date);
+    const isToday = isSameDay(date, new Date());
+    const isRangeStart = isDateRangeStart(date);
+    const isRangeEnd = isDateRangeEnd(date);
+    const isInRange = isDateInRange(date);
+    const isHovered = isDateHovered(date);
+    const isSelected = isRangeStart || isRangeEnd;
+    const isCurrentMonth = isSameMonth(date, displayMonth);
+
+    return cn(
+      "relative h-9 w-9 p-0 font-normal text-sm rounded-md transition-all",
+      "hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/20",
+      {
+        // Base states
+        "text-gray-900": !isDisabled && !isSelected && isCurrentMonth,
+        "text-gray-300 cursor-not-allowed hover:bg-transparent": isDisabled,
+
+        // Today
+        "font-semibold": isToday,
+
+        // Selected dates
+        "bg-primary text-white hover:bg-primary/90": isSelected,
+
+        // Range states
+        "bg-primary/10 hover:bg-primary/20 rounded-none":
+          isInRange && !isSelected,
+        "rounded-l-md": isRangeStart && selected?.to,
+        "rounded-r-md": isRangeEnd && selected?.from,
+
+        // Hover range preview
+        "bg-gray-100": isHovered && !isInRange,
+
+        // Outside current month - only gray out if not selected and in a different month than the one being displayed
+        "text-gray-400":
+          !isCurrentMonth && !isSelected && !isInRange && !isHovered,
+      }
+    );
+  };
+
+  const handleDateClick = (date: Date) => {
+    if (isDateDisabled(date)) return;
+
+    if (!selected?.from || (selected?.from && selected?.to)) {
+      // Starting a new selection
+      onSelect({ from: date, to: undefined });
+    } else {
+      // Completing the range
+      if (isBefore(date, selected.from)) {
+        // If clicked date is before start, reset to new start
+        onSelect({ from: date, to: undefined });
+      } else {
+        // Complete the range
+        onSelect({ from: selected.from, to: date });
+      }
+    }
+  };
+
+  const renderMonth = (monthOffset: number) => {
+    const displayMonth = addMonths(currentMonth, monthOffset);
+    const monthStart = startOfMonth(displayMonth);
+    const monthEnd = endOfMonth(displayMonth);
+    const startDate = new Date(monthStart);
+    const endDate = new Date(monthEnd);
+
+    // Adjust to start on Sunday
+    startDate.setDate(startDate.getDate() - startDate.getDay());
+    // Adjust to end on Saturday
+    endDate.setDate(endDate.getDate() + (6 - endDate.getDay()));
+
+    const days = eachDayOfInterval({ start: startDate, end: endDate });
+
+    return (
+      <div className="p-4">
+        {/* Calendar Header */}
+        <div className="flex items-center justify-between mb-4">
+          {monthOffset === 0 && (
+            <button
+              onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+              className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
+              aria-label="Previous month"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+          )}
+
+          <h2
+            className={cn(
+              "text-sm font-semibold mx-auto text-gray-900",
+              monthOffset === 0 && numberOfMonths === 1 ? "" : "text-center",
+              monthOffset === 0 && numberOfMonths > 1 ? "" : "",
+              monthOffset > 0 ? "" : ""
+            )}
+          >
+            {format(displayMonth, "MMMM yyyy", { locale: dateLocale })}
+          </h2>
+
+          {monthOffset === numberOfMonths - 1 && (
+            <button
+              onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+              className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
+              aria-label="Next month"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Calendar Grid */}
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {weekDays.map((day) => (
+            <div
+              key={day}
+              className="h-9 w-9 flex items-center justify-center text-xs font-medium text-gray-500"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {days.map((day, dayIdx) => (
+            <button
+              key={dayIdx}
+              onClick={() => handleDateClick(day)}
+              onMouseEnter={() => setHoveredDate(day)}
+              onMouseLeave={() => setHoveredDate(null)}
+              disabled={isDateDisabled(day)}
+              className={getDayClass(day, displayMonth)}
+            >
+              <time dateTime={format(day, "yyyy-MM-dd")}>
+                {format(day, "d")}
+              </time>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className={cn("bg-white rounded-xl", numberOfMonths > 1 && "flex")}>
+      {Array.from({ length: numberOfMonths }).map((_, i) => (
+        <div key={i} className={cn(i > 0 && "")}>
+          {renderMonth(i)}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const QuickSearch = ({
   location,
@@ -272,7 +486,8 @@ const QuickSearch = ({
                 }}
                 onKeyDown={handleLocationKeyDown}
                 placeholder={t("quickSearch.wherePlaceholder")}
-                className="border-0 border-none shadow-none focus:ring-0 focus:outline-none p-0 h-auto text-sm bg-transparent placeholder:text-gray-500"
+                className="border-0 ring-0  border-none shadow-none focus:ring-0 focus:outline-none p-0 h-auto text-sm bg-transparent placeholder:text-gray-500"
+                style={{ boxShadow: "none" }}
               />
             </div>
 
@@ -338,31 +553,25 @@ const QuickSearch = ({
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
-                  className="w-auto p-4 mt-1.5 rounded-2xl border shadow-xl"
+                  className="w-auto p-0 mt-1.5 rounded-2xl border shadow-xl"
                   align="start"
                 >
-                  <Calendar
+                  <CustomCalendar
                     mode="range"
                     selected={dateRange}
-                    onSelect={(range) => {
+                    onSelect={(range: any) => {
                       setDateRange(range);
                       if (range?.from && range?.to) {
                         setActivePopover(null);
                       }
                     }}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
+                    disabled={(date: Date) => date < new Date()}
                     numberOfMonths={
                       typeof window !== "undefined" && window.innerWidth >= 768
                         ? 2
                         : 1
                     }
-                    className="rounded-md"
-                    classNames={{
-                      day_range_start: "rounded-l-md bg-primary text-white",
-                      day_range_end: "rounded-r-md bg-primary text-white",
-                      day_range_middle: "bg-orange-100 text-orange-900",
-                    }}
+                    locale={dateLocale}
                   />
                 </PopoverContent>
               </Popover>
@@ -391,31 +600,25 @@ const QuickSearch = ({
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
-                  className="w-auto p-4 mt-1.5 rounded-2xl border shadow-xl"
+                  className="w-auto p-0 mt-1.5 rounded-2xl border shadow-xl"
                   align="start"
                 >
-                  <Calendar
+                  <CustomCalendar
                     mode="range"
                     selected={dateRange}
-                    onSelect={(range) => {
+                    onSelect={(range: any) => {
                       setDateRange(range);
                       if (range?.from && range?.to) {
                         setActivePopover(null);
                       }
                     }}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
+                    disabled={(date: Date) => date < new Date()}
                     numberOfMonths={
                       typeof window !== "undefined" && window.innerWidth >= 768
                         ? 2
                         : 1
                     }
-                    className="rounded-md"
-                    classNames={{
-                      day_range_start: "rounded-l-md bg-primary text-white",
-                      day_range_end: "rounded-r-md bg-primary text-white",
-                      day_range_middle: "bg-orange-100 text-orange-900",
-                    }}
+                    locale={dateLocale}
                   />
                 </PopoverContent>
               </Popover>
@@ -667,10 +870,10 @@ const QuickSearch = ({
                             className="overflow-hidden"
                           >
                             <div className="border-t border-gray-100 p-4 bg-gray-50">
-                              <Calendar
+                              <CustomCalendar
                                 mode="range"
                                 selected={dateRange}
-                                onSelect={(range) => {
+                                onSelect={(range: any) => {
                                   setDateRange(range);
                                   if (range?.from && range?.to) {
                                     setTimeout(() => {
@@ -678,40 +881,9 @@ const QuickSearch = ({
                                     }, 500);
                                   }
                                 }}
-                                disabled={(date) => date < new Date()}
+                                disabled={(date: Date) => date < new Date()}
                                 numberOfMonths={1}
-                                className="w-full"
-                                classNames={{
-                                  months: "flex w-full",
-                                  month: "space-y-4 w-full",
-                                  caption:
-                                    "flex justify-center pt-1 relative items-center w-full",
-                                  caption_label: "text-sm font-medium",
-                                  nav: "space-x-1 flex items-center",
-                                  nav_button:
-                                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-                                  nav_button_previous: "absolute left-1",
-                                  nav_button_next: "absolute right-1",
-                                  table: "w-full border-collapse",
-                                  head_row: "flex w-full",
-                                  head_cell:
-                                    "text-gray-500 rounded-md flex-1 font-normal text-[0.8rem] text-center",
-                                  row: "flex w-full mt-2",
-                                  cell: "flex-1 text-center text-sm p-0 relative aspect-square",
-                                  day: "w-full h-full p-0 font-normal aria-selected:opacity-100 flex items-center justify-center",
-                                  day_range_start:
-                                    "rounded-l-md bg-primary text-white",
-                                  day_range_end:
-                                    "rounded-r-md bg-primary text-white",
-                                  day_range_middle:
-                                    "bg-orange-100 text-orange-900",
-                                  day_selected:
-                                    "bg-primary text-white hover:bg-primary hover:text-white focus:bg-primary focus:text-white",
-                                  day_today: "bg-accent text-accent-foreground",
-                                  day_outside: "text-gray-500 opacity-50",
-                                  day_disabled: "text-gray-500 opacity-50",
-                                  day_hidden: "invisible",
-                                }}
+                                locale={dateLocale}
                               />
                               {dateRange?.from && dateRange?.to && (
                                 <div className="mt-4 text-center">

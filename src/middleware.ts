@@ -29,8 +29,20 @@ const PUBLIC_PATHS = {
     "/images",
     "/api/auth/", 
     "/api/public/",
+    // Add public API routes
+    "/api/locations",
+    "/api/trailers/quick-search",
   ]
 };
+
+// Public API routes that don't require authentication
+const PUBLIC_API_ROUTES = new Set([
+  "/api/locations",
+  "/api/trailers",
+  "/api/trailers/quick-search",
+  "/api/categories",
+  "/api/accessories",
+]);
 
 // Add verhuren as a special route that requires auth check
 const AUTH_AWARE_PUBLIC_PATHS = new Set([
@@ -61,6 +73,9 @@ const CACHE_DURATION = 60 * 1000; // 1 minute
 function isPublicPath(path: string): boolean {
   // Check exact matches
   if (PUBLIC_PATHS.exact.has(path)) return true;
+  
+  // Check if it's a public API route
+  if (PUBLIC_API_ROUTES.has(path)) return true;
   
   // Check if it's a static file
   if (path.includes(".") && !path.startsWith("/api/")) return true;

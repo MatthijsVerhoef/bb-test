@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -21,59 +21,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import ReservationSkeleton from "./check-reservation-skeleton";
-import { loadStripe } from "@stripe/stripe-js";
+import { getStripe } from "@/lib/stripe-loader";
 import { Elements, type StripeElementsOptions } from "@stripe/react-stripe-js";
 import CheckoutForm from "./checkout-form";
 import { useBookingCalculations } from "@/hooks/useBookingCalculations";
 import { useTranslation } from "@/lib/i18n/client";
-
-// Initialize Stripe with your publishable key
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
-);
-
-// Define booking data interface
-interface BookingData {
-  trailerId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  driversLicense: string;
-  startDate: string;
-  endDate: string;
-  pickupTime: string;
-  returnTime: string;
-  rentalDays: number;
-  totalPrice: number;
-  basePrice: number;
-  needsDelivery?: boolean;
-  deliveryAddress?: string;
-  message?: string;
-  securityDeposit?: number;
-}
-
-// Define trailer data interface
-interface TrailerData {
-  id: string;
-  title: string;
-  pricePerDay: number;
-  pricePerWeek?: number;
-  pricePerMonth?: number;
-  securityDeposit?: number;
-  deliveryFee?: number;
-  category?: {
-    name: string;
-  };
-  images?: Array<{
-    url: string;
-  }>;
-}
-
-interface ReservationClientProps {
-  trailerId: string | null;
-  trailerData: TrailerData;
-}
 
 export default function ReservationClient({
   trailerId,
@@ -85,9 +37,11 @@ export default function ReservationClient({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
-  const [message, setMessage] = useState<string>(""); // For message to lessor
+  const [message, setMessage] = useState<string>("");
+  const [stripeLoaded, setStripeLoaded] = useState(false);
 
   const paymentIntentId = useRef<string | null>(null);
+  const paymentIntentCreated = useRef(false);
 
   // Use the booking calculations hook
   const { rentalDays, basePrice, serviceFee, totalPrice } =
@@ -104,6 +58,113 @@ export default function ReservationClient({
       securityDeposit: trailerData.securityDeposit || null,
     });
 
+  // Preload Stripe as soon as component mounts
+  useEffect(() => {
+    const stripePromise = getStripe();
+    if (stripePromise) {
+      stripePromise
+        .then((stripe) => {
+          if (stripe) {
+            setStripeLoaded(true);
+          } else {
+            setError(
+              t("checkReservation.errors.stripeLoadError") ||
+                "Failed to load payment system"
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error loading Stripe:", error);
+          setError(
+            t("checkReservation.errors.stripeLoadError") ||
+              "Failed to load payment system"
+          );
+        });
+    } else {
+      setError(
+        t("checkReservation.errors.stripeLoadError") ||
+          "Failed to load payment system"
+      );
+    }
+  }, [t]);
+
+  // Create a payment intent on the server
+  const createPaymentIntent = useCallback(
+    async (bookingData: BookingData, trailerData: TrailerData) => {
+      // Prevent duplicate calls
+      if (paymentIntentCreated.current) return;
+      paymentIntentCreated.current = true;
+
+      try {
+        // Use the total from the hook which includes all fees
+        const amount = totalPrice || bookingData.totalPrice;
+
+        const response = await fetch("/api/create-payment-intent", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            amount: amount * 100, // Convert to cents for Stripe
+            currency: "eur",
+            isGuestCheckout: true,
+            metadata: {
+              trailerId: bookingData.trailerId,
+              rentalDays: bookingData.rentalDays,
+              startDate: bookingData.startDate,
+              endDate: bookingData.endDate,
+            },
+            reservationData: {
+              trailerId: bookingData.trailerId,
+              startDate: bookingData.startDate,
+              endDate: bookingData.endDate,
+              firstName: bookingData.firstName,
+              lastName: bookingData.lastName,
+              email: bookingData.email,
+              phone: bookingData.phone,
+              driversLicense: bookingData.driversLicense,
+              pickupTime: bookingData.pickupTime,
+              returnTime: bookingData.returnTime,
+              needsDelivery: bookingData.needsDelivery || false,
+              deliveryAddress: bookingData.deliveryAddress,
+              message: bookingData.message || "",
+            },
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.status === 400) {
+          if (
+            data.error &&
+            data?.error?.includes("dates are no longer available")
+          ) {
+            setError(t("checkReservation.errors.datesUnavailable"));
+            return;
+          }
+          setError(data.error || t("checkReservation.errors.genericError"));
+          return;
+        }
+
+        if (!response.ok && response.status !== 401) {
+          throw new Error(data.error || "Failed to create payment intent");
+        }
+
+        if (data.clientSecret) {
+          setClientSecret(data.clientSecret);
+          paymentIntentId.current = data.paymentIntentId;
+        } else {
+          setError(data.error || t("checkReservation.errors.paymentError"));
+        }
+      } catch (err) {
+        console.error("Error creating payment intent:", err);
+        setError(t("checkReservation.errors.paymentError"));
+        paymentIntentCreated.current = false; // Allow retry on error
+      }
+    },
+    [t, totalPrice]
+  );
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
@@ -116,9 +177,6 @@ export default function ReservationClient({
           if (parsedData.trailerId === trailerId) {
             setBookingData(parsedData);
             setMessage(parsedData.message || "");
-
-            // Create a payment intent on the server
-            createPaymentIntent(parsedData, trailerData);
           } else {
             setError(t("checkReservation.errors.wrongBookingData"));
           }
@@ -138,84 +196,19 @@ export default function ReservationClient({
         cancelPaymentIntent(paymentIntentId.current);
       }
     };
-  }, [trailerId, trailerData]);
+  }, [trailerId, t]);
 
-  // Create a payment intent on the server
-  const createPaymentIntent = async (
-    bookingData: BookingData,
-    trailerData: TrailerData
-  ) => {
-    try {
-      // Use the total from the hook which includes all fees
-      const amount = totalPrice || bookingData.totalPrice;
-
-      const response = await fetch("/api/create-payment-intent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: amount * 100, // Convert to cents for Stripe
-          currency: "eur",
-          // Add a flag to indicate this is a guest checkout
-          isGuestCheckout: true,
-          metadata: {
-            trailerId: bookingData.trailerId,
-            rentalDays: bookingData.rentalDays,
-            startDate: bookingData.startDate,
-            endDate: bookingData.endDate,
-          },
-          reservationData: {
-            trailerId: bookingData.trailerId,
-            startDate: bookingData.startDate,
-            endDate: bookingData.endDate,
-            firstName: bookingData.firstName,
-            lastName: bookingData.lastName,
-            email: bookingData.email,
-            phone: bookingData.phone,
-            driversLicense: bookingData.driversLicense,
-            pickupTime: bookingData.pickupTime,
-            returnTime: bookingData.returnTime,
-            needsDelivery: bookingData.needsDelivery || false,
-            deliveryAddress: bookingData.deliveryAddress,
-            message: bookingData.message || "",
-          },
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.status === 400) {
-        // Handle specific error for dates already blocked
-        if (
-          data.error &&
-          data?.error?.includes("dates are no longer available")
-        ) {
-          setError(t("checkReservation.errors.datesUnavailable"));
-          return;
-        }
-        // Handle other 400 errors
-        setError(data.error || t("checkReservation.errors.genericError"));
-        return;
-      }
-
-      // Check if we got a successful response (excluding 401 which we handle above)
-      if (!response.ok && response.status !== 401) {
-        throw new Error(data.error || "Failed to create payment intent");
-      }
-
-      if (data.clientSecret) {
-        setClientSecret(data.clientSecret);
-        // Store the payment intent ID for potential cancellation
-        paymentIntentId.current = data.paymentIntentId;
-      } else {
-        setError(data.error || t("checkReservation.errors.paymentError"));
-      }
-    } catch (err) {
-      console.error("Error creating payment intent:", err);
-      setError(t("checkReservation.errors.paymentError"));
+  // Create payment intent when booking data is available and total price is calculated
+  useEffect(() => {
+    if (
+      bookingData &&
+      trailerData &&
+      totalPrice > 0 &&
+      !paymentIntentCreated.current
+    ) {
+      createPaymentIntent(bookingData, trailerData);
     }
-  };
+  }, [bookingData, trailerData, totalPrice, createPaymentIntent]);
 
   // Cancel payment intent if user leaves page without completing payment
   const cancelPaymentIntent = async (intentId: string) => {
@@ -436,6 +429,9 @@ export default function ReservationClient({
     </Card>
   );
 
+  // Show loading state for payment form while Stripe or payment intent loads
+  const isPaymentLoading = !clientSecret || !stripeLoaded;
+
   return (
     <div className="container max-w-5xl mx-auto px-4 pt-8 pb-8 md:pt-20 md:pb-24">
       <div className="flex flex-col lg:flex-row lg:items-start gap-x-6">
@@ -559,8 +555,14 @@ export default function ReservationClient({
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  {clientSecret && bookingData ? (
-                    <Elements stripe={stripePromise} options={stripeOptions}>
+                  {isPaymentLoading ? (
+                    <div className="space-y-4">
+                      <Skeleton className="h-12 w-full rounded-xl" />
+                      <Skeleton className="h-12 w-full rounded-xl" />
+                      <Skeleton className="h-12 w-full rounded-xl" />
+                    </div>
+                  ) : clientSecret && bookingData && stripeLoaded ? (
+                    <Elements stripe={getStripe()} options={stripeOptions}>
                       <CheckoutForm
                         totalPrice={totalPrice}
                         bookingData={bookingData}
@@ -569,9 +571,16 @@ export default function ReservationClient({
                       />
                     </Elements>
                   ) : (
-                    <div className="py-4 flex justify-center">
-                      <Skeleton className="h-32 w-full rounded-xl" />
-                    </div>
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        {error ||
+                          t(
+                            "checkReservation.errors.paymentSystemUnavailable"
+                          ) ||
+                          "Payment system is currently unavailable. Please try again later."}
+                      </AlertDescription>
+                    </Alert>
                   )}
                 </CardContent>
               </Card>

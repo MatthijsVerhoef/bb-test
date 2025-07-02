@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 
-// Declare google maps types
 declare global {
   interface Window {
     google: any;
@@ -11,7 +10,6 @@ declare global {
   }
 }
 
-// Natural color style (keeping your existing style)
 const NATURAL_MAP_STYLE = [
   {
     elementType: "geometry",
@@ -102,7 +100,6 @@ interface TrailerMapProps {
   view: string;
 }
 
-// Keep track of script loading state globally
 let isScriptLoading = false;
 let isScriptLoaded = false;
 const loadCallbacks: (() => void)[] = [];
@@ -117,13 +114,11 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
   const [mapInitialized, setMapInitialized] = useState(false);
   const updateDebounceRef = useRef<NodeJS.Timeout>();
 
-  // Filter valid markers and memoize to prevent unnecessary updates
   const validMarkers = useMemo(
     () => markers.filter((m) => m.latitude && m.longitude),
     [markers]
   );
 
-  // Initialize map when ready
   const initializeMap = useCallback(() => {
     if (
       !mapContainerRef.current ||
@@ -137,7 +132,7 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
 
     try {
       const mapOptions = {
-        center: { lat: 52.3676, lng: 4.9041 }, // Netherlands center
+        center: { lat: 52.3676, lng: 4.9041 },
         zoom: zoom,
         styles: NATURAL_MAP_STYLE,
         disableDefaultUI: true,
@@ -151,7 +146,6 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
         mapOptions
       );
 
-      // Add click listener to close info windows
       mapInstanceRef.current.addListener("click", () => {
         if (infoWindowRef.current) {
           infoWindowRef.current.close();
@@ -165,7 +159,6 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
     }
   }, [zoom, mapInitialized]);
 
-  // Update markers on the map with debouncing
   const updateMarkers = useCallback(() => {
     if (updateDebounceRef.current) {
       clearTimeout(updateDebounceRef.current);
@@ -174,10 +167,8 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
     updateDebounceRef.current = setTimeout(() => {
       if (!mapInstanceRef.current || !window.google?.maps) return;
 
-      // Create a set of current marker IDs for efficient lookup
       const currentMarkerIds = new Set(validMarkers.map((m) => m.id));
 
-      // Remove markers that no longer exist in the data
       const markersToRemove: string[] = [];
       markersRef.current.forEach((marker, id) => {
         if (!currentMarkerIds.has(id)) {
@@ -185,7 +176,6 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
         }
       });
 
-      // Remove markers after iteration to avoid modifying the map during iteration
       markersToRemove.forEach((id) => {
         const marker = markersRef.current.get(id);
         if (marker) {
@@ -199,12 +189,10 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
         }
       });
 
-      // Add or update markers
       validMarkers.forEach((markerData) => {
         const existingMarker = markersRef.current.get(markerData.id);
 
         if (!existingMarker) {
-          // Create new marker
           const position = {
             lat: markerData.latitude!,
             lng: markerData.longitude!,
@@ -230,7 +218,7 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
               anchor: new window.google.maps.Point(0, 0),
               labelOrigin: new window.google.maps.Point(0, 0),
             },
-            optimized: false, // Prevent optimization to avoid DOM issues
+            optimized: false,
           });
 
           marker.addListener("click", () => {
@@ -283,10 +271,8 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
             infoWindowRef.current.open(mapInstanceRef.current, marker);
           });
 
-          // Store the marker
           markersRef.current.set(markerData.id, marker);
         } else {
-          // Update existing marker if price changed
           const newLabel = `€${Math.round(markerData.price)}`;
           const currentLabel = existingMarker.getLabel();
           if (
@@ -303,7 +289,6 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
         }
       });
 
-      // Fit map to show all markers if we have any
       if (validMarkers.length > 0 && mapInstanceRef.current) {
         const bounds = new window.google.maps.LatLngBounds();
         validMarkers.forEach((markerData) => {
@@ -324,33 +309,27 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
           console.warn("Error fitting bounds:", e);
         }
       }
-    }, 200); // 200ms debounce
+    }, 200);
   }, [validMarkers]);
 
-  // Load Google Maps script
   useEffect(() => {
     const loadGoogleMapsScript = () => {
-      // If already loaded, just mark as ready
       if (isScriptLoaded && window.google?.maps?.Map) {
         setIsReady(true);
         return;
       }
 
-      // If currently loading, add to callbacks
       if (isScriptLoading) {
         loadCallbacks.push(() => setIsReady(true));
         return;
       }
 
-      // Check if script exists
       const existingScript = document.getElementById("google-maps-script");
       if (existingScript) {
-        // Script exists, wait for it to load
         if (window.google?.maps?.Map) {
           isScriptLoaded = true;
           setIsReady(true);
         } else {
-          // Wait for existing script to load
           isScriptLoading = true;
           loadCallbacks.push(() => setIsReady(true));
 
@@ -364,7 +343,6 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
             }
           }, 100);
 
-          // Timeout after 10 seconds
           setTimeout(() => {
             clearInterval(checkInterval);
             isScriptLoading = false;
@@ -374,7 +352,6 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
         return;
       }
 
-      // Load new script
       isScriptLoading = true;
       const script = document.createElement("script");
       script.id = "google-maps-script";
@@ -383,7 +360,6 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
       script.defer = true;
 
       script.onload = () => {
-        // Wait a bit to ensure Google Maps is fully initialized
         setTimeout(() => {
           isScriptLoaded = true;
           isScriptLoading = false;
@@ -404,67 +380,52 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
     loadGoogleMapsScript();
   }, []);
 
-  // Initialize map when ready
   useEffect(() => {
     if (isReady && !mapInitialized && mapDivRef.current) {
-      // Small delay to ensure DOM is ready
       requestAnimationFrame(() => {
         initializeMap();
       });
     }
   }, [isReady, mapInitialized, initializeMap]);
 
-  // Update markers when they change or map is initialized
   useEffect(() => {
     if (mapInitialized) {
       updateMarkers();
     }
   }, [validMarkers, mapInitialized, updateMarkers]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      // Clear debounce timeout
       if (updateDebounceRef.current) {
         clearTimeout(updateDebounceRef.current);
       }
 
-      // Clean up all markers
       markersRef.current.forEach((marker) => {
         try {
           if (window.google?.maps?.event) {
             google.maps.event.clearInstanceListeners(marker);
           }
           marker.setMap(null);
-        } catch (e) {
-          // Ignore errors during cleanup
-        }
+        } catch (e) {}
       });
       markersRef.current.clear();
 
-      // Close info window
       if (infoWindowRef.current) {
         try {
           infoWindowRef.current.close();
-        } catch (e) {
-          // Ignore errors during cleanup
-        }
+        } catch (e) {}
         infoWindowRef.current = null;
       }
 
-      // Clear map instance
       if (mapInstanceRef.current && window.google?.maps?.event) {
         try {
           google.maps.event.clearInstanceListeners(mapInstanceRef.current);
-        } catch (e) {
-          // Ignore errors during cleanup
-        }
+        } catch (e) {}
       }
       mapInstanceRef.current = null;
     };
   }, []);
 
-  // Determine if we should show the map
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   const shouldHideMap = view === "list" && isMobile;
 
@@ -485,7 +446,6 @@ function TrailerMapComponent({ markers, zoom = 10, view }: TrailerMapProps) {
         className="w-full h-full relative"
         style={{ isolation: "isolate" }}
       >
-        {/* Map div that Google Maps will use */}
         <div
           ref={mapDivRef}
           className="w-full h-full absolute inset-0"

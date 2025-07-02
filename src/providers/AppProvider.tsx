@@ -1,8 +1,8 @@
 "use client";
-
 import React, { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useSession } from "next-auth/react";
 import { useAuthStore } from "@/stores/auth.store";
 import { useFavoritesStore } from "@/stores/favorites.store";
 import { useNotificationsStore } from "@/stores/notifications.store";
@@ -27,6 +27,7 @@ export default function AppProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const { data: session, status } = useSession();
   const initializeAuth = useAuthStore((state) => state.actions.initializeAuth);
   const initializeFavorites = useFavoritesStore(
     (state) => state.actions.initializeFavorites
@@ -39,11 +40,30 @@ export default function AppProvider({
   );
   const user = useAuthStore((state) => state.user);
 
-  // Initialize stores on mount
+  // Initialize stores based on session status
   useEffect(() => {
-    initializeAuth();
+    // Only initialize auth if session is loaded
+    if (status === "loading") {
+      // Still loading, don't do anything
+      return;
+    }
+
+    if (status === "authenticated" && session) {
+      // User is authenticated, initialize auth store
+      initializeAuth();
+    } else if (status === "unauthenticated") {
+      // User is not authenticated, just mark as initialized without fetching
+      useAuthStore.setState({
+        user: null,
+        loading: false,
+        initialized: true,
+        error: null,
+      });
+    }
+
+    // Always initialize favorites (can work offline)
     initializeFavorites();
-  }, [initializeAuth, initializeFavorites]);
+  }, [status, session, initializeAuth, initializeFavorites]);
 
   // Handle user-dependent actions
   useEffect(() => {

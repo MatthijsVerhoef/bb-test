@@ -280,7 +280,7 @@ export default function HomePageClient({
               }`}
             >
               {view === "map" && (
-                <div className="absolute top-[80px] right-4 z-[10] flex h-11 px-1 items-center rounded-full bg-white shadow-md">
+                <div className="absolute top-[80px] right-4 z-[99] flex h-11 px-1 items-center rounded-full bg-white shadow-md">
                   <Button
                     variant="ghost"
                     className="rounded-full size-9"

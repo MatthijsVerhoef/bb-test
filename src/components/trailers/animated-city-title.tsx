@@ -20,28 +20,28 @@ const CITY_LISTS = {
     "Breda",
   ],
   en: [
-    "London",
-    "Manchester",
-    "Birmingham",
-    "Leeds",
-    "Glasgow",
-    "Liverpool",
-    "Bristol",
-    "Edinburgh",
-    "Cardiff",
-    "Belfast",
+    "Amsterdam",
+    "Rotterdam",
+    "Utrecht",
+    "Den Haag",
+    "Eindhoven",
+    "Groningen",
+    "Amersfoort",
+    "Nijmegen",
+    "Tilburg",
+    "Breda",
   ],
   de: [
-    "Berlin",
-    "Hamburg",
-    "München",
-    "Köln",
-    "Frankfurt",
-    "Stuttgart",
-    "Düsseldorf",
-    "Dortmund",
-    "Dresden",
-    "Leipzig",
+    "Amsterdam",
+    "Rotterdam",
+    "Utrecht",
+    "Den Haag",
+    "Eindhoven",
+    "Groningen",
+    "Amersfoort",
+    "Nijmegen",
+    "Tilburg",
+    "Breda",
   ],
 };
 
@@ -49,30 +49,24 @@ interface AnimatedCityTitleProps {
   selectedCity: string | null | undefined;
 }
 
-// Client-side only component to avoid hydration issues
 function AnimatedCityTitleClient({ selectedCity }: AnimatedCityTitleProps) {
   const [currentCityIndex, setCurrentCityIndex] = useState(0);
   const [isClient, setIsClient] = useState(false);
   const { t, locale } = useTranslation("home");
 
-  // Get the appropriate city list based on locale
   const cities = CITY_LISTS[locale as keyof typeof CITY_LISTS] || CITY_LISTS.nl;
 
-  // Use client-side detection to avoid hydration mismatch
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Reset city index when locale changes
   useEffect(() => {
     setCurrentCityIndex(0);
   }, [locale]);
 
-  // If a city is selected, show that instead of cycling
   const displayCity = selectedCity || cities[currentCityIndex];
   const isSelected = Boolean(selectedCity);
 
-  // Change city every 3 seconds if no city is selected
   useEffect(() => {
     if (isSelected) return;
 
@@ -83,7 +77,6 @@ function AnimatedCityTitleClient({ selectedCity }: AnimatedCityTitleProps) {
     return () => clearInterval(interval);
   }, [isSelected, cities.length]);
 
-  // Only render the animation on the client to avoid hydration issues
   if (!isClient) {
     return (
       <h1 className="text-[#8997AA] font-semibold text-[32px] flex flex-wrap">

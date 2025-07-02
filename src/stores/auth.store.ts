@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { signIn, signOut } from 'next-auth/react';
+import { signIn, signOut, getSession } from 'next-auth/react';
 import { ApiClient } from '@/lib/api-client';
 
 export interface User {
@@ -51,7 +51,7 @@ export const useAuthStore = create<AuthStore>()(
     immer((set, get) => ({
       // Initial state
       user: null,
-      loading: true,
+      loading: false, // Changed from true to false
       error: null,
       initialized: false,
 
@@ -209,6 +209,18 @@ export const useAuthStore = create<AuthStore>()(
 
         refreshUser: async () => {
           try {
+            // First check if there's a session
+            const session = await getSession();
+            
+            if (!session) {
+              set(state => {
+                state.user = null;
+                state.loading = false;
+                state.initialized = true;
+              });
+              return;
+            }
+
             const userData = await ApiClient.fetch<{ user: User }>('/api/auth/me', {
               method: 'GET',
               cacheConfig: { ttl: 0 },
@@ -230,7 +242,20 @@ export const useAuthStore = create<AuthStore>()(
 
         initializeAuth: async () => {
           try {
-            // Get current user from NextAuth session
+            // First check if there's a session
+            const session = await getSession();
+            
+            // If no session, just mark as initialized without fetching
+            if (!session) {
+              set(state => {
+                state.user = null;
+                state.loading = false;
+                state.initialized = true;
+              });
+              return;
+            }
+
+            // Only fetch user data if there's a session
             const userData = await ApiClient.fetch<{ user: User }>('/api/auth/me', {
               method: 'GET',
               cacheConfig: { ttl: 0 },
