@@ -1,24 +1,21 @@
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
-import { DateRange } from "react-day-picker";
 
-interface SearchButtonProps {
-  location: string;
-  dateRange: DateRange | undefined;
-  onClick: () => void;
-}
-
-export const SearchButton = ({
+export const CondensedSearchButton = ({
   location,
   dateRange,
   onClick,
-}: SearchButtonProps) => {
-  const formatDate = (date: Date | undefined, fallback: string) => {
-    return date ? format(date, "d MMM", { locale: nl }) : fallback;
+}: any) => {
+  const formatArrivalDate = () => {
+    if (!dateRange?.from) return "Datums toevoegen";
+    return format(dateRange.from, "d MMM", { locale: nl });
   };
 
-  const hasSearchData = location || dateRange?.from || dateRange?.to;
+  const formatDepartureDate = () => {
+    if (!dateRange?.to) return "Datums toevoegen";
+    return format(dateRange.to, "d MMM", { locale: nl });
+  };
 
   return (
     <motion.div
@@ -32,17 +29,14 @@ export const SearchButton = ({
         onClick={onClick}
         className="flex items-center space-x-2 bg-white ps-5 pe-1 py-1 min-w-[400px] rounded-full cursor-pointer border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
       >
-        <span className="text-sm font-medium">
-          {hasSearchData ? (
-            <>
-              {location} <span className="mx-2">|</span>{" "}
-              {formatDate(dateRange?.from, "Datums toevoegen")} -{" "}
-              {formatDate(dateRange?.to, "Datums toevoegen")}
-            </>
-          ) : (
-            "Zoek een aanhanger"
-          )}
-        </span>
+        {!location || Object.keys(dateRange).length <= 0 ? (
+          <span className="text-sm font-medium">Zoek een aanhanger</span>
+        ) : (
+          <span className="text-sm font-medium">
+            {location} <span className="mx-2">|</span> {formatArrivalDate()} -{" "}
+            {formatDepartureDate()}
+          </span>
+        )}
         <div className="ms-auto bg-primary p-1.5 rounded-full text-white">
           <svg
             xmlns="http://www.w3.org/2000/svg"

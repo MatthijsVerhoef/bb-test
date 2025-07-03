@@ -1038,7 +1038,7 @@ const Header = () => {
 
                 {/* Language Selection */}
                 <div className="px-3 py-2 overflow-visible">
-                  <div className="flex items-center mb-2 overflow-visible">
+                  <div className="flex items-center overflow-visible">
                     <svg
                       className="w-4 h-4 mr-3 text-gray-500"
                       fill="none"
@@ -1118,13 +1118,6 @@ const Header = () => {
                   setDateRange={setDateRange}
                   showMobileHeader={showMobileHeader}
                 />
-                {/* <QuickSearchWrapper
-                  location={location}
-                  setLocation={setLocation}
-                  dateRange={dateRange}
-                  setDateRange={setDateRange}
-                  showMobileHeader={showMobileHeader}
-                /> */}
               </motion.div>
             )}
           </AnimatePresence>

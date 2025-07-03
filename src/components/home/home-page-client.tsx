@@ -399,20 +399,8 @@ export default function HomePageClient({
         className={`
           lg:hidden fixed left-0 right-0 z-80
           transform transition-all duration-300 ease-in-out
+          ${isNavVisible ? "bottom-[64px]" : "bottom-[16px]"}
         `}
-        style={{
-          bottom: isMobile
-            ? isNavVisible
-              ? "64px"
-              : "16px"
-            : isNavVisible
-            ? "64px"
-            : "16px",
-          transform:
-            isMobile && !showMobileHeader
-              ? "translateY(-44px)"
-              : "translateY(0)",
-        }}
       >
         <div className="container mx-auto px-4 sm:px-6">
           <Sheet open={showFilterSheet} onOpenChange={setShowFilterSheet}>

@@ -273,7 +273,7 @@ export default function TrailerSpecs({
           {specs.filter((spec) =>
             ["Merk", "Model", "Bouwjaar"].includes(spec.label)
           ).length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
               {specs
                 .filter((spec) =>
                   ["Merk", "Model", "Bouwjaar"].includes(spec.label)
@@ -303,7 +303,7 @@ export default function TrailerSpecs({
               <h3 className="text-sm font-medium mb-3 text-gray-700">
                 {t("specs.dimensions")}
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {dimensionSpecs.map((spec, index) => (
                   <div
                     key={index}

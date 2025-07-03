@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MapPin, ChevronLeft, Ellipsis, Flag, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,6 @@ import ShareDialog from "@/components/trailer-details/share-dialog";
 import FavoriteButton from "@/components/trailer-details/favorite-button";
 import RentalBookingForm from "@/components/trailer-details/rental-booking-form";
 import TrailerLocationMap from "@/components/trailer-details/trailer-details-map";
-import LicenseBanner from "@/components/trailer-details/LicenseBanner";
 
 interface TrailerDetailClientProps {
   trailer: any;
@@ -44,6 +43,29 @@ export default function TrailerDetailClient({
   const { t } = useTranslation("trailer");
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showFixedHeader, setShowFixedHeader] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollThreshold = 300;
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > scrollThreshold) {
+        setShowFixedHeader(true);
+      } else {
+        setShowFixedHeader(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // Check initial scroll position
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const openBookingModal = () => {
     setMobileBookingOpen(true);
@@ -66,6 +88,25 @@ export default function TrailerDetailClient({
           >
             <ChevronLeft className="mr-2 h-4 w-4" />
             {t("backToListing")}
+          </Button>
+        </Link>
+      </div>
+
+      {/* Fixed Header with Fade Effect */}
+      <div
+        className={`
+          fixed w-screen top-0 left-0 ps-2 pe-4 py-1.5 z-50 bg-white border-b
+          transition-all duration-300 ease-in-out
+          ${
+            showFixedHeader
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-full pointer-events-none"
+          }
+        `}
+      >
+        <Link href="/" prefetch={false}>
+          <Button variant={"ghost"} className="p-4 rounded-full">
+            <ChevronLeft className="h-4 w-4" />
           </Button>
         </Link>
       </div>
@@ -222,24 +263,17 @@ export default function TrailerDetailClient({
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2.5 z-90 lg:hidden">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-lg font-semibold text-gray-900">
-              €{trailer.pricePerDay}
-              <span className="text-sm font-normal text-gray-600 ml-1">
+            <div className="text-base font-semibold text-gray-900">
+              € {trailer.pricePerDay}
+              <span className="text-xs font-normal text-gray-600 ml-1">
                 {t("perDay")}
               </span>
             </div>
-            {avgRating && (
-              <div className="text-sm text-gray-600">
-                ⭐ {avgRating.toFixed(1)} ({trailer.reviews.length}{" "}
-                {t("reviews")})
-              </div>
-            )}
           </div>
           <Button
-            className="px-6 py-3 rounded-full bg-primary hover:bg-primary/90"
+            className="px-6 py-6 rounded-lg bg-primary hover:bg-primary/90"
             onClick={openBookingModal}
           >
-            <Calendar className="w-4 h-4 " />
             {t("reserve")}
           </Button>
         </div>

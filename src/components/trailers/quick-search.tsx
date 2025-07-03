@@ -822,7 +822,9 @@ const QuickSearch = ({
                             mobileActiveSection === "dates" ? null : "dates"
                           );
                         }}
-                        className="w-full p-6 text-left hover:bg-gray-50 transition-colors flex items-center justify-between"
+                        className={`w-full p-6 pb-3 text-left hover:bg-gray-50 transition-colors flex items-center justify-between ${
+                          mobileActiveSection === "dates" ? "pb-3" : "pb-6"
+                        }`}
                       >
                         <div>
                           <h3 className="text-sm font-semibold text-gray-900 mb-1">
@@ -869,7 +871,7 @@ const QuickSearch = ({
                             }}
                             className="overflow-hidden"
                           >
-                            <div className="border-t border-gray-100 p-4 bg-gray-50">
+                            <div className="bg-gray-50">
                               <CustomCalendar
                                 mode="range"
                                 selected={dateRange}
