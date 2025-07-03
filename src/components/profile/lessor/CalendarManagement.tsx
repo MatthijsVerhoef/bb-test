@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Ban, Loader2 } from "lucide-react";
 import { useLessorCalendarData } from "@/hooks/useLessorCalendarData";
-import { BlockedPeriodsList } from "./calendar/BlockedPeriodsList";
 import LessorCalendar from "./LessorCalendar";
 import AvailabilitySettings from "./calendar/AvailabilitySettings";
 import { useTranslation } from "@/lib/i18n/client";
+import MobileLessorCalendar from "./MobileLessorCalendar";
 
 interface CalendarManagementProps {
   userId: string;
@@ -122,7 +122,7 @@ export default function CalendarManagement({
               trailers={trailers}
               rentals={rentals}
               blockedPeriods={blockedPeriods}
-              weeklyAvailability={weeklyAvailabilityArray} // Pass the array of WeeklyAvailability records
+              weeklyAvailability={weeklyAvailabilityArray}
               onAddBlockedPeriod={addBlockedPeriod}
               onRemoveBlockedPeriod={removeBlockedPeriod}
             />

@@ -280,7 +280,7 @@ export default function LessorDashboard() {
       {isLoadingStats ? (
         <MetricsGridSkeleton />
       ) : (
-        <div className="grid grid-cols-3 flex-1 border rounded-lg">
+        <div className="grid grid-cols-2 md:grid-cols-3 flex-1 border rounded-lg">
           <MetricCard
             title={t("lessorDashboard.acceptanceRate.title")}
             value={`${stats?.acceptanceRate?.toFixed(0) || 0}%`}

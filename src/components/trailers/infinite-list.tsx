@@ -139,7 +139,7 @@ export function TrailersPaginationList({
     <div>
       {trailers && trailers.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-y-6 gap-x-5">
+          <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-y-6 gap-x-3 md:gap-x-5">
             {trailers.map((trailer) => {
               const trailerWithProperAvailability = {
                 ...trailer,

@@ -43,13 +43,11 @@ interface MobileOverviewProps {
     isVerified: boolean;
     role: "USER" | "LESSOR" | "ADMIN" | "SUPPORT";
   };
-  profileCompletion: number;
   onNavigate: (tab: string, mode?: "renter" | "lessor") => void;
 }
 
 export default function MobileOverview({
   user,
-  profileCompletion,
   onNavigate,
 }: MobileOverviewProps) {
   const canAccessLessorMode = user.role === "LESSOR" || user.role === "ADMIN";
@@ -131,7 +129,7 @@ export default function MobileOverview({
       <Card className="border-0 bg-[#F7F7F7]">
         <CardContent className="p-4">
           <div className="flex flex-col items-center justify-center">
-            <Avatar className="h-16 w-16">
+            <Avatar className="h-16 w-16 bg-white">
               {user.profilePicture ? (
                 <AvatarImage
                   src={user.profilePicture}
@@ -139,7 +137,7 @@ export default function MobileOverview({
                   className="object-cover"
                 />
               ) : (
-                <AvatarFallback className="text-lg font-semibold">
+                <AvatarFallback className="text-lg bg-white font-semibold">
                   {user.firstName?.[0]}
                   {user.lastName?.[0]}
                 </AvatarFallback>
@@ -150,11 +148,6 @@ export default function MobileOverview({
                 {user.firstName} {user.lastName}
               </h1>
               <p className="text-sm text-gray-500">{user.email}</p>
-              <div className="flex items-center mt-2 space-x-2">
-                <Badge variant="outline" className="text-xs">
-                  Profiel {profileCompletion}% compleet
-                </Badge>
-              </div>
             </div>
           </div>
         </CardContent>
@@ -175,7 +168,7 @@ export default function MobileOverview({
               }}
             >
               <Card className="border-0 p-0 cursor-pointer transition-colors hover:bg-gray-50 active:bg-gray-100">
-                <CardContent className="py-3 px-3 rounded-0">
+                <CardContent className="py-3 px-0 rounded-0">
                   <div className="flex items-center space-x-4">
                     <div className="">{item.icon}</div>
                     <div className="flex-1">
@@ -208,7 +201,7 @@ export default function MobileOverview({
                 }}
               >
                 <Card className="border-0 p-0 cursor-pointer transition-colors hover:bg-gray-50 active:bg-gray-100">
-                  <CardContent className="py-3 px-3 rounded-0">
+                  <CardContent className="py-3 px-0 rounded-0">
                     <div className="flex items-center space-x-4">
                       <div className="">{item.icon}</div>
                       <div className="flex-1">
@@ -239,7 +232,7 @@ export default function MobileOverview({
           }}
         >
           <Card className="border-0 p-0 cursor-pointer transition-colors hover:bg-gray-50 active:bg-gray-100">
-            <CardContent className="px-3 py-3">
+            <CardContent className="px-1 py-3">
               <div className="flex items-center space-x-4">
                 <div>
                   <Settings className="h-5 w-5" strokeWidth={1.5} />

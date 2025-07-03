@@ -70,7 +70,7 @@ export default function TrailerCard({ trailer }: TrailerCardProps) {
       {/* Image */}
       <Link
         href={`/aanbod/${trailer.id}`}
-        className="relative block overflow-hidden aspect-[6/4] rounded-md"
+        className="relative block overflow-hidden aspect-[6/5] md:aspect-[6/4] rounded-lg md:rounded-md"
         onClick={handleClick}
       >
         {isValidImageUrl ? (

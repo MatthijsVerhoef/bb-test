@@ -436,7 +436,7 @@ export default function ImprovedReviews({
       </div>
 
       <Tabs defaultValue="all" className="w-full mt-9">
-        <TabsList className="bg-white pb-[25px] rounded-0 flex items-center justify-start rounded-none">
+        <TabsList className="pb-[25px] bg-white h-14 overflow-x-auto overflow-y-hidden max-w-full rounded-0 flex items-center justify-start rounded-none">
           <TabsTrigger
             className="data-[state=active]:bg-[#222222] data-[state=active]:text-white shadow-none py-4 me-3 text-xs max-w-fit px-7 rounded-full data-[state=inactive]:border data-[state=inactive]:border-gray-200"
             value="all"

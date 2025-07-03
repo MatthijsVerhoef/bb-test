@@ -77,7 +77,6 @@ interface RenterHistoryProps {
   userId: string;
 }
 
-// Query key factory
 const rentalKeys = {
   all: ["rentals"] as const,
   renter: (userId: string) => [...rentalKeys.all, "renter", userId] as const,
@@ -85,7 +84,6 @@ const rentalKeys = {
     [...rentalKeys.all, "detail", rentalId] as const,
 };
 
-// Memoized subcomponents
 const RentalCard = memo(
   ({
     rental,
@@ -152,7 +150,7 @@ const RentalCard = memo(
             } md:flex-row md:items-start relative`}
           >
             {/* Image */}
-            <div className="relative w-full md:w-42 h-30 mb-4 md:mb-0 md:mr-4 rounded-lg overflow-hidden">
+            <div className="relative w-full md:w-42 h-50 md:h-30 mb-4 md:mb-0 md:mr-4 rounded-lg overflow-hidden">
               {rental.trailerImage ? (
                 <Image
                   src={rental.trailerImage}
@@ -287,7 +285,7 @@ const RentalCard = memo(
             </div>
 
             {/* Status and price */}
-            <div className="mt-4 md:mt-0 md:ml-4 flex flex-col items-end justify-between absolute h-fit top-0 end-0">
+            <div className="mt-2 mr-2 md:mr-0 md:mt-0 md:ml-4 flex flex-col items-end justify-between absolute h-fit top-0 end-0">
               <Badge variant={getBadgeVariant(rental.status)}>
                 {getDisplayStatus(rental.status)}
               </Badge>
@@ -480,7 +478,7 @@ export default function RenterHistory({ userId }: RenterHistoryProps) {
         onValueChange={setActiveTab}
         className="w-full mt-9"
       >
-        <TabsList className="w-full bg-white gap-x-2 pb-[25px] rounded-0 flex items-center justify-start rounded-none">
+        <TabsList className="w-full  max-w-[100vw] overflow-x-auto bg-white h-14 gap-x-2 overflow-y-hidden pb-[25px] rounded-0 flex items-center justify-start rounded-none">
           <TabsTrigger
             className="data-[state=active]:bg-[#222222] data-[state=active]:shadow-none data-[state=active]:text-white shadow-none py-4 text-xs max-w-fit px-7 rounded-full data-[state=inactive]:border data-[state=inactive]:border-gray-200"
             value="upcoming"

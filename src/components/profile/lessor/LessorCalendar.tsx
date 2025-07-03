@@ -104,17 +104,17 @@ export default function LessorCalendar({
   onRemoveBlockedPeriod,
 }: LessorCalendarProps) {
   const { t } = useTranslation("profile");
-  
+
   const DAY_NAMES = [
-    t('lessorCalendar.availability.shortDays.MONDAY'),
-    t('lessorCalendar.availability.shortDays.TUESDAY'),
-    t('lessorCalendar.availability.shortDays.WEDNESDAY'),
-    t('lessorCalendar.availability.shortDays.THURSDAY'),
-    t('lessorCalendar.availability.shortDays.FRIDAY'),
-    t('lessorCalendar.availability.shortDays.SATURDAY'),
-    t('lessorCalendar.availability.shortDays.SUNDAY')
+    t("lessorCalendar.availability.shortDays.MONDAY"),
+    t("lessorCalendar.availability.shortDays.TUESDAY"),
+    t("lessorCalendar.availability.shortDays.WEDNESDAY"),
+    t("lessorCalendar.availability.shortDays.THURSDAY"),
+    t("lessorCalendar.availability.shortDays.FRIDAY"),
+    t("lessorCalendar.availability.shortDays.SATURDAY"),
+    t("lessorCalendar.availability.shortDays.SUNDAY"),
   ];
-  
+
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedTrailer, setSelectedTrailer] = useState<string | null>(
     trailers.length > 0 ? trailers[0].id : null
@@ -387,7 +387,9 @@ export default function LessorCalendar({
               </div>
               {dateRentals.length > 1 && (
                 <div className="text-[10px] text-blue-600">
-                  {t('lessorCalendar.calendar.rental.more', { count: dateRentals.length - 1 })}
+                  {t("lessorCalendar.calendar.rental.more", {
+                    count: dateRentals.length - 1,
+                  })}
                 </div>
               )}
             </div>
@@ -397,8 +399,10 @@ export default function LessorCalendar({
           {!hasRentals && status !== "available" && (
             <div className="mt-auto">
               <div className="text-[10px] text-gray-500 truncate">
-                {status === "unavailable" && t('lessorCalendar.calendar.dayStatus.unavailable')}
-                {status === "blocked" && t('lessorCalendar.calendar.dayStatus.blocked')}
+                {status === "unavailable" &&
+                  t("lessorCalendar.calendar.dayStatus.unavailable")}
+                {status === "blocked" &&
+                  t("lessorCalendar.calendar.dayStatus.blocked")}
               </div>
             </div>
           )}
@@ -414,9 +418,11 @@ export default function LessorCalendar({
       {/* Trailer Selection Section */}
       <Card className="p-6 bg-[#f7f7f7] border-0">
         <div className="mb-0">
-          <h3 className="text-lg font-semibold mb-0">{t('lessorCalendar.trailerSelection.title')}</h3>
+          <h3 className="text-lg font-semibold mb-0">
+            {t("lessorCalendar.trailerSelection.title")}
+          </h3>
           <p className="text-sm text-gray-600">
-            {t('lessorCalendar.trailerSelection.description')}
+            {t("lessorCalendar.trailerSelection.description")}
           </p>
         </div>
 
@@ -457,7 +463,9 @@ export default function LessorCalendar({
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold">
-                  {t('lessorCalendar.calendar.title', { trailerName: selectedTrailerData?.title })}
+                  {t("lessorCalendar.calendar.title", {
+                    trailerName: selectedTrailerData?.title,
+                  })}
                 </h3>
               </div>
 
@@ -472,7 +480,7 @@ export default function LessorCalendar({
                       className="gap-2"
                     >
                       <Lock className="w-4 h-4" />
-                      {t('lessorCalendar.calendar.blockDates')}
+                      {t("lessorCalendar.calendar.blockDates")}
                     </Button>
                     <Button
                       variant="outline"
@@ -481,7 +489,7 @@ export default function LessorCalendar({
                       className="gap-2"
                     >
                       <Unlock className="w-4 h-4" />
-                      {t('lessorCalendar.calendar.unblockDates')}
+                      {t("lessorCalendar.calendar.unblockDates")}
                     </Button>
                   </>
                 ) : (
@@ -494,7 +502,7 @@ export default function LessorCalendar({
                         setSelectedDates([]);
                       }}
                     >
-                      {t('lessorCalendar.calendar.cancel')}
+                      {t("lessorCalendar.calendar.cancel")}
                     </Button>
                     <Button
                       size="sm"
@@ -514,16 +522,24 @@ export default function LessorCalendar({
                       {selectionMode === "block" ? (
                         <>
                           <Lock className="w-4 h-4" />
-                          {selectedDates.length === 1 
-                            ? t('lessorCalendar.calendar.blockDay', { count: selectedDates.length })
-                            : t('lessorCalendar.calendar.blockDays', { count: selectedDates.length })}
+                          {selectedDates.length === 1
+                            ? t("lessorCalendar.calendar.blockDay", {
+                                count: selectedDates.length,
+                              })
+                            : t("lessorCalendar.calendar.blockDays", {
+                                count: selectedDates.length,
+                              })}
                         </>
                       ) : (
                         <>
                           <Unlock className="w-4 h-4" />
                           {selectedDates.length === 1
-                            ? t('lessorCalendar.calendar.unblockDay', { count: selectedDates.length })
-                            : t('lessorCalendar.calendar.unblockDays', { count: selectedDates.length })}
+                            ? t("lessorCalendar.calendar.unblockDay", {
+                                count: selectedDates.length,
+                              })
+                            : t("lessorCalendar.calendar.unblockDays", {
+                                count: selectedDates.length,
+                              })}
                         </>
                       )}
                     </Button>
@@ -546,16 +562,14 @@ export default function LessorCalendar({
 
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Calendar className="w-5 h-5" />
-              {format(
-                currentMonth, 
-                "MMMM yyyy", 
-                { 
-                  locale: 
-                    t('common:locale') === 'nl' ? nl : 
-                    t('common:locale') === 'de' ? de : 
-                    enUS 
-                }
-              )}
+              {format(currentMonth, "MMMM yyyy", {
+                locale:
+                  t("common:locale") === "nl"
+                    ? nl
+                    : t("common:locale") === "de"
+                    ? de
+                    : enUS,
+              })}
             </h2>
 
             <Button
@@ -569,7 +583,7 @@ export default function LessorCalendar({
           </div>
 
           {/* Day Headers */}
-          <div className="grid grid-cols-7 gap-2 mb-2">
+          <div className="grid grid-cols-7 gap-1 md:gap-2 mb-2">
             {DAY_NAMES.map((day) => (
               <div
                 key={day}
@@ -581,32 +595,34 @@ export default function LessorCalendar({
           </div>
 
           {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1 md:gap-2">
             {calendarDays.map((date, index) => renderDay(date, index))}
           </div>
 
           {/* Legend */}
           <div className="flex flex-wrap items-center gap-4 text-xs bg-gray-50 p-3 rounded-lg">
-            <span className="font-medium text-gray-700">{t('lessorCalendar.calendar.legend.title')}</span>
+            <span className="font-medium text-gray-700">
+              {t("lessorCalendar.calendar.legend.title")}
+            </span>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-white border border-gray-200 rounded" />
-              <span>{t('lessorCalendar.calendar.legend.available')}</span>
+              <span>{t("lessorCalendar.calendar.legend.available")}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-gray-50 border border-gray-200 rounded" />
-              <span>{t('lessorCalendar.calendar.legend.unavailable')}</span>
+              <span>{t("lessorCalendar.calendar.legend.unavailable")}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-red-50 border border-red-200 rounded" />
-              <span>{t('lessorCalendar.calendar.legend.blocked')}</span>
+              <span>{t("lessorCalendar.calendar.legend.blocked")}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded" />
-              <span>{t('lessorCalendar.calendar.legend.booked')}</span>
+              <span>{t("lessorCalendar.calendar.legend.booked")}</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 border border-primary rounded" />
-              <span>{t('lessorCalendar.calendar.legend.today')}</span>
+              <span>{t("lessorCalendar.calendar.legend.today")}</span>
             </div>
           </div>
         </Card>
@@ -617,10 +633,10 @@ export default function LessorCalendar({
         <Card className="p-12 text-center">
           <Calendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
           <h3 className="text-lg font-medium text-gray-700 mb-2">
-            {t('lessorCalendar.calendar.noTrailerSelected.title')}
+            {t("lessorCalendar.calendar.noTrailerSelected.title")}
           </h3>
           <p className="text-sm text-gray-500">
-            {t('lessorCalendar.calendar.noTrailerSelected.description')}
+            {t("lessorCalendar.calendar.noTrailerSelected.description")}
           </p>
         </Card>
       )}
