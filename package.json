@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push && next build --no-lint",
+    "build": "rm -rf .next && prisma generate && next build",
     "start": "node server-integrated.js",
     "start:local": "node server.js",
     "lint": "next lint",
