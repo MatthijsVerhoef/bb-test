@@ -64,100 +64,202 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const requestId = crypto.randomUUID();
   const startTime = Date.now();
-  console.log('POST /blocked-periods - Start');
+  
+  const log = (step: string, data?: any) => {
+    const elapsed = Date.now() - startTime;
+    console.log(`[${requestId}] ${elapsed}ms - ${step}`, data ? JSON.stringify(data) : '');
+  };
+  
+  log('POST /blocked-periods - Start');
   
   try {
+    // Step 1: Parse request body
+    log('Step 1: Starting to parse request body...');
+    const bodyStartTime = Date.now();
+    let body;
+    try {
+      body = await req.json();
+      log('Step 1: Body parsed successfully', {
+        parseTime: Date.now() - bodyStartTime,
+        bodyKeys: Object.keys(body),
+        hasTrailerId: !!body.trailerId,
+        startDate: body.startDate,
+        endDate: body.endDate
+      });
+    } catch (parseError) {
+      log('Step 1: ERROR parsing body', { error: parseError.message });
+      throw parseError;
+    }
+
+    // Step 2: Get session
+    log('Step 2: Getting session...');
+    const sessionStartTime = Date.now();
     const session = await getServerSession(authOptions);
+    log('Step 2: Session retrieved', {
+      sessionTime: Date.now() - sessionStartTime,
+      hasSession: !!session,
+      userId: session?.user?.id
+    });
+    
     if (!session?.user?.id) {
+      log('Step 2: No session found, returning 401');
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const userId = session.user.id;
-    const body = await req.json();
-    
-    console.log('Request body:', body);
 
+    // Step 3: Validate request data
+    log('Step 3: Validating request data...');
+    let validatedData;
+    try {
+      validatedData = blockedPeriodSchema.parse(body);
+      log('Step 3: Data validated successfully');
+    } catch (validationError) {
+      log('Step 3: Validation failed', { error: validationError });
+      throw validationError;
+    }
+
+    // Step 4: Check user role
+    log('Step 4: Checking user role...');
+    const userCheckStartTime = Date.now();
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, role: true },
     });
+    log('Step 4: User check completed', {
+      queryTime: Date.now() - userCheckStartTime,
+      found: !!user,
+      role: user?.role
+    });
 
     if (!user || (user.role !== "LESSOR" && user.role !== "ADMIN")) {
+      log('Step 4: User not authorized');
       return NextResponse.json(
         { error: "You need to be a lessor to perform this action" },
         { status: 403 }
       );
     }
 
-    const validatedData = blockedPeriodSchema.parse(body);
-
+    // Step 5: Check trailer ownership if provided
     if (validatedData.trailerId) {
-      console.log('Checking trailer ownership...');
-      const trailer = await prisma.trailer.findFirst({
-        where: {
-          id: validatedData.trailerId,
-          ownerId: userId,
-        },
-        select: { id: true },
-      });
+      log('Step 5: Checking trailer ownership...', { trailerId: validatedData.trailerId });
+      const trailerCheckStartTime = Date.now();
+      
+      try {
+        const trailer = await prisma.trailer.findFirst({
+          where: {
+            id: validatedData.trailerId,
+            ownerId: userId,
+          },
+          select: { id: true },
+        });
+        
+        log('Step 5: Trailer check completed', {
+          queryTime: Date.now() - trailerCheckStartTime,
+          found: !!trailer
+        });
 
-      if (!trailer) {
-        return NextResponse.json(
-          { error: "Trailer not found or you don't have permission" },
-          { status: 404 }
-        );
+        if (!trailer) {
+          log('Step 5: Trailer not found or not owned by user');
+          return NextResponse.json(
+            { error: "Trailer not found or you don't have permission" },
+            { status: 404 }
+          );
+        }
+      } catch (trailerError) {
+        log('Step 5: ERROR checking trailer', { 
+          error: trailerError.message,
+          code: trailerError.code 
+        });
+        throw trailerError;
       }
+    } else {
+      log('Step 5: No trailer ID provided, skipping trailer check');
     }
 
-    // IMPORTANT: Handle the dates properly for MySQL
+    // Step 6: Prepare dates
+    log('Step 6: Preparing dates...');
     const startDate = new Date(validatedData.startDate);
     const endDate = new Date(validatedData.endDate);
     
-    console.log('Creating blocked period with dates:', {
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
+    log('Step 6: Dates prepared', {
+      startDateISO: startDate.toISOString(),
+      endDateISO: endDate.toISOString(),
       startDateLocal: startDate.toString(),
       endDateLocal: endDate.toString(),
     });
 
-    // Create the blocked period - but with a timeout
-    const createPromise = prisma.blockedPeriod.create({
-      data: {
-        startDate,
-        endDate,
-        reason: validatedData.reason || null, // MySQL prefers null over undefined
-        allDay: validatedData.allDay,
-        morning: validatedData.morning,
-        afternoon: validatedData.afternoon,
-        evening: validatedData.evening,
-        trailerId: validatedData.trailerId || null, // MySQL prefers null
-        userId: userId,
-      },
-      include: {
-        trailer: {
-          select: {
-            id: true,
-            title: true,
+    // Step 7: Create blocked period
+    log('Step 7: Creating blocked period in database...');
+    const createStartTime = Date.now();
+    
+    // Log the exact data being sent to Prisma
+    const createData = {
+      startDate,
+      endDate,
+      reason: validatedData.reason || null,
+      allDay: validatedData.allDay,
+      morning: validatedData.morning,
+      afternoon: validatedData.afternoon,
+      evening: validatedData.evening,
+      trailerId: validatedData.trailerId || null,
+      userId: userId,
+    };
+    log('Step 7a: Create data prepared', createData);
+
+    let blockedPeriod;
+    try {
+      // Create with timeout
+      const createPromise = prisma.blockedPeriod.create({
+        data: createData,
+        include: {
+          trailer: {
+            select: {
+              id: true,
+              title: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    // Add a timeout to the create operation
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Database operation timeout')), 25000)
-    );
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database operation timeout')), 25000)
+      );
 
-    const blockedPeriod = await Promise.race([createPromise, timeoutPromise]);
+      blockedPeriod = await Promise.race([createPromise, timeoutPromise]);
+      
+      log('Step 7: Create completed successfully', {
+        createTime: Date.now() - createStartTime,
+        id: blockedPeriod.id
+      });
+    } catch (createError) {
+      log('Step 7: ERROR creating blocked period', {
+        error: createError.message,
+        code: createError.code,
+        createTime: Date.now() - createStartTime
+      });
+      throw createError;
+    }
     
-    console.log(`Blocked period created in ${Date.now() - startTime}ms`);
+    // Step 8: Return response
+    const totalTime = Date.now() - startTime;
+    log('Step 8: Request completed successfully', {
+      totalTime,
+      blockedPeriodId: blockedPeriod.id
+    });
     
     return NextResponse.json({ blockedPeriod }, { status: 201 });
     
-  } catch (error) {
-    console.error("Error creating blocked period:", error);
-    console.error('Total time:', Date.now() - startTime);
+  } catch (error: any) {
+    const totalTime = Date.now() - startTime;
+    log('ERROR: Request failed', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack,
+      totalTime
+    });
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -171,6 +273,15 @@ export async function POST(req: NextRequest) {
         { error: "Database operation timed out" },
         { status: 504 }
       );
+    }
+    
+    // Log any Prisma-specific errors
+    if (error.code) {
+      log('Prisma error details', {
+        code: error.code,
+        meta: error.meta,
+        clientVersion: error.clientVersion
+      });
     }
     
     return NextResponse.json(
