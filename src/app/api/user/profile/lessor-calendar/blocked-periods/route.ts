@@ -1,8 +1,12 @@
+console.log('===== BLOCKED PERIODS ROUTE FILE EXECUTING =====');
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
 import { z } from "zod";
+
+console.log('===== BLOCKED PERIODS ROUTE LOADED =====');
 
 const blockedPeriodSchema = z.object({
   startDate: z.string().datetime(),
@@ -64,6 +68,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  console.log('===== POST HANDLER CALLED =====');
   const requestId = crypto.randomUUID();
   const startTime = Date.now();
   
