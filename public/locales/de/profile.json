@@ -517,6 +517,10 @@
         "title": "Kein Anhänger ausgewählt",
         "description": "Bitte wählen Sie oben einen Anhänger aus, um seinen Kalender einzusehen und zu verwalten"
       },
+      "noTrailersFound": {
+        "title": "Keine Anhänger gefunden",
+        "description": "Fügen Sie einen Anhänger hinzu, um Ihren Kalender zu verwalten."
+      },
       "legend": {
         "title": "Legende:",
         "available": "Verfügbar",
@@ -531,6 +535,13 @@
       },
       "rental": {
         "more": "+{{count}} weitere"
+      },
+      "mobile": {
+        "daysSelected": "{{count}} Tag",
+        "daysSelectedPlural": "{{count}} Tage",
+        "blocked": "Blockiert",
+        "available": "Verfügbar",
+        "loadingMore": "Weitere Monate werden geladen..."
       }
     },
     "availability": {
@@ -621,6 +632,15 @@
         "FRIDAY": "Fr",
         "SATURDAY": "Sa",
         "SUNDAY": "So"
+      },
+      "mobileDays": {
+        "0": "M",
+        "1": "D",
+        "2": "M",
+        "3": "D",
+        "4": "F",
+        "5": "S",
+        "6": "S"
       }
     }
   },

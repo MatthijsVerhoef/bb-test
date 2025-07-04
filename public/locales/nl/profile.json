@@ -517,6 +517,10 @@
         "title": "Geen aanhanger geselecteerd",
         "description": "Selecteer hierboven een aanhanger om de kalender te bekijken en te beheren"
       },
+      "noTrailersFound": {
+        "title": "Geen aanhangers gevonden",
+        "description": "Voeg een aanhanger toe om je kalender te beheren."
+      },
       "legend": {
         "title": "Legenda:",
         "available": "Beschikbaar",
@@ -531,6 +535,13 @@
       },
       "rental": {
         "more": "+{{count}} meer"
+      },
+      "mobile": {
+        "daysSelected": "{{count}} dag",
+        "daysSelectedPlural": "{{count}} dagen",
+        "blocked": "Geblokkeerd",
+        "available": "Beschikbaar",
+        "loadingMore": "Meer maanden laden..."
       }
     },
     "availability": {
@@ -621,6 +632,15 @@
         "FRIDAY": "Vr",
         "SATURDAY": "Za",
         "SUNDAY": "Zo"
+      },
+      "mobileDays": {
+        "0": "M",
+        "1": "D",
+        "2": "W",
+        "3": "D",
+        "4": "V",
+        "5": "Z",
+        "6": "Z"
       }
     }
   },

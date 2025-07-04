@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, Ban, Loader2 } from "lucide-react";
 import { useLessorCalendarData } from "@/hooks/useLessorCalendarData";
-import LessorCalendar from "./LessorCalendar";
+import { LessorCalendar } from "./LessorCalendar";
 import AvailabilitySettings from "./calendar/AvailabilitySettings";
 import { useTranslation } from "@/lib/i18n/client";
-import MobileLessorCalendar from "./MobileLessorCalendar";
+import { MobileLessorCalendar } from "./MobileLessorCalendar";
 
 interface CalendarManagementProps {
   userId: string;
@@ -116,8 +116,26 @@ export default function CalendarManagement({
             </TabsList>
           </div>
 
-          <TabsContent value="calendar" className="mt-6 p-0 pt-0">
+          <TabsContent
+            value="calendar"
+            className="mt-6 p-0 pt-0 hidden md:block"
+          >
             <LessorCalendar
+              userId={userId}
+              trailers={trailers}
+              rentals={rentals}
+              blockedPeriods={blockedPeriods}
+              weeklyAvailability={weeklyAvailabilityArray}
+              onAddBlockedPeriod={addBlockedPeriod}
+              onRemoveBlockedPeriod={removeBlockedPeriod}
+            />
+          </TabsContent>
+
+          <TabsContent
+            value="calendar"
+            className="mt-6 p-0 pt-0 block md:hidden"
+          >
+            <MobileLessorCalendar
               userId={userId}
               trailers={trailers}
               rentals={rentals}

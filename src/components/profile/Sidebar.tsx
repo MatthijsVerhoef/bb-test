@@ -156,7 +156,6 @@ export default function Sidebar({
 
           {canAccessLessorMode && (
             <div className="w-full mt-6 px-3">
-              {/* Replace Tabs with direct buttons */}
               <div className="grid grid-cols-2 gap-1 bg-gray-100 p-1 rounded-full">
                 <button
                   type="button"

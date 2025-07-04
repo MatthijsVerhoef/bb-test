@@ -517,6 +517,10 @@
         "title": "No trailer selected",
         "description": "Please select a trailer above to view and manage its calendar"
       },
+      "noTrailersFound": {
+        "title": "No Trailers Found",
+        "description": "Add a trailer to start managing your calendar."
+      },
       "legend": {
         "title": "Legend:",
         "available": "Available",
@@ -531,6 +535,13 @@
       },
       "rental": {
         "more": "+{{count}} more"
+      },
+      "mobile": {
+        "daysSelected": "{{count}} day",
+        "daysSelectedPlural": "{{count}} days",
+        "blocked": "Blocked",
+        "available": "Available",
+        "loadingMore": "Loading more months..."
       }
     },
     "availability": {
@@ -621,6 +632,15 @@
         "FRIDAY": "Fri",
         "SATURDAY": "Sat",
         "SUNDAY": "Sun"
+      },
+      "mobileDays": {
+        "0": "M",
+        "1": "T",
+        "2": "W",
+        "3": "T",
+        "4": "F",
+        "5": "S",
+        "6": "S"
       }
     }
   },

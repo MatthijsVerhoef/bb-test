@@ -1,3 +1,5 @@
+// app/api/user/profile/lessor-calendar/blocked-periods/[id]/route.ts
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
@@ -5,7 +7,7 @@ import { getServerSession } from "next-auth/next";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ trailerId: string }> }
+  { params }: { params: Promise<{ id: string }> } // Changed from trailerId to id
 ) {
   try {
     // Get the authenticated user
@@ -15,7 +17,7 @@ export async function DELETE(
     }
 
     const userId = session.user.id;
-    const { trailerId: blockedPeriodId } = await params;
+    const { id: blockedPeriodId } = await params; // Changed from trailerId to id
 
     const user = await prisma.user.findUnique({
       where: { id: userId },

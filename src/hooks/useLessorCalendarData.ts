@@ -242,14 +242,16 @@ export function useLessorCalendarData(options = {}) {
         afternoon: false,
         evening: false,
       };
-  
+
+      // Make the API call first
       const result = await ApiClient.post('/api/user/profile/lessor-calendar/blocked-periods', requestData);
       
       if (result.error) {
         console.error("API Error adding blocked period:", result.error);
         throw new Error(result.error);
       }
-            
+      
+      // Format the new period from the API response
       const newPeriod = {
         ...result.blockedPeriod,
         id: result.blockedPeriod.id,
@@ -259,10 +261,11 @@ export function useLessorCalendarData(options = {}) {
         trailerId: result.blockedPeriod.trailerId,
       };
       
+      // Update the cache immediately with the new data
       queryClient.setQueryData(
         LESSOR_CALENDAR_KEYS.data(),
         (oldData: CalendarData | undefined) => {
-          if (!oldData) return undefined;
+          if (!oldData) return oldData;
           
           return {
             ...oldData,
@@ -271,25 +274,38 @@ export function useLessorCalendarData(options = {}) {
         }
       );
       
+      // Clear any cached availability data
       if (period.trailerId && typeof window !== 'undefined' && window.__TRAILER_DATA) {
         delete window.__TRAILER_DATA[period.trailerId]?._availabilityData;
       }
       
-      queryClient.invalidateQueries({ queryKey: LESSOR_CALENDAR_KEYS.data() });
+      // Don't invalidate immediately - let the optimistic update show
+      // Invalidate after a short delay to ensure fresh data
+      setTimeout(() => {
+        queryClient.invalidateQueries({ 
+          queryKey: LESSOR_CALENDAR_KEYS.data(),
+          refetchType: 'none' // Don't refetch immediately, just mark as stale
+        });
+      }, 100);
       
       return newPeriod;
     } catch (error) {
+      // On error, invalidate to get fresh data
+      queryClient.invalidateQueries({ queryKey: LESSOR_CALENDAR_KEYS.data() });
       console.error("Failed to add blocked period:", error);
       throw error;
     }
   };
 
   const removeBlockedPeriod = async (id: string) => {
-    try {      
+    try {
+      // Optimistically update the cache first
+      const previousData = queryClient.getQueryData<CalendarData>(LESSOR_CALENDAR_KEYS.data());
+      
       queryClient.setQueryData(
         LESSOR_CALENDAR_KEYS.data(),
         (oldData: CalendarData | undefined) => {
-          if (!oldData) return undefined;
+          if (!oldData) return oldData;
           
           return {
             ...oldData,
@@ -298,23 +314,51 @@ export function useLessorCalendarData(options = {}) {
         }
       );
       
-      const result = await ApiClient.delete(`/api/user/profile/lessor-calendar/blocked-periods/${id}`);
-      
-      if (result.error) {
-        console.error("API Error removing blocked period:", result.error);
-        queryClient.invalidateQueries({ queryKey: LESSOR_CALENDAR_KEYS.data() });
-        throw new Error(result.error);
+      // Make the API call - handle different response formats
+      try {
+        const result = await ApiClient.delete(`/api/user/profile/lessor-calendar/blocked-periods/${id}`);
+        
+        // Check if there's an error in the response
+        if (result && result.error) {
+          throw new Error(result.error);
+        }
+        
+        // Success - the delete worked
+        console.log("Successfully removed blocked period:", id);
+        
+      } catch (deleteError: any) {
+        // If it's a 404, the period might already be deleted
+        if (deleteError.status === 404) {
+          console.log("Blocked period already deleted:", id);
+          // Don't revert - it's already gone
+        } else {
+          // Revert on other errors
+          if (previousData) {
+            queryClient.setQueryData(LESSOR_CALENDAR_KEYS.data(), previousData);
+          }
+          console.error("API Error removing blocked period:", deleteError);
+          throw deleteError;
+        }
       }
-            
+      
+      // Clear cached availability data
       if (typeof window !== 'undefined' && window.__TRAILER_DATA) {
         Object.keys(window.__TRAILER_DATA).forEach(trailerId => {
           delete window.__TRAILER_DATA[trailerId]?._availabilityData;
         });
       }
       
-      queryClient.invalidateQueries({ queryKey: LESSOR_CALENDAR_KEYS.data() });
+      // Invalidate after a short delay
+      setTimeout(() => {
+        queryClient.invalidateQueries({ 
+          queryKey: LESSOR_CALENDAR_KEYS.data(),
+          refetchType: 'none'
+        });
+      }, 100);
       
     } catch (error) {
+      // On error, force refetch to get correct data
+      queryClient.invalidateQueries({ queryKey: LESSOR_CALENDAR_KEYS.data() });
       console.error("Failed to remove blocked period:", error);
       throw error;
     }
