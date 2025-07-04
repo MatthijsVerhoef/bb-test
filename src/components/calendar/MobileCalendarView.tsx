@@ -389,22 +389,95 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
   const handleUnblockDates = useCallback(async () => {
     if (selectedDates.length === 0 || actionInProgress) return;
 
-    const periodsToRemove = new Set<string>();
-    selectedDates.forEach((date) => {
-      const blockedPeriod = isInBlockedPeriod(date);
-      if (blockedPeriod) {
-        periodsToRemove.add(blockedPeriod.id);
-      }
-    });
-
-    if (periodsToRemove.size === 0) return;
-
     setActionInProgress(true);
 
     try {
-      await Promise.all(
-        [...periodsToRemove].map((periodId) => onRemoveBlockedPeriod(periodId))
-      );
+      // Group selected dates by the blocked period they belong to
+      const periodsToProcess = new Map<
+        string,
+        { period: any; datesToUnblock: Date[] }
+      >();
+
+      selectedDates.forEach((date) => {
+        const blockedPeriod = isInBlockedPeriod(date);
+        if (blockedPeriod) {
+          if (!periodsToProcess.has(blockedPeriod.id)) {
+            periodsToProcess.set(blockedPeriod.id, {
+              period: blockedPeriod,
+              datesToUnblock: [],
+            });
+          }
+          periodsToProcess.get(blockedPeriod.id)!.datesToUnblock.push(date);
+        }
+      });
+
+      // Process each affected period
+      for (const [periodId, { period, datesToUnblock }] of periodsToProcess) {
+        const periodStart = startOfDay(new Date(period.startDate));
+        const periodEnd = startOfDay(new Date(period.endDate));
+
+        // Sort dates to unblock
+        datesToUnblock.sort((a, b) => a.getTime() - b.getTime());
+
+        // Check if we're unblocking all dates in the period
+        const allDatesInPeriod = [];
+        let currentDate = new Date(periodStart);
+        while (currentDate <= periodEnd) {
+          allDatesInPeriod.push(new Date(currentDate));
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        const unblockingAllDates = allDatesInPeriod.every((date) =>
+          datesToUnblock.some((d) => isSameDay(d, date))
+        );
+
+        if (unblockingAllDates) {
+          // Remove the entire period
+          await onRemoveBlockedPeriod(periodId);
+        } else {
+          // Create new periods for the dates that remain blocked
+          const remainingBlockedRanges: Array<{ start: Date; end: Date }> = [];
+          let rangeStart: Date | null = null;
+
+          allDatesInPeriod.forEach((date, index) => {
+            const isUnblocked = datesToUnblock.some((d) => isSameDay(d, date));
+
+            if (!isUnblocked) {
+              if (!rangeStart) {
+                rangeStart = new Date(date);
+              }
+            } else if (rangeStart) {
+              // End the current range
+              const rangeEnd = new Date(allDatesInPeriod[index - 1]);
+              remainingBlockedRanges.push({ start: rangeStart, end: rangeEnd });
+              rangeStart = null;
+            }
+          });
+
+          // Handle the last range if it exists
+          if (rangeStart) {
+            remainingBlockedRanges.push({
+              start: rangeStart,
+              end: new Date(allDatesInPeriod[allDatesInPeriod.length - 1]),
+            });
+          }
+
+          // Remove the original period
+          await onRemoveBlockedPeriod(periodId);
+
+          // Create new periods for remaining blocked ranges
+          for (const range of remainingBlockedRanges) {
+            await onAddBlockedPeriod({
+              startDate: range.start,
+              endDate: range.end,
+              reason: period.reason,
+              trailerId: period.trailerId,
+              userId,
+            });
+          }
+        }
+      }
+
       setSelectedDates([]);
     } catch (error) {
       console.error("Failed to unblock dates:", error);
@@ -415,7 +488,9 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
     selectedDates,
     isInBlockedPeriod,
     onRemoveBlockedPeriod,
+    onAddBlockedPeriod,
     actionInProgress,
+    userId,
   ]);
 
   const selectedDatesStatus = useMemo(() => {

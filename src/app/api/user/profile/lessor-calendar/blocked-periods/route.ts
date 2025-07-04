@@ -64,6 +64,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const startTime = Date.now();
+  console.log('POST /blocked-periods - Start');
+  
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
@@ -71,8 +74,10 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = session.user.id;
+    const body = await req.json();
     
-    // Make sure the user has LESSOR role
+    console.log('Request body:', body);
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, role: true },
@@ -85,11 +90,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
     const validatedData = blockedPeriodSchema.parse(body);
-    
-    // If trailerId is provided, verify it belongs to the user
+
     if (validatedData.trailerId) {
+      console.log('Checking trailer ownership...');
       const trailer = await prisma.trailer.findFirst({
         where: {
           id: validatedData.trailerId,
@@ -97,7 +101,7 @@ export async function POST(req: NextRequest) {
         },
         select: { id: true },
       });
-      
+
       if (!trailer) {
         return NextResponse.json(
           { error: "Trailer not found or you don't have permission" },
@@ -106,17 +110,28 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create the blocked period
-    const blockedPeriod = await prisma.blockedPeriod.create({
+    // IMPORTANT: Handle the dates properly for MySQL
+    const startDate = new Date(validatedData.startDate);
+    const endDate = new Date(validatedData.endDate);
+    
+    console.log('Creating blocked period with dates:', {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      startDateLocal: startDate.toString(),
+      endDateLocal: endDate.toString(),
+    });
+
+    // Create the blocked period - but with a timeout
+    const createPromise = prisma.blockedPeriod.create({
       data: {
-        startDate: new Date(validatedData.startDate),
-        endDate: new Date(validatedData.endDate),
-        reason: validatedData.reason,
+        startDate,
+        endDate,
+        reason: validatedData.reason || null, // MySQL prefers null over undefined
         allDay: validatedData.allDay,
         morning: validatedData.morning,
         afternoon: validatedData.afternoon,
         evening: validatedData.evening,
-        trailerId: validatedData.trailerId,
+        trailerId: validatedData.trailerId || null, // MySQL prefers null
         userId: userId,
       },
       include: {
@@ -129,14 +144,32 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Add a timeout to the create operation
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Database operation timeout')), 25000)
+    );
+
+    const blockedPeriod = await Promise.race([createPromise, timeoutPromise]);
+    
+    console.log(`Blocked period created in ${Date.now() - startTime}ms`);
+    
     return NextResponse.json({ blockedPeriod }, { status: 201 });
+    
   } catch (error) {
     console.error("Error creating blocked period:", error);
+    console.error('Total time:', Date.now() - startTime);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: "Invalid data", details: error.errors },
         { status: 400 }
+      );
+    }
+    
+    if (error.message === 'Database operation timeout') {
+      return NextResponse.json(
+        { error: "Database operation timed out" },
+        { status: 504 }
       );
     }
     
