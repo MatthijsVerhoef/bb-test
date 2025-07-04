@@ -133,8 +133,37 @@ export async function middleware(request: NextRequest) {
   const requestId = crypto.randomUUID();
   const startTime = Date.now();
 
+  // ENHANCED LOGGING - Log ALL requests
+  console.log(`[Middleware ${requestId}] ${request.method} ${path}`);
+  
+  // Log specific problematic path
+  if (path.includes('blocked-periods')) {
+    console.log(`[Middleware ${requestId}] BLOCKED-PERIODS REQUEST DETECTED:`, {
+      method: request.method,
+      url: request.url,
+      headers: {
+        'content-type': request.headers.get('content-type'),
+        'content-length': request.headers.get('content-length'),
+        'user-agent': request.headers.get('user-agent'),
+      },
+      cookies: request.cookies.getAll().map(c => c.name),
+    });
+  }
+
+  // Log POST requests specifically
+  if (request.method === 'POST') {
+    console.log(`[Middleware ${requestId}] POST Request Details:`, {
+      path,
+      contentType: request.headers.get('content-type'),
+      contentLength: request.headers.get('content-length'),
+      origin: request.headers.get('origin'),
+      referer: request.headers.get('referer'),
+    });
+  }
+
   // Handle CORS preflight requests
   if (request.method === 'OPTIONS') {
+    console.log(`[Middleware ${requestId}] OPTIONS request, returning CORS headers`);
     return new NextResponse(null, {
       status: 200,
       headers: {
@@ -150,64 +179,75 @@ export async function middleware(request: NextRequest) {
   requestTimings.set(requestId, startTime);
 
   // Create response handler to log performance
-  const createResponse = (response: NextResponse) => {
+  const createResponse = (response: NextResponse, reason: string) => {
     const duration = Date.now() - startTime;
     requestTimings.delete(requestId);
+    
+    console.log(`[Middleware ${requestId}] Response: ${reason} - ${duration}ms`);
     
     // Add performance headers
     response.headers.set('X-Request-ID', requestId);
     response.headers.set('X-Response-Time', `${duration}ms`);
     response.headers.set('Server-Timing', `total;dur=${duration}`);
+    response.headers.set('X-Middleware-Response', reason);
     
     return response;
   };
 
   // Handle /verhuren specially - redirect to /plaatsen if authenticated
   if (path === "/verhuren") {
+    console.log(`[Middleware ${requestId}] Checking /verhuren auth`);
     const token = await getCachedToken(request);
     if (token && token.isVerified) {
       // User is authenticated, redirect to /plaatsen
-      return createResponse(NextResponse.redirect(new URL("/plaatsen", request.url)));
+      return createResponse(NextResponse.redirect(new URL("/plaatsen", request.url)), "verhuren-redirect");
     }
     // Not authenticated, let them see the verhuren page
-    return createResponse(NextResponse.next());
+    return createResponse(NextResponse.next(), "verhuren-public");
   }
 
   // Allow public paths (excluding auth-aware ones)
   if (isPublicPath(path) && !isAuthAwarePublicPath(path)) {
-    return createResponse(NextResponse.next());
+    console.log(`[Middleware ${requestId}] Public path, allowing`);
+    return createResponse(NextResponse.next(), "public-path");
   }
 
   // Get token for protected routes
+  console.log(`[Middleware ${requestId}] Checking auth for protected route`);
+  const tokenStartTime = Date.now();
   const token = await getCachedToken(request);
+  console.log(`[Middleware ${requestId}] Token check took ${Date.now() - tokenStartTime}ms, has token: ${!!token}`);
 
   // Check authentication for protected routes
   if (!token) {
+    console.log(`[Middleware ${requestId}] No token, denying access`);
     // API routes should return 401
     if (path.startsWith("/api/")) {
       return createResponse(NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
-      ));
+      ), "api-unauthorized");
     }
     
     // Redirect to login for protected pages
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("returnUrl", path);
-    return createResponse(NextResponse.redirect(loginUrl));
+    return createResponse(NextResponse.redirect(loginUrl), "login-redirect");
   }
 
   // Check email verification for certain routes
   if (!token.isVerified && !path.startsWith("/verify-email")) {
+    console.log(`[Middleware ${requestId}] Email not verified, redirecting`);
     const verifyUrl = new URL("/verify-email-sent", request.url);
-    return createResponse(NextResponse.redirect(verifyUrl));
+    return createResponse(NextResponse.redirect(verifyUrl), "verify-redirect");
   }
 
   // Check role-based access
   for (const [route, roles] of Object.entries(ROUTE_PERMISSIONS)) {
     if (path.startsWith(route)) {
       if (!hasRequiredRole(token.role as string, roles)) {
-        return createResponse(NextResponse.redirect(new URL("/", request.url)));
+        console.log(`[Middleware ${requestId}] Role check failed for ${route}, user role: ${token.role}`);
+        return createResponse(NextResponse.redirect(new URL("/", request.url)), "role-denied");
       }
     }
   }
@@ -219,11 +259,13 @@ export async function middleware(request: NextRequest) {
   requestHeaders.set("x-request-id", requestId);
   requestHeaders.set("x-request-start", startTime.toString());
 
+  console.log(`[Middleware ${requestId}] Allowing request with user ${token.id}`);
+  
   return createResponse(NextResponse.next({
     request: {
       headers: requestHeaders,
     },
-  }));
+  }), "authenticated-allowed");
 }
 
 export const config = {
