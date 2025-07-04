@@ -33,7 +33,7 @@ interface ApiError extends Error {
   details?: any;
 }
 
-const DEFAULT_TIMEOUT = 15000;
+const DEFAULT_TIMEOUT = 30000;
 const DEFAULT_CACHE_CONFIG: CacheConfig = {
   ttl: 60000,
   persistToStorage: false,

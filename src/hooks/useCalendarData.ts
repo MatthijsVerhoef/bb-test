@@ -7,8 +7,7 @@ import type {
   BlockedPeriod,
   Rental,
   DateStatus,
-  DAY_NUMBER_TO_ENUM,
-} from "@/types/calendar";
+} from "@/types/Calendar";
 
 const DAY_NUMBER_TO_ENUM_MAP = {
   0: "SUNDAY",

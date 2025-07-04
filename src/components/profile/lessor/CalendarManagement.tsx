@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Clock, Ban, Loader2 } from "lucide-react";
+import { Calendar, Ban, Loader2 } from "lucide-react";
 import { useLessorCalendarData } from "@/hooks/useLessorCalendarData";
 import { LessorCalendar } from "./LessorCalendar";
 import AvailabilitySettings from "./calendar/AvailabilitySettings";

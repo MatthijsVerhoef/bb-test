@@ -227,6 +227,7 @@ export function useLessorCalendarData(options = {}) {
   });
 
   const addBlockedPeriod = async (period: Omit<BlockedPeriod, "id">) => {
+    console.log('called')
     try {
       const requestData = {
         startDate: period.startDate instanceof Date 
