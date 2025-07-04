@@ -38,7 +38,7 @@ export const TrailerSelector: React.FC<TrailerSelectorProps> = ({
           {trailers.map((trailer) => (
             <Card
               key={trailer.id}
-              className="p-4 cursor-pointer hover:shadow-md transition-shadow"
+              className="p-4 cursor-pointer transition-shadow"
               onClick={() => onSelectTrailer(trailer.id)}
             >
               <div className="flex items-center gap-4">

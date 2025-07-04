@@ -372,7 +372,7 @@ export default function AvailabilitySettings({
           Toepassen op:
         </label>
         <Select value={selectedScope} onValueChange={setSelectedScope}>
-          <SelectTrigger className="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all">
+          <SelectTrigger className="w-full px-3 min-h-12 rounded-xl py-2.5 border border-gray-200 shadow-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all">
             <SelectValue placeholder="Selecteer bereik" />
           </SelectTrigger>
           <SelectContent>
@@ -387,7 +387,7 @@ export default function AvailabilitySettings({
       </div>
 
       {/* Description */}
-      <p className="text-gray-600">
+      <p className="text-gray-600 text-sm">
         Stel hier je standaard beschikbaarheid in. Huurders kunnen alleen boeken
         op de dagen en tijden die je hier instelt.
       </p>
@@ -571,12 +571,6 @@ export default function AvailabilitySettings({
             "Wijzigingen opslaan"
           )}
         </button>
-
-        {!hasChanges && (
-          <p className="text-center text-sm text-gray-500 mt-3">
-            Geen wijzigingen om op te slaan
-          </p>
-        )}
       </div>
 
       {/* Time Editor Dialog */}

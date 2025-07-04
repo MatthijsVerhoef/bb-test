@@ -53,6 +53,13 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [actionInProgress, setActionInProgress] = useState(false);
 
+  // Touch drag selection state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartDate, setDragStartDate] = useState<Date | null>(null);
+  const [dragEndDate, setDragEndDate] = useState<Date | null>(null);
+  const [touchStartTime, setTouchStartTime] = useState<number>(0);
+  const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const monthRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const loadingRef = useRef(false);
@@ -99,6 +106,26 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
       return () => clearTimeout(timeoutId);
     }
   }, [visibleMonths.length]);
+
+  // Check if a date is in the drag selection range
+  const isInDragRange = useCallback(
+    (date: Date) => {
+      if (!isDragging || !dragStartDate || !dragEndDate) return false;
+
+      const start = isBefore(dragStartDate, dragEndDate)
+        ? dragStartDate
+        : dragEndDate;
+      const end = isAfter(dragStartDate, dragEndDate)
+        ? dragStartDate
+        : dragEndDate;
+
+      return (
+        (isAfter(date, start) || isSameDay(date, start)) &&
+        (isBefore(date, end) || isSameDay(date, end))
+      );
+    },
+    [isDragging, dragStartDate, dragEndDate]
+  );
 
   // Improved scroll handler with date limits (4 months past, 6 months future)
   const handleScroll = useCallback(() => {
@@ -224,13 +251,75 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
     };
   }, []);
 
-  // Date selection
-  const toggleDateSelection = useCallback(
-    (date: Date) => {
+  // Date element finder for touch events
+  const getDateElementFromPoint = useCallback(
+    (x: number, y: number): Date | null => {
+      const element = document.elementFromPoint(x, y);
+      if (element) {
+        const dateElement = element.closest("[data-date]");
+        if (dateElement) {
+          const dateStr = dateElement.getAttribute("data-date");
+          if (dateStr) {
+            return new Date(dateStr);
+          }
+        }
+      }
+      return null;
+    },
+    []
+  );
+
+  // Handle touch start
+  const handleTouchStart = useCallback(
+    (date: Date, e: React.TouchEvent) => {
       const normalizedDate = startOfDay(date);
 
+      // Don't allow selection of dates with rentals or past dates
       if (getDateRentals(normalizedDate).length > 0) return;
       if (isBefore(normalizedDate, startOfDay(new Date()))) return;
+
+      const touch = e.touches[0];
+      setTouchStartTime(Date.now());
+      touchStartPosRef.current = { x: touch.clientX, y: touch.clientY };
+      setDragStartDate(normalizedDate);
+      setDragEndDate(normalizedDate);
+    },
+    [getDateRentals]
+  );
+
+  // Handle touch move
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!dragStartDate || !touchStartPosRef.current) return;
+
+      const touch = e.touches[0];
+      const deltaX = Math.abs(touch.clientX - touchStartPosRef.current.x);
+      const deltaY = Math.abs(touch.clientY - touchStartPosRef.current.y);
+
+      // Start dragging if moved more than 10 pixels
+      if ((deltaX > 10 || deltaY > 10) && !isDragging) {
+        setIsDragging(true);
+        // Clear previous selection when starting drag
+        setSelectedDates([]);
+      }
+
+      if (isDragging) {
+        const date = getDateElementFromPoint(touch.clientX, touch.clientY);
+        if (date) {
+          setDragEndDate(date);
+        }
+      }
+    },
+    [dragStartDate, isDragging, getDateElementFromPoint]
+  );
+
+  // Handle touch end
+  const handleTouchEnd = useCallback(() => {
+    const touchDuration = Date.now() - touchStartTime;
+
+    if (!isDragging && touchDuration < 300 && dragStartDate) {
+      // It's a tap, not a drag
+      const normalizedDate = startOfDay(dragStartDate);
 
       setSelectedDates((prev) => {
         const isSelected = prev.some((d) => isSameDay(d, normalizedDate));
@@ -238,37 +327,33 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
         if (isSelected) {
           return prev.filter((d) => !isSameDay(d, normalizedDate));
         } else {
-          // Smart range selection
-          if (prev.length === 1) {
-            const existingDate = prev[0];
-            const startDate = isBefore(normalizedDate, existingDate)
-              ? normalizedDate
-              : existingDate;
-            const endDate = isAfter(normalizedDate, existingDate)
-              ? normalizedDate
-              : existingDate;
-
-            const datesInRange = eachDayOfInterval({
-              start: startDate,
-              end: endDate,
-            });
-            const allDatesValid = datesInRange.every(
-              (d) =>
-                getDateRentals(d).length === 0 &&
-                !isBefore(d, startOfDay(new Date()))
-            );
-
-            if (allDatesValid && datesInRange.length <= 30) {
-              return datesInRange;
-            }
-          }
-
           return [...prev, normalizedDate];
         }
       });
-    },
-    [getDateRentals]
-  );
+    } else if (isDragging && dragStartDate && dragEndDate) {
+      // It's a drag
+      const start = isBefore(dragStartDate, dragEndDate)
+        ? dragStartDate
+        : dragEndDate;
+      const end = isAfter(dragStartDate, dragEndDate)
+        ? dragStartDate
+        : dragEndDate;
+
+      // Check if all dates in range are valid
+      const datesInRange = eachDayOfInterval({ start, end });
+      const validDates = datesInRange.filter(
+        (d) =>
+          getDateRentals(d).length === 0 && !isBefore(d, startOfDay(new Date()))
+      );
+
+      setSelectedDates(validDates);
+    }
+
+    setIsDragging(false);
+    setDragStartDate(null);
+    setDragEndDate(null);
+    touchStartPosRef.current = null;
+  }, [touchStartTime, dragStartDate, dragEndDate, isDragging, getDateRentals]);
 
   // Block/unblock operations
   const handleBlockDates = useCallback(async () => {
@@ -387,31 +472,53 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
             </h3>
           </div>
 
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-1 select-none">
             {/* Add empty cells for padding */}
             {Array.from({ length: paddingDays }).map((_, index) => (
               <div key={`empty-${index}`} className="h-[70px]" />
             ))}
 
             {/* Render only current month days */}
-            {days.map((date) => (
-              <Day
-                key={date.toISOString()}
-                date={date}
-                monthDate={monthDate}
-                status={getDateStatus(date)}
-                rentals={getDateRentals(date)}
-                isSelected={selectedDates.some((d) => isSameDay(d, date))}
-                isPast={isBefore(date, startOfDay(new Date()))}
-                onSelect={() => toggleDateSelection(date)}
-                isMobile
-              />
-            ))}
+            {days.map((date) => {
+              const isSelected = selectedDates.some((d) => isSameDay(d, date));
+              const isInRange = isInDragRange(date);
+
+              return (
+                <div
+                  key={date.toISOString()}
+                  data-date={date.toISOString()}
+                  onTouchStart={(e) => handleTouchStart(date, e)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  className="cursor-pointer touch-none"
+                >
+                  <Day
+                    date={date}
+                    monthDate={monthDate}
+                    status={getDateStatus(date)}
+                    rentals={getDateRentals(date)}
+                    isSelected={isSelected || isInRange}
+                    isPast={isBefore(date, startOfDay(new Date()))}
+                    onSelect={() => {}} // We handle selection in the parent div
+                    isMobile
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       );
     },
-    [getDateStatus, getDateRentals, selectedDates, toggleDateSelection, tCommon]
+    [
+      getDateStatus,
+      getDateRentals,
+      selectedDates,
+      handleTouchStart,
+      handleTouchMove,
+      handleTouchEnd,
+      isInDragRange,
+      tCommon,
+    ]
   );
 
   return (

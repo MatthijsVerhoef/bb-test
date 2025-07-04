@@ -1,6 +1,12 @@
 // components/calendar/DesktopCalendarView.tsx
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import {
   format,
   startOfMonth,
@@ -31,7 +37,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/client";
 import { useCalendarData } from "@/hooks/useCalendarData";
 import { Day } from "./Day";
-import type { CalendarProps } from "@/types/calendar";
+import type { CalendarProps } from "@/types/Calendar";
 
 interface DesktopCalendarViewProps extends CalendarProps {
   selectedTrailer: string;
@@ -53,6 +59,13 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [actionInProgress, setActionInProgress] = useState(false);
+
+  // Drag selection state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartDate, setDragStartDate] = useState<Date | null>(null);
+  const [dragEndDate, setDragEndDate] = useState<Date | null>(null);
+  const [mouseDownTime, setMouseDownTime] = useState<number>(0);
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   // Define date limits
   const today = new Date();
@@ -99,57 +112,143 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
     return [...emptyDays, ...days];
   }, [currentMonth]);
 
-  // Toggle date selection with smart range selection
-  const toggleDateSelection = useCallback(
+  // Check if a date is in the drag selection range
+  const isInDragRange = useCallback(
+    (date: Date) => {
+      if (!isDragging || !dragStartDate || !dragEndDate) return false;
+
+      const start = isBefore(dragStartDate, dragEndDate)
+        ? dragStartDate
+        : dragEndDate;
+      const end = isAfter(dragStartDate, dragEndDate)
+        ? dragStartDate
+        : dragEndDate;
+
+      return (
+        (isAfter(date, start) || isSameDay(date, start)) &&
+        (isBefore(date, end) || isSameDay(date, end))
+      );
+    },
+    [isDragging, dragStartDate, dragEndDate]
+  );
+
+  // Handle mouse down
+  const handleMouseDown = useCallback(
     (date: Date) => {
       const normalizedDate = startOfDay(date);
 
-      // Don't allow selection of dates with rentals
+      // Don't allow selection of dates with rentals or past dates
       if (getDateRentals(normalizedDate).length > 0) return;
-
-      // Don't allow selection of past dates
       if (isBefore(normalizedDate, startOfDay(new Date()))) return;
 
-      setSelectedDates((prev) => {
-        const isSelected = prev.some((d) => isSameDay(d, normalizedDate));
-
-        if (isSelected) {
-          return prev.filter((d) => !isSameDay(d, normalizedDate));
-        } else {
-          // Smart range selection: if we have one date selected and click another,
-          // fill in the range between them (if valid)
-          if (prev.length === 1) {
-            const existingDate = prev[0];
-            const startDate = isBefore(normalizedDate, existingDate)
-              ? normalizedDate
-              : existingDate;
-            const endDate = isAfter(normalizedDate, existingDate)
-              ? normalizedDate
-              : existingDate;
-
-            // Check if all dates in range are valid (no rentals, not in past)
-            const datesInRange = eachDayOfInterval({
-              start: startDate,
-              end: endDate,
-            });
-            const allDatesValid = datesInRange.every(
-              (d) =>
-                getDateRentals(d).length === 0 &&
-                !isBefore(d, startOfDay(new Date()))
-            );
-
-            if (allDatesValid && datesInRange.length <= 30) {
-              // Limit range to 30 days
-              return datesInRange;
-            }
-          }
-
-          return [...prev, normalizedDate];
-        }
-      });
+      setMouseDownTime(Date.now());
+      setDragStartDate(normalizedDate);
+      setDragEndDate(normalizedDate);
     },
     [getDateRentals]
   );
+
+  // Handle mouse enter (for drag)
+  const handleMouseEnter = useCallback(
+    (date: Date) => {
+      if (!dragStartDate) return;
+
+      const timeSinceMouseDown = Date.now() - mouseDownTime;
+
+      // Consider it a drag if mouse has been down for more than 200ms or moved to different date
+      if (timeSinceMouseDown > 200 || !isSameDay(date, dragStartDate)) {
+        if (!isDragging) {
+          setIsDragging(true);
+          // Clear existing selection when starting drag
+          setSelectedDates([]);
+        }
+        setDragEndDate(startOfDay(date));
+      }
+    },
+    [dragStartDate, mouseDownTime, isDragging]
+  );
+
+  // Handle mouse up
+  const handleMouseUp = useCallback(
+    (date: Date) => {
+      const normalizedDate = startOfDay(date);
+      const timeSinceMouseDown = Date.now() - mouseDownTime;
+
+      if (
+        !isDragging &&
+        timeSinceMouseDown < 200 &&
+        dragStartDate &&
+        isSameDay(dragStartDate, normalizedDate)
+      ) {
+        // It's a click, not a drag
+        setSelectedDates((prev) => {
+          const isSelected = prev.some((d) => isSameDay(d, normalizedDate));
+
+          if (isSelected) {
+            return prev.filter((d) => !isSameDay(d, normalizedDate));
+          } else {
+            return [...prev, normalizedDate];
+          }
+        });
+      } else if (isDragging && dragStartDate && dragEndDate) {
+        // It's a drag - add the range
+        const start = isBefore(dragStartDate, dragEndDate)
+          ? dragStartDate
+          : dragEndDate;
+        const end = isAfter(dragStartDate, dragEndDate)
+          ? dragStartDate
+          : dragEndDate;
+
+        // Check if all dates in range are valid
+        const datesInRange = eachDayOfInterval({ start, end });
+        const validDates = datesInRange.filter(
+          (d) =>
+            getDateRentals(d).length === 0 &&
+            !isBefore(d, startOfDay(new Date()))
+        );
+
+        setSelectedDates(validDates);
+      }
+
+      // Reset drag state
+      setIsDragging(false);
+      setDragStartDate(null);
+      setDragEndDate(null);
+    },
+    [isDragging, mouseDownTime, dragStartDate, dragEndDate, getDateRentals]
+  );
+
+  // Global mouse up handler
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      if (isDragging && dragStartDate && dragEndDate) {
+        const start = isBefore(dragStartDate, dragEndDate)
+          ? dragStartDate
+          : dragEndDate;
+        const end = isAfter(dragStartDate, dragEndDate)
+          ? dragStartDate
+          : dragEndDate;
+
+        const datesInRange = eachDayOfInterval({ start, end });
+        const validDates = datesInRange.filter(
+          (d) =>
+            getDateRentals(d).length === 0 &&
+            !isBefore(d, startOfDay(new Date()))
+        );
+
+        setSelectedDates(validDates);
+      }
+
+      setIsDragging(false);
+      setDragStartDate(null);
+      setDragEndDate(null);
+    };
+
+    document.addEventListener("mouseup", handleGlobalMouseUp);
+    return () => {
+      document.removeEventListener("mouseup", handleGlobalMouseUp);
+    };
+  }, [isDragging, dragStartDate, dragEndDate, getDateRentals]);
 
   // Block/unblock handlers
   const handleBlockDates = async () => {
@@ -197,7 +296,7 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
         [...periodsToRemove].map((periodId) => onRemoveBlockedPeriod(periodId))
       );
 
-      //   setSelectedDates([]);
+      setSelectedDates([]);
     } catch (error) {
       console.error("Failed to unblock dates:", error);
     } finally {
@@ -262,14 +361,14 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
                 </Button>
               </div>
 
-              <div className="flex items-center">
+              <div className="flex items-center bg-gray-100 py-2 ps-4 pr-3 rounded-xl">
                 <span className="text-sm font-medium">Beschikbaar:</span>
-                <div className="relative ms-2 grid grid-cols-2 gap-1 h-full bg-gray-100 rounded-full p-1">
+                <div className="relative ms-2 grid grid-cols-2 gap-1 h-full bg-[#222222] rounded-full p-1">
                   <button
                     type="button"
                     className={`flex items-center justify-center gap-2 text-[13px] py-3 px-3 rounded-full transition-colors duration-300 z-10 ${
                       selectedDatesStatus.isBlocked
-                        ? "text-black font-medium"
+                        ? "text-white font-medium"
                         : "bg-white text-green-400"
                     }`}
                     onClick={handleToggleSelectedDates}
@@ -281,7 +380,7 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
                     type="button"
                     className={`flex items-center justify-center gap-2 text-[13px] py-2 px-3 rounded-full transition-colors duration-300 z-10 ${
                       !selectedDatesStatus.isBlocked
-                        ? "text-black font-medium"
+                        ? "text-white font-medium"
                         : "text-red-400 bg-white"
                     }`}
                     onClick={handleToggleSelectedDates}
@@ -344,24 +443,42 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1 md:gap-2">
+      <div
+        ref={calendarRef}
+        className="grid grid-cols-7 gap-1 md:gap-2 select-none"
+        onMouseLeave={() => {
+          if (isDragging) {
+            setDragEndDate(dragStartDate);
+          }
+        }}
+      >
         {calendarDays.map((date, index) => {
           if (!date) {
             return <div key={`empty-${index}`} className="aspect-square" />;
           }
 
+          const isSelected = selectedDates.some((d) => isSameDay(d, date));
+          const isInRange = isInDragRange(date);
+
           return (
-            <Day
+            <div
               key={date.toISOString()}
-              date={date}
-              monthDate={currentMonth}
-              status={getDateStatus(date)}
-              rentals={getDateRentals(date)}
-              isSelected={selectedDates.some((d) => isSameDay(d, date))}
-              isPast={date < new Date() && !isToday(date)}
-              onSelect={() => toggleDateSelection(date)}
-              disabled={false}
-            />
+              onMouseDown={() => handleMouseDown(date)}
+              onMouseEnter={() => handleMouseEnter(date)}
+              onMouseUp={() => handleMouseUp(date)}
+              className="cursor-pointer"
+            >
+              <Day
+                date={date}
+                monthDate={currentMonth}
+                status={getDateStatus(date)}
+                rentals={getDateRentals(date)}
+                isSelected={isSelected || isInRange}
+                isPast={date < new Date() && !isToday(date)}
+                onSelect={() => {}} // We handle selection in the parent div
+                disabled={false}
+              />
+            </div>
           );
         })}
       </div>
@@ -392,13 +509,6 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
           <span>{t("lessorCalendar.calendar.legend.today")}</span>
         </div>
       </div>
-
-      {/* Helper text */}
-      {selectedDates.length === 0 && (
-        <div className="text-center text-sm text-gray-500 mt-4">
-          {t("lessorCalendar.calendar.desktop.selectDatesHint")}
-        </div>
-      )}
     </Card>
   );
 };

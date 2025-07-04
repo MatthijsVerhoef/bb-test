@@ -1,13 +1,26 @@
 import { PrismaClient } from '@prisma/client';
-// import { logger } from './logger';
 
 declare global {
   var prisma: PrismaClient | undefined;
 }
 
 const createPrismaClient = () => {
+  // Parse DATABASE_URL to add connection parameters
+  const databaseUrl = process.env.DATABASE_URL;
+  
+  // Add connection pool parameters for Railway
+  const url = new URL(databaseUrl);
+  url.searchParams.append('connection_limit', '10');
+  url.searchParams.append('pool_timeout', '10');
+  url.searchParams.append('connect_timeout', '30');
+  
   const client = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' 
+    datasources: {
+      db: {
+        url: url.toString(),
+      },
+    },
+    log: process.env.NODE_ENV === 'development'
       ? [
           { emit: 'event', level: 'query' },
           { emit: 'event', level: 'error' },
@@ -18,8 +31,7 @@ const createPrismaClient = () => {
           { emit: 'event', level: 'warn' },
         ],
   });
-
-
+  
   return client;
 };
 
