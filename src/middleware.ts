@@ -132,38 +132,23 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const requestId = crypto.randomUUID();
   const startTime = Date.now();
-
-  // ENHANCED LOGGING - Log ALL requests
+  
+  // Enhanced logging for debugging
   console.log(`[Middleware ${requestId}] ${request.method} ${path}`);
   
-  // Log specific problematic path
-  if (path.includes('blocked-periods')) {
-    console.log(`[Middleware ${requestId}] BLOCKED-PERIODS REQUEST DETECTED:`, {
-      method: request.method,
-      url: request.url,
-      headers: {
-        'content-type': request.headers.get('content-type'),
-        'content-length': request.headers.get('content-length'),
-        'user-agent': request.headers.get('user-agent'),
-      },
-      cookies: request.cookies.getAll().map(c => c.name),
-    });
-  }
-
-  // Log POST requests specifically
+  // Log POST request details for debugging
   if (request.method === 'POST') {
-    console.log(`[Middleware ${requestId}] POST Request Details:`, {
-      path,
-      contentType: request.headers.get('content-type'),
-      contentLength: request.headers.get('content-length'),
-      origin: request.headers.get('origin'),
-      referer: request.headers.get('referer'),
+    console.log(`[Middleware ${requestId}] POST Headers:`, {
+      'content-type': request.headers.get('content-type'),
+      'content-length': request.headers.get('content-length'),
+      'origin': request.headers.get('origin'),
+      'host': request.headers.get('host'),
     });
   }
 
   // Handle CORS preflight requests
   if (request.method === 'OPTIONS') {
-    console.log(`[Middleware ${requestId}] OPTIONS request, returning CORS headers`);
+    console.log(`[Middleware ${requestId}] Handling OPTIONS preflight`);
     return new NextResponse(null, {
       status: 200,
       headers: {
@@ -179,97 +164,143 @@ export async function middleware(request: NextRequest) {
   requestTimings.set(requestId, startTime);
 
   // Create response handler to log performance
-  const createResponse = (response: NextResponse, reason: string) => {
+  const createResponse = (response: NextResponse, context?: string) => {
     const duration = Date.now() - startTime;
     requestTimings.delete(requestId);
     
-    console.log(`[Middleware ${requestId}] Response: ${reason} - ${duration}ms`);
+    console.log(`[Middleware ${requestId}] Response: ${context || 'processed'} in ${duration}ms`);
     
     // Add performance headers
     response.headers.set('X-Request-ID', requestId);
     response.headers.set('X-Response-Time', `${duration}ms`);
     response.headers.set('Server-Timing', `total;dur=${duration}`);
-    response.headers.set('X-Middleware-Response', reason);
+    
+    // Add CORS headers for API routes
+    if (path.startsWith('/api/')) {
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    }
     
     return response;
   };
 
-  // Handle /verhuren specially - redirect to /plaatsen if authenticated
-  if (path === "/verhuren") {
-    console.log(`[Middleware ${requestId}] Checking /verhuren auth`);
+  try {
+    // Handle /verhuren specially - redirect to /plaatsen if authenticated
+    if (path === "/verhuren") {
+      const token = await getCachedToken(request);
+      if (token && token.isVerified) {
+        console.log(`[Middleware ${requestId}] Authenticated user accessing /verhuren, redirecting to /plaatsen`);
+        return createResponse(
+          NextResponse.redirect(new URL("/plaatsen", request.url)),
+          'redirect'
+        );
+      }
+      // Not authenticated, let them see the verhuren page
+      console.log(`[Middleware ${requestId}] Unauthenticated user accessing /verhuren`);
+      return createResponse(NextResponse.next(), 'public-access');
+    }
+
+    // Allow public paths (excluding auth-aware ones)
+    if (isPublicPath(path) && !isAuthAwarePublicPath(path)) {
+      console.log(`[Middleware ${requestId}] Public path, allowing access`);
+      return createResponse(NextResponse.next(), 'public-path');
+    }
+
+    // Get token for protected routes
     const token = await getCachedToken(request);
-    if (token && token.isVerified) {
-      // User is authenticated, redirect to /plaatsen
-      return createResponse(NextResponse.redirect(new URL("/plaatsen", request.url)), "verhuren-redirect");
+
+    // Check authentication for protected routes
+    if (!token) {
+      console.log(`[Middleware ${requestId}] No token found for protected route`);
+      
+      // API routes should return 401
+      if (path.startsWith("/api/")) {
+        console.log(`[Middleware ${requestId}] Returning 401 for unauthenticated API request`);
+        return createResponse(
+          NextResponse.json(
+            { error: "Unauthorized" },
+            { status: 401 }
+          ),
+          'api-unauthorized'
+        );
+      }
+      
+      // Redirect to login for protected pages
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("returnUrl", path);
+      console.log(`[Middleware ${requestId}] Redirecting to login`);
+      return createResponse(NextResponse.redirect(loginUrl), 'login-redirect');
     }
-    // Not authenticated, let them see the verhuren page
-    return createResponse(NextResponse.next(), "verhuren-public");
-  }
 
-  // Allow public paths (excluding auth-aware ones)
-  if (isPublicPath(path) && !isAuthAwarePublicPath(path)) {
-    console.log(`[Middleware ${requestId}] Public path, allowing`);
-    return createResponse(NextResponse.next(), "public-path");
-  }
-
-  // Get token for protected routes
-  console.log(`[Middleware ${requestId}] Checking auth for protected route`);
-  const tokenStartTime = Date.now();
-  const token = await getCachedToken(request);
-  console.log(`[Middleware ${requestId}] Token check took ${Date.now() - tokenStartTime}ms, has token: ${!!token}`);
-
-  // Check authentication for protected routes
-  if (!token) {
-    console.log(`[Middleware ${requestId}] No token, denying access`);
-    // API routes should return 401
-    if (path.startsWith("/api/")) {
-      return createResponse(NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      ), "api-unauthorized");
+    // Check email verification for certain routes
+    if (!token.isVerified && !path.startsWith("/verify-email")) {
+      console.log(`[Middleware ${requestId}] User not verified, redirecting to verify email`);
+      const verifyUrl = new URL("/verify-email-sent", request.url);
+      return createResponse(NextResponse.redirect(verifyUrl), 'verify-redirect');
     }
-    
-    // Redirect to login for protected pages
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("returnUrl", path);
-    return createResponse(NextResponse.redirect(loginUrl), "login-redirect");
-  }
 
-  // Check email verification for certain routes
-  if (!token.isVerified && !path.startsWith("/verify-email")) {
-    console.log(`[Middleware ${requestId}] Email not verified, redirecting`);
-    const verifyUrl = new URL("/verify-email-sent", request.url);
-    return createResponse(NextResponse.redirect(verifyUrl), "verify-redirect");
-  }
-
-  // Check role-based access
-  for (const [route, roles] of Object.entries(ROUTE_PERMISSIONS)) {
-    if (path.startsWith(route)) {
-      if (!hasRequiredRole(token.role as string, roles)) {
-        console.log(`[Middleware ${requestId}] Role check failed for ${route}, user role: ${token.role}`);
-        return createResponse(NextResponse.redirect(new URL("/", request.url)), "role-denied");
+    // Check role-based access
+    for (const [route, roles] of Object.entries(ROUTE_PERMISSIONS)) {
+      if (path.startsWith(route)) {
+        if (!hasRequiredRole(token.role as string, roles)) {
+          console.log(`[Middleware ${requestId}] User role ${token.role} not authorized for ${route}`);
+          return createResponse(
+            NextResponse.redirect(new URL("/", request.url)),
+            'role-unauthorized'
+          );
+        }
       }
     }
+
+    // Add user info and performance tracking to headers
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-user-id", token.id as string);
+    requestHeaders.set("x-user-role", token.role as string);
+    requestHeaders.set("x-request-id", requestId);
+    requestHeaders.set("x-request-start", startTime.toString());
+
+    console.log(`[Middleware ${requestId}] Request authorized, proceeding`);
+    return createResponse(
+      NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      }),
+      'authorized'
+    );
+    
+  } catch (error) {
+    console.error(`[Middleware ${requestId}] Error:`, error);
+    
+    // Return error response
+    if (path.startsWith("/api/")) {
+      return createResponse(
+        NextResponse.json(
+          { error: "Internal server error" },
+          { status: 500 }
+        ),
+        'error'
+      );
+    }
+    
+    // For non-API routes, redirect to home
+    return createResponse(
+      NextResponse.redirect(new URL("/", request.url)),
+      'error-redirect'
+    );
   }
-
-  // Add user info and performance tracking to headers
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-user-id", token.id as string);
-  requestHeaders.set("x-user-role", token.role as string);
-  requestHeaders.set("x-request-id", requestId);
-  requestHeaders.set("x-request-start", startTime.toString());
-
-  console.log(`[Middleware ${requestId}] Allowing request with user ${token.id}`);
-  
-  return createResponse(NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  }), "authenticated-allowed");
 }
 
 export const config = {
   matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
   ],
 };
