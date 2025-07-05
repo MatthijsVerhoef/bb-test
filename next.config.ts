@@ -52,7 +52,7 @@ const nextConfig: NextConfig = {
         })
       );
     }
-
+ 
     return config;
   },
   trailingSlash: false,
