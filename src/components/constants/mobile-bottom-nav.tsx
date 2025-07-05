@@ -6,11 +6,13 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   Search,
-  Plus,
+  MapPinPlusInside,
   MessageCircle,
   User,
   Heart,
   UserCircle,
+  Compass,
+  AudioLines,
   Calendar,
   CalendarDays,
   Star,
@@ -87,8 +89,8 @@ const MobileBottomNav = () => {
   // Navigation items for authenticated users
   const authenticatedNavItems = [
     {
-      label: "Home",
-      icon: Home,
+      label: "Discover",
+      icon: Compass,
       href: "/",
       isActive: pathname === "/",
     },
@@ -100,8 +102,14 @@ const MobileBottomNav = () => {
       badge: totalUnreadCount > 0 ? totalUnreadCount : undefined,
     },
     {
+      label: "Profiel",
+      icon: AudioLines,
+      href: PROFILE_URL,
+      isActive: pathname === "/profiel",
+    },
+    {
       label: "Verhuren",
-      icon: Plus,
+      icon: MapPinPlusInside,
       href: "/verhuren",
       isActive: pathname === "/verhuren" || pathname === "/plaatsen",
       isSpecial: true,
@@ -118,8 +126,8 @@ const MobileBottomNav = () => {
   // Navigation items for non-authenticated users
   const guestNavItems = [
     {
-      label: "Ontdekken",
-      icon: Search,
+      label: "Ontdek",
+      icon: Compass,
       href: "/",
       isActive: pathname === "/",
     },
@@ -145,7 +153,7 @@ const MobileBottomNav = () => {
       {/* Mobile Bottom Navigation */}
       <div
         className={`
-        fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-0.5 z-90 md:hidden
+        fixed bottom-0 left-0 right-0 bg-white drop-shadow-xl/50 px-2 py-1 z-90 md:hidden
         transform transition-transform duration-300 ease-in-out
         ${isVisible ? "translate-y-0" : "translate-y-full"}
       `}
@@ -155,50 +163,29 @@ const MobileBottomNav = () => {
             const Icon = item.icon;
             const isActive = item.isActive;
 
+            // All nav items now use the same structure for consistency
             if (item.onClick) {
               return (
                 <button
                   key={index}
                   onClick={item.onClick}
-                  className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all ${
-                    isActive
-                      ? "text-primary"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className="flex flex-col items-center justify-center p-1 rounded-lg transition-all"
                 >
-                  <div className="relative">
+                  <div
+                    className={`relative flex items-center justify-center w-6 h-6 ${
+                      isActive ? "text-primary" : "text-gray-500"
+                    }`}
+                  >
                     <Icon size={18} strokeWidth={1.2} />
-                    {item.badge && (
-                      <span className="absolute -top-1.5 -right-1.5 bg-primary text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] min-w-[16px]">
-                        {item.badge > 99 ? "99+" : item.badge}
-                      </span>
-                    )}
                   </div>
-                  <span className="text-[10px] font-medium mt-1 leading-none">
+                  <span
+                    className={`text-[10px] font-medium mt-1 leading-none ${
+                      isActive ? "text-primary" : "text-gray-500"
+                    }`}
+                  >
                     {item.label}
                   </span>
                 </button>
-              );
-            }
-
-            if (item.isSpecial) {
-              return (
-                <Link key={index} href={item.href}>
-                  <div
-                    className={`flex flex-col items-center justify-center p-0 rounded-lg transition-all ${
-                      isActive
-                        ? "text-primary"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    <div className="text-dark rounded-full">
-                      <Icon size={18} strokeWidth={1.2} />
-                    </div>
-                    <span className="text-[10px] font-medium mt-1 leading-none">
-                      {item.label}
-                    </span>
-                  </div>
-                </Link>
               );
             }
 
@@ -206,23 +193,24 @@ const MobileBottomNav = () => {
             if (item.isProfile && user) {
               return (
                 <Link key={index} href={item.href}>
-                  <div
-                    className={`flex flex-col items-center justify-center rounded-lg transition-all ${
-                      isActive
-                        ? "text-primary"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    <div className="relative">
-                      <Avatar className="size-8">
+                  <div className="flex flex-col items-center justify-center p-1 rounded-lg transition-all">
+                    <div
+                      className={`relative flex items-center justify-center w-6 h-6 ${
+                        isActive ? "text-primary" : "text-gray-500"
+                      }`}
+                    >
+                      <Avatar className="size-6">
                         <AvatarImage src={user?.profilePicture || undefined} />
                         <AvatarFallback className="text-xs">
                           {user?.firstName?.[0]}
-                          {user?.lastName?.[0]}
                         </AvatarFallback>
                       </Avatar>
                     </div>
-                    <span className="text-[10px] font-medium mt-1 leading-none">
+                    <span
+                      className={`text-[10px] font-medium mt-1 leading-none ${
+                        isActive ? "text-primary" : "text-gray-500"
+                      }`}
+                    >
                       {item.label}
                     </span>
                   </div>
@@ -230,16 +218,15 @@ const MobileBottomNav = () => {
               );
             }
 
+            // All other items including special
             return (
               <Link key={index} href={item.href}>
-                <div
-                  className={`flex flex-col items-center justify-center rounded-lg transition-all ${
-                    isActive
-                      ? "text-primary"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  <div className="relative">
+                <div className="flex flex-col items-center justify-center p-1 rounded-lg transition-all">
+                  <div
+                    className={`relative flex items-center justify-center w-6 h-6 ${
+                      isActive ? "text-primary" : "text-gray-500"
+                    }`}
+                  >
                     <Icon size={18} strokeWidth={1.2} />
                     {item.badge && (
                       <span className="absolute -top-1.5 -right-1.5 bg-primary text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] min-w-[16px]">
@@ -247,7 +234,11 @@ const MobileBottomNav = () => {
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] font-medium mt-1 leading-none">
+                  <span
+                    className={`text-[10px] font-medium mt-1 leading-none ${
+                      isActive ? "text-primary" : "text-gray-500"
+                    }`}
+                  >
                     {item.label}
                   </span>
                 </div>
@@ -258,7 +249,7 @@ const MobileBottomNav = () => {
       </div>
 
       {/* Spacer to prevent content from being hidden behind the bottom nav */}
-      <div className="h-6 md:hidden" />
+      <div className="h-16 md:hidden" />
 
       {/* Auth Dialog */}
       <AuthDialog

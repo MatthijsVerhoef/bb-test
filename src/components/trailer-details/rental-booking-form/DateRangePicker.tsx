@@ -333,8 +333,9 @@ export default function DateRangePicker({
     const isSelected = isRangeStart || isRangeEnd;
 
     return cn(
-      "relative h-9 w-9 p-0 font-normal text-sm rounded-md transition-all",
+      "relative h-11 w-11 p-0 font-normal text-sm rounded-md transition-all touch-manipulation",
       "hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/20",
+      "active:bg-gray-200 active:scale-95",
       {
         // Base states
         "text-gray-900": !isDisabled && !isSelected,
@@ -457,7 +458,7 @@ export default function DateRangePicker({
               {weekDays.map((day) => (
                 <div
                   key={day}
-                  className="h-9 w-9 flex items-center justify-center text-xs font-medium text-gray-500"
+                  className="h-11 w-11 flex items-center justify-center text-xs font-medium text-gray-500"
                 >
                   {day}
                 </div>
@@ -471,8 +472,11 @@ export default function DateRangePicker({
                   onClick={() => handleDateClick(day)}
                   onMouseEnter={() => setHoveredDate(day)}
                   onMouseLeave={() => setHoveredDate(null)}
+                  onTouchStart={() => setHoveredDate(day)}
+                  onTouchEnd={() => setHoveredDate(null)}
                   disabled={isDateDisabled(day)}
                   className={getDayClass(day)}
+                  aria-label={format(day, "EEEE, MMMM d, yyyy", { locale: dateLocale })}
                 >
                   <time dateTime={format(day, "yyyy-MM-dd")}>
                     {format(day, "d")}

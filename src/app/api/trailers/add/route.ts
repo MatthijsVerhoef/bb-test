@@ -1,7 +1,6 @@
 // app/api/trailers/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
@@ -48,10 +47,13 @@ const TrailerTypeEnum = z.enum([
 
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions);
+    // Check authentication using getToken for better performance
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET!
+    });
     
-    if (!session || !session.user) {
+    if (!token || !token.id) {
       return NextResponse.json(
         { error: "Je moet ingelogd zijn om een aanhanger te plaatsen" },
         { status: 401 }
@@ -59,24 +61,22 @@ export async function POST(req: NextRequest) {
     }
 
     // Ensure user is verified
-    const user = session.user;
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "Gebruiker niet gevonden" },
-        { status: 404 }
-      );
-    }
-
-    if (!user.isVerified) {
+    if (!token.isVerified) {
       return NextResponse.json(
         { error: "Je account moet geverifieerd zijn om een aanhanger te plaatsen" },
         { status: 403 }
       );
     }
+    
+    // Create user object from token
+    const user = {
+      id: token.id as string,
+      role: token.role as string,
+      isVerified: token.isVerified as boolean
+    };
 
     // Always upgrade to LESSOR role when adding a trailer (unless already ADMIN)
-    if (user.role !== "ADMIN") {
+    if (user.role !== "ADMIN" && user.role !== "LESSOR") {
       // Automatically upgrade to LESSOR role
       await prisma.user.update({
         where: { id: user.id },
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       
       console.log(`User ${user.id} role updated to LESSOR`);
       
-      // Update session user role to LESSOR (will be reflected on next auth check)
+      // Update local user role to LESSOR
       user.role = "LESSOR";
     }
 

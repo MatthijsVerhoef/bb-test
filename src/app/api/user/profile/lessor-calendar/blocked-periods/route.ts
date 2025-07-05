@@ -2,8 +2,7 @@ console.log('===== BLOCKED PERIODS ROUTE FILE EXECUTING =====');
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth/next";
+import { getToken } from "next-auth/jwt";
 import { z } from "zod";
 
 console.log('===== BLOCKED PERIODS ROUTE LOADED =====');
@@ -21,12 +20,16 @@ const blockedPeriodSchema = z.object({
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET!
+    });
+    
+    if (!token?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = token.id as string;
     
     // Get all blocked periods for this user
     const blockedPeriods = await prisma.blockedPeriod.findMany({
@@ -98,22 +101,25 @@ export async function POST(req: NextRequest) {
       throw parseError;
     }
 
-    // Step 2: Get session
-    log('Step 2: Getting session...');
-    const sessionStartTime = Date.now();
-    const session = await getServerSession(authOptions);
-    log('Step 2: Session retrieved', {
-      sessionTime: Date.now() - sessionStartTime,
-      hasSession: !!session,
-      userId: session?.user?.id
+    // Step 2: Get token
+    log('Step 2: Getting token...');
+    const tokenStartTime = Date.now();
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET!
+    });
+    log('Step 2: Token retrieved', {
+      tokenTime: Date.now() - tokenStartTime,
+      hasToken: !!token,
+      userId: token?.id
     });
     
-    if (!session?.user?.id) {
-      log('Step 2: No session found, returning 401');
+    if (!token?.id) {
+      log('Step 2: No token found, returning 401');
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = token.id as string;
 
     // Step 3: Validate request data
     log('Step 3: Validating request data...');

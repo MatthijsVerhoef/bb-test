@@ -10,9 +10,9 @@ const createPrismaClient = () => {
   
   // Add connection pool parameters for Railway
   const url = new URL(databaseUrl);
-  url.searchParams.append('connection_limit', '10');
-  url.searchParams.append('pool_timeout', '10');
-  url.searchParams.append('connect_timeout', '30');
+  url.searchParams.append('connection_limit', '25');
+  url.searchParams.append('pool_timeout', '20');
+  url.searchParams.append('connect_timeout', '60');
   
   const client = new PrismaClient({
     datasources: {
