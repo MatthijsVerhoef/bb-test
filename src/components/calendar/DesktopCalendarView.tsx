@@ -409,6 +409,32 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
               trailerName: currentTrailer?.title,
             })}
           </h3>
+          {/* Legend */}
+          <div className="flex flex-wrap items-center gap-4 text-xs bg-gray-50 p-3 rounded-lg mt-4">
+            <span className="font-medium text-gray-700">
+              {t("lessorCalendar.calendar.legend.title")}
+            </span>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-white border border-gray-200 rounded" />
+              <span>{t("lessorCalendar.calendar.legend.available")}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-gray-50 border border-gray-200 rounded" />
+              <span>{t("lessorCalendar.calendar.legend.unavailable")}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-red-50 border border-red-200 rounded" />
+              <span>{t("lessorCalendar.calendar.legend.blocked")}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded" />
+              <span>{t("lessorCalendar.calendar.legend.booked")}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 border border-primary rounded" />
+              <span>{t("lessorCalendar.calendar.legend.today")}</span>
+            </div>
+          </div>
 
           {/* Show selected dates count and action buttons when dates are selected */}
           {selectedDates.length > 0 && (
@@ -553,33 +579,6 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
             </div>
           );
         })}
-      </div>
-
-      {/* Legend */}
-      <div className="flex flex-wrap items-center gap-4 text-xs bg-gray-50 p-3 rounded-lg mt-4">
-        <span className="font-medium text-gray-700">
-          {t("lessorCalendar.calendar.legend.title")}
-        </span>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-white border border-gray-200 rounded" />
-          <span>{t("lessorCalendar.calendar.legend.available")}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-gray-50 border border-gray-200 rounded" />
-          <span>{t("lessorCalendar.calendar.legend.unavailable")}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-red-50 border border-red-200 rounded" />
-          <span>{t("lessorCalendar.calendar.legend.blocked")}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded" />
-          <span>{t("lessorCalendar.calendar.legend.booked")}</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 border border-primary rounded" />
-          <span>{t("lessorCalendar.calendar.legend.today")}</span>
-        </div>
       </div>
     </Card>
   );
