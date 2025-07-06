@@ -123,7 +123,7 @@ const TrailerCard = memo(function TrailerCard({
         onMouseEnter={handleMouseEnter}
       >
         <CardContent className="p-0 pb-2 flex flex-col items-start w-full">
-          <div className="flex flex-col items-center sm:flex-row gap-6 w-full">
+          <div className="flex relative flex-col items-center sm:flex-row gap-6 w-full">
             {/* Trailer image */}
             <div className="relative w-full sm:w-28 h-46 sm:h-18 rounded-md overflow-hidden bg-gray-100">
               {trailer.mainImage ? (
@@ -145,7 +145,7 @@ const TrailerCard = memo(function TrailerCard({
             </div>
 
             {/* Trailer information */}
-            <div className="flex-1 flex flex-col w-full">
+            <div className="flex-1 flex flex-col w-full relative">
               <div className="flex flex-col items-start mb-0.5 w-full">
                 <h3 className="font-medium">{trailer.title}</h3>
                 <p className="text-[13px] text-gray-500">
@@ -165,10 +165,33 @@ const TrailerCard = memo(function TrailerCard({
                   </span>
                 </div>
               )}
+
+              <div className="block md:hidden">
+                {!trailer.isDraft && completeness.isComplete && (
+                  <div
+                    className="flex absolute top-0 right-0 items-center gap-2"
+                    onClick={handleActionClick}
+                  >
+                    <span className="text-xs text-gray-500 whitespace-nowrap">
+                      {t("trailerManagement.card.active")}
+                    </span>
+                    {isCheckingRentals ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                    ) : (
+                      <Switch
+                        checked={trailer.status === "ACTIVE"}
+                        onCheckedChange={() => {}}
+                        onClick={handleStatusToggle}
+                        disabled={isCheckingRentals}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {trailer.status === "DRAFT" && (
-              <div className="flex flex-col gap-1">
+              <div className="flex absolute top-0 left-0 mt-4 ml-3 md:mt-0 md:ml-3 md:relative flex-col gap-1">
                 {getStatusBadge(trailer.status)}
               </div>
             )}
@@ -176,7 +199,7 @@ const TrailerCard = memo(function TrailerCard({
             {/* Status toggle */}
             {!trailer.isDraft && completeness.isComplete && (
               <div
-                className="flex items-center gap-2"
+                className="hidden md:flex items-center gap-2"
                 onClick={handleActionClick}
               >
                 <span className="text-xs text-gray-500 whitespace-nowrap">
@@ -197,7 +220,7 @@ const TrailerCard = memo(function TrailerCard({
 
             <Button
               variant="outline"
-              className="size-10 rounded-full"
+              className="size-10 absolute top-0 right-0 mt-2 mr-2 md:mr-0 md:mt-0 md:relative rounded-full"
               onClick={onEdit}
             >
               <Edit size={20} strokeWidth={1.5} />

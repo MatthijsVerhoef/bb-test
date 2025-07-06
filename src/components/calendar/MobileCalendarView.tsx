@@ -27,7 +27,8 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/client";
 import { useCalendarData } from "@/hooks/useCalendarData";
 import { Day } from "./Day";
-import type { BlockedPeriod, CalendarProps } from "@/types/Calendar";
+import { MobileRentalDetailsDrawer } from "./MobileRentalDetailsDrawer";
+import type { BlockedPeriod, CalendarProps, Rental } from "@/types/Calendar";
 
 interface MobileCalendarViewProps extends CalendarProps {
   selectedTrailer: string;
@@ -52,6 +53,8 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [actionInProgress, setActionInProgress] = useState(false);
+  const [selectedRental, setSelectedRental] = useState<Rental | null>(null);
+  const [showRentalDrawer, setShowRentalDrawer] = useState(false);
 
   // Touch drag selection state
   const [isDragging, setIsDragging] = useState(false);
@@ -273,9 +276,16 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
   const handleTouchStart = useCallback(
     (date: Date, e: React.TouchEvent) => {
       const normalizedDate = startOfDay(date);
+      const dateRentals = getDateRentals(normalizedDate);
 
-      // Don't allow selection of dates with rentals or past dates
-      if (getDateRentals(normalizedDate).length > 0) return;
+      // If there are rentals, show the rental drawer
+      if (dateRentals.length > 0) {
+        setSelectedRental(dateRentals[0]); // Show the first rental
+        setShowRentalDrawer(true);
+        return;
+      }
+
+      // Don't allow selection of past dates
       if (isBefore(normalizedDate, startOfDay(new Date()))) return;
 
       const touch = e.touches[0];
@@ -741,6 +751,16 @@ export const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Rental Details Drawer */}
+      <MobileRentalDetailsDrawer
+        rental={selectedRental}
+        isOpen={showRentalDrawer}
+        onClose={() => {
+          setShowRentalDrawer(false);
+          setSelectedRental(null);
+        }}
+      />
     </div>
   );
 };

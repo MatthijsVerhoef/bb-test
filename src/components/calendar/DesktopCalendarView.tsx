@@ -22,22 +22,14 @@ import {
   isAfter,
 } from "date-fns";
 import { nl, de, enUS } from "date-fns/locale";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Calendar,
-  Lock,
-  Unlock,
-  X,
-  Check,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/client";
 import { useCalendarData } from "@/hooks/useCalendarData";
 import { Day } from "./Day";
-import type { CalendarProps } from "@/types/Calendar";
+import { RentalDetailsPopup } from "./RentalDetailsPopup";
+import type { CalendarProps, Rental } from "@/types/Calendar";
 
 interface DesktopCalendarViewProps extends CalendarProps {
   selectedTrailer: string;
@@ -59,8 +51,9 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [actionInProgress, setActionInProgress] = useState(false);
+  const [selectedRental, setSelectedRental] = useState<Rental | null>(null);
+  const [showRentalPopup, setShowRentalPopup] = useState(false);
 
-  // Drag selection state
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartDate, setDragStartDate] = useState<Date | null>(null);
   const [dragEndDate, setDragEndDate] = useState<Date | null>(null);
@@ -70,17 +63,12 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
   // Define date limits
   const today = new Date();
   const currentMonthStart = startOfMonth(today);
-  const maxFutureMonth = addMonths(currentMonthStart, 6); // 6 months into future
-  const maxPastMonth = subMonths(currentMonthStart, 4); // 4 months into past
+  const maxFutureMonth = addMonths(currentMonthStart, 6);
+  const maxPastMonth = subMonths(currentMonthStart, 4);
 
   // Check if we can navigate
   const canGoBack = currentMonth > maxPastMonth;
   const canGoForward = currentMonth < maxFutureMonth;
-
-  const currentTrailer = useMemo(
-    () => trailers.find((t) => t.id === selectedTrailer),
-    [trailers, selectedTrailer]
-  );
 
   const { isInBlockedPeriod, getDateRentals, getDateStatus } = useCalendarData({
     selectedTrailer,
@@ -132,20 +120,57 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
     [isDragging, dragStartDate, dragEndDate]
   );
 
-  // Handle mouse down
+  // Handle date click - modified to handle rentals
+  const handleDateClick = useCallback(
+    (date: Date) => {
+      const normalizedDate = startOfDay(date);
+      const dateRentals = getDateRentals(normalizedDate);
+
+      // If there are rentals, show the rental popup
+      if (dateRentals.length > 0) {
+        setSelectedRental(dateRentals[0]); // Show the first rental
+        setShowRentalPopup(true);
+        return;
+      }
+
+      // Otherwise, proceed with normal selection logic
+      // Don't allow selection of past dates
+      if (isBefore(normalizedDate, startOfDay(new Date()))) return;
+
+      // Toggle selection
+      setSelectedDates((prev) => {
+        const isSelected = prev.some((d) => isSameDay(d, normalizedDate));
+
+        if (isSelected) {
+          return prev.filter((d) => !isSameDay(d, normalizedDate));
+        } else {
+          return [...prev, normalizedDate];
+        }
+      });
+    },
+    [getDateRentals]
+  );
+
+  // Handle mouse down - modified to not start drag on rental dates
   const handleMouseDown = useCallback(
     (date: Date) => {
       const normalizedDate = startOfDay(date);
+      const dateRentals = getDateRentals(normalizedDate);
 
-      // Don't allow selection of dates with rentals or past dates
-      if (getDateRentals(normalizedDate).length > 0) return;
+      // If clicking on a rental date, handle it as a click
+      if (dateRentals.length > 0) {
+        handleDateClick(date);
+        return;
+      }
+
+      // Don't allow selection of past dates
       if (isBefore(normalizedDate, startOfDay(new Date()))) return;
 
       setMouseDownTime(Date.now());
       setDragStartDate(normalizedDate);
       setDragEndDate(normalizedDate);
     },
-    [getDateRentals]
+    [getDateRentals, handleDateClick]
   );
 
   // Handle mouse enter (for drag)
@@ -181,15 +206,7 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
         isSameDay(dragStartDate, normalizedDate)
       ) {
         // It's a click, not a drag
-        setSelectedDates((prev) => {
-          const isSelected = prev.some((d) => isSameDay(d, normalizedDate));
-
-          if (isSelected) {
-            return prev.filter((d) => !isSameDay(d, normalizedDate));
-          } else {
-            return [...prev, normalizedDate];
-          }
-        });
+        handleDateClick(date);
       } else if (isDragging && dragStartDate && dragEndDate) {
         // It's a drag - add the range
         const start = isBefore(dragStartDate, dragEndDate)
@@ -215,7 +232,14 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
       setDragStartDate(null);
       setDragEndDate(null);
     },
-    [isDragging, mouseDownTime, dragStartDate, dragEndDate, getDateRentals]
+    [
+      isDragging,
+      mouseDownTime,
+      dragStartDate,
+      dragEndDate,
+      getDateRentals,
+      handleDateClick,
+    ]
   );
 
   // Global mouse up handler
@@ -401,46 +425,14 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
   }, [selectedDatesStatus.isBlocked, handleBlockDates, handleUnblockDates]);
 
   return (
-    <Card className="p-6 border-0">
-      <div className="mb-2">
-        <div className="flex flex-col items-start justify-between mb-4">
-          <h3 className="text-lg font-semibold">
-            {t("lessorCalendar.calendar.title", {
-              trailerName: currentTrailer?.title,
-            })}
-          </h3>
-          {/* Legend */}
-          <div className="flex flex-wrap items-center gap-4 text-xs bg-gray-50 p-3 rounded-lg mt-4">
-            <span className="font-medium text-gray-700">
-              {t("lessorCalendar.calendar.legend.title")}
-            </span>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-white border border-gray-200 rounded" />
-              <span>{t("lessorCalendar.calendar.legend.available")}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-gray-50 border border-gray-200 rounded" />
-              <span>{t("lessorCalendar.calendar.legend.unavailable")}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-red-50 border border-red-200 rounded" />
-              <span>{t("lessorCalendar.calendar.legend.blocked")}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-blue-50 border border-blue-200 rounded" />
-              <span>{t("lessorCalendar.calendar.legend.booked")}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 border border-primary rounded" />
-              <span>{t("lessorCalendar.calendar.legend.today")}</span>
-            </div>
-          </div>
-
-          {/* Show selected dates count and action buttons when dates are selected */}
-          {selectedDates.length > 0 && (
-            <div className="flex flex-col items-start gap-3 ms-auto">
-              <div className="flex ms-auto items-center gap-2 bg-gray-100 px-4 py-2 rounded-full">
-                <span className="text-sm font-medium text-gray-900">
+    <Card className="p-0 border-0">
+      {selectedDates.length > 0 && (
+        <div className="mb-2">
+          <div className="flex flex-col items-start justify-between mb-4">
+            {/* Show selected dates count and action buttons when dates are selected */}
+            <div className="flex flex-row items-center bg-gray-100 p-2 w-full mt-6 rounded-xl gap-3 ms-auto">
+              <div className="flex me-auto items-center gap-2 bg-[#222222] text-white px-4 py-2 rounded-full">
+                <span className="text-sm font-medium text-white">
                   {t(
                     selectedDates.length === 1
                       ? "lessorCalendar.calendar.mobile.daysSelected"
@@ -459,7 +451,7 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
                 </Button>
               </div>
 
-              <div className="flex items-center bg-gray-100 py-2 ps-4 pr-3 rounded-xl">
+              <div className="flex items-center rounded-xl">
                 <span className="text-sm font-medium">Beschikbaar:</span>
                 <div className="relative ms-2 grid grid-cols-2 gap-1 h-full bg-[#222222] rounded-full p-1">
                   <button
@@ -489,12 +481,12 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Month Navigation */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex mt-6 items-center justify-between mb-6">
         <Button
           variant="ghost"
           size="icon"
@@ -506,7 +498,6 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
         </Button>
 
         <h2 className="text-xl font-semibold flex items-center gap-2">
-          <Calendar className="w-5 h-5" />
           {format(currentMonth, "MMMM yyyy", {
             locale:
               tCommon("locale") === "nl"
@@ -580,6 +571,43 @@ export const DesktopCalendarView: React.FC<DesktopCalendarViewProps> = ({
           );
         })}
       </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-4 text-xs bg-gray-100 p-3 rounded-lg mt-4">
+        <span className="font-medium text-gray-700">
+          {t("lessorCalendar.calendar.legend.title")}
+        </span>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-white border border-gray-200 rounded" />
+          <span>{t("lessorCalendar.calendar.legend.available")}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-gray-50 border border-gray-200 rounded" />
+          <span>{t("lessorCalendar.calendar.legend.unavailable")}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-red-50 border border-red-200 rounded" />
+          <span>{t("lessorCalendar.calendar.legend.blocked")}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 bg-primary/20 border border-primary rounded" />
+          <span>{t("lessorCalendar.calendar.legend.booked")}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-3 h-3 border border-primary rounded" />
+          <span>{t("lessorCalendar.calendar.legend.today")}</span>
+        </div>
+      </div>
+
+      {/* Rental Details Popup */}
+      <RentalDetailsPopup
+        rental={selectedRental}
+        isOpen={showRentalPopup}
+        onClose={() => {
+          setShowRentalPopup(false);
+          setSelectedRental(null);
+        }}
+      />
     </Card>
   );
 };

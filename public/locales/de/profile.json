@@ -642,6 +642,28 @@
         "5": "S",
         "6": "S"
       }
+    },
+    "rentalDetails": {
+      "title": "Mietdetails",
+      "perDay": "pro Tag",
+      "renter": "Mieter",
+      "period": "Mietzeitraum",
+      "from": "Von",
+      "to": "Bis",
+      "day": "Tag",
+      "days": "Tage",
+      "totalPrice": "Gesamtpreis",
+      "status": "Status",
+      "statuses": {
+        "PENDING": "Ausstehend",
+        "CONFIRMED": "Bestätigt",
+        "ACTIVE": "Aktiv",
+        "CANCELLED": "Storniert",
+        "COMPLETED": "Abgeschlossen",
+        "LATE_RETURN": "Verspätete Rückgabe",
+        "DISPUTED": "Strittig"
+      },
+      "viewAllRentals": "Alle Vermietungen anzeigen"
     }
   },
   "lessorHistory": {

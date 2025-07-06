@@ -384,6 +384,18 @@ export default function LessorHistory({
                   </Button>
 
                   <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-[13px]"
+                    onClick={() => {
+                      setSelectedRental(rental);
+                      setManageOpen(true);
+                    }}
+                  >
+                    Stuur bericht
+                  </Button>
+
+                  <Button
                     variant="default"
                     size="sm"
                     className="text-[13px]"

@@ -642,6 +642,28 @@
         "5": "Z",
         "6": "Z"
       }
+    },
+    "rentalDetails": {
+      "title": "Verhuurdetails",
+      "perDay": "per dag",
+      "renter": "Huurder",
+      "period": "Huurperiode",
+      "from": "Van",
+      "to": "Tot",
+      "day": "dag",
+      "days": "dagen",
+      "totalPrice": "Totaalprijs",
+      "status": "Status",
+      "statuses": {
+        "PENDING": "In afwachting",
+        "CONFIRMED": "Bevestigd",
+        "ACTIVE": "Actief",
+        "CANCELLED": "Geannuleerd",
+        "COMPLETED": "Afgerond",
+        "LATE_RETURN": "Late terugkeer",
+        "DISPUTED": "Betwist"
+      },
+      "viewAllRentals": "Bekijk alle verhuringen"
     }
   },
   "lessorHistory": {
@@ -665,7 +687,7 @@
     },
     "buttons": {
       "viewDetails": "Bekijk details",
-      "manageRental": "Beheer verhuring",
+      "manageRental": "Beheren",
       "reviewRental": "Review verhuring",
       "refresh": "Vernieuwen"
     },

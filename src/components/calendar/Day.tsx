@@ -1,5 +1,4 @@
 // components/calendar/Day.tsx
-
 import React from "react";
 import { format, isToday, isSameMonth } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -35,28 +34,31 @@ export const Day: React.FC<DayProps> = ({
 
   // Determine background colors
   let backgroundClasses = "";
+
   if (isSelected) {
+    // When selected, use darker versions of the colors
     switch (status) {
       case "available":
-        backgroundClasses = "bg-[#222222]";
+        backgroundClasses = "bg-[#222222] text-white border-[#222222]";
         break;
       case "blocked":
-        backgroundClasses = "bg-red-300";
+        backgroundClasses = "bg-red-400 text-white border-red-400";
         break;
       case "unavailable":
-        backgroundClasses = "bg-gray-400";
+        backgroundClasses = "bg-gray-400 text-white border-gray-400";
         break;
       case "rented":
-        backgroundClasses = "bg-blue-600";
+        backgroundClasses = "bg-primary text-white border-primary";
         break;
     }
   } else {
+    // When not selected, use the colors that match your legend
     switch (status) {
       case "available":
         backgroundClasses = "bg-white border-gray-200 hover:bg-gray-50";
         break;
       case "unavailable":
-        backgroundClasses = "bg-gray-100 border-gray-200 line-through";
+        backgroundClasses = "bg-gray-50 border-gray-200";
         break;
       case "blocked":
         backgroundClasses = "bg-red-50 border-red-200 hover:bg-red-100";
@@ -67,21 +69,25 @@ export const Day: React.FC<DayProps> = ({
     }
   }
 
+  // Add today's border if applicable
+  const todayClasses = isToday(date) ? "border-2 border-primary" : "";
+
   const baseClasses = isMobile
     ? "h-[70px] p-1 border rounded-md text-xs"
     : "aspect-square p-2 border rounded-lg";
 
   return (
     <div
-      onClick={disabled ? undefined : onSelect}
+      onClick={disabled || isPast ? undefined : onSelect}
       className={cn(
         baseClasses,
         "relative cursor-pointer transition-all",
         !isCurrentMonth && "opacity-40",
         backgroundClasses,
-        isPast && "opacity-50 cursor-not-allowed",
-        isToday(date) && "",
-        (hasRentals || isPast || disabled) && "cursor-not-allowed"
+        todayClasses,
+        isPast && !hasRentals && "opacity-50 cursor-not-allowed",
+        (isPast || disabled) && !hasRentals && "cursor-not-allowed",
+        hasRentals && "cursor-pointer hover:shadow-md" // Allow clicking on rentals
       )}
     >
       <div className="flex flex-col h-full">
@@ -89,11 +95,8 @@ export const Day: React.FC<DayProps> = ({
           className={cn(
             "font-medium",
             isMobile ? "mx-auto mt-2" : "text-sm",
-            isSelected &&
-              (status === "available" || status === "blocked") &&
-              "text-white",
-            isToday(date) &&
-              "bg-primary text-white rounded-full size-5 flex items-center justify-center"
+            isSelected && "text-current", // Use current text color from parent
+            isToday(date) && !isSelected && "font-bold" // Make today's date bold
           )}
         >
           {format(date, "d")}
@@ -104,7 +107,7 @@ export const Day: React.FC<DayProps> = ({
             className={cn(
               "truncate mt-auto",
               isMobile ? "text-[9px]" : "text-[10px]",
-              "text-primary"
+              isSelected ? "text-current" : "font-medium"
             )}
           >
             {rentals[0].renter.firstName}
@@ -113,7 +116,12 @@ export const Day: React.FC<DayProps> = ({
 
         {!isMobile && !hasRentals && status !== "available" && (
           <div className="mt-auto">
-            <div className="text-[10px] text-gray-500 truncate">
+            <div
+              className={cn(
+                "text-[10px] truncate",
+                isSelected ? "text-current" : "text-gray-500"
+              )}
+            >
               {status === "unavailable" &&
                 t("lessorCalendar.calendar.dayStatus.unavailable")}
               {status === "blocked" &&

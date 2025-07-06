@@ -1,7 +1,7 @@
 // hooks/useCalendarData.ts
 
 import { useMemo, useCallback } from "react";
-import { format, startOfDay, getDay } from "date-fns";
+import { format, startOfDay, getDay, addDays } from "date-fns";
 import type {
   WeeklyAvailability,
   BlockedPeriod,
@@ -66,14 +66,16 @@ export const useCalendarData = ({
         const startDate = startOfDay(new Date(rental.startDate));
         const endDate = startOfDay(new Date(rental.endDate));
 
-        let currentDate = new Date(startDate);
+        // Use addDays instead of modifying the date object
+        let currentDate = startDate;
         while (currentDate <= endDate) {
           const dateKey = format(currentDate, "yyyy-MM-dd");
           if (!rentalMap.has(dateKey)) {
             rentalMap.set(dateKey, []);
           }
           rentalMap.get(dateKey)!.push(rental);
-          currentDate.setDate(currentDate.getDate() + 1);
+          // Create a new date object for the next iteration
+          currentDate = addDays(currentDate, 1);
         }
       });
 
@@ -94,11 +96,13 @@ export const useCalendarData = ({
         const startDate = startOfDay(new Date(period.startDate));
         const endDate = startOfDay(new Date(period.endDate));
 
-        let currentDate = new Date(startDate);
+        // Use addDays instead of modifying the date object
+        let currentDate = startDate;
         while (currentDate <= endDate) {
           const dateKey = format(currentDate, "yyyy-MM-dd");
           blockedMap.set(dateKey, period);
-          currentDate.setDate(currentDate.getDate() + 1);
+          // Create a new date object for the next iteration
+          currentDate = addDays(currentDate, 1);
         }
       });
 

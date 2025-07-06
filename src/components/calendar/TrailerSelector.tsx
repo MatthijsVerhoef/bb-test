@@ -24,7 +24,7 @@ export const TrailerSelector: React.FC<TrailerSelectorProps> = ({
 
   if (isMobile) {
     return (
-      <div className="bg-gray-50 px-4 py-6">
+      <div className="bg-gray-100 px-4 py-6 rounded-xl">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">
             {t("lessorCalendar.trailerSelection.title")}
@@ -38,7 +38,7 @@ export const TrailerSelector: React.FC<TrailerSelectorProps> = ({
           {trailers.map((trailer) => (
             <Card
               key={trailer.id}
-              className="p-4 cursor-pointer transition-shadow"
+              className="p-3 cursor-pointer transition-shadow"
               onClick={() => onSelectTrailer(trailer.id)}
             >
               <div className="flex items-center gap-4">
@@ -46,7 +46,7 @@ export const TrailerSelector: React.FC<TrailerSelectorProps> = ({
                   <img
                     src={trailer.images[0].url}
                     alt={trailer.title}
-                    className="w-16 h-16 rounded-lg object-cover"
+                    className="w-16 h-16 rounded-md object-cover"
                     loading="lazy"
                   />
                 )}
@@ -68,8 +68,8 @@ export const TrailerSelector: React.FC<TrailerSelectorProps> = ({
   }
 
   return (
-    <Card className="p-6 bg-[#f7f7f7] border-0">
-      <div className="mb-4">
+    <Card className="p-6 bg-gray-100 border-0">
+      <div className="mb-0">
         <h3 className="text-lg font-semibold">
           {t("lessorCalendar.trailerSelection.title")}
         </h3>
@@ -84,7 +84,7 @@ export const TrailerSelector: React.FC<TrailerSelectorProps> = ({
             key={trailer.id}
             onClick={() => onSelectTrailer(trailer.id)}
             className={cn(
-              "p-4 rounded-lg border transition-all text-left",
+              "p-3 rounded-lg border transition-all text-left",
               selectedTrailer === trailer.id
                 ? "border-primary bg-primary/50"
                 : "border-gray-200 bg-white hover:border-gray-300"
@@ -95,10 +95,12 @@ export const TrailerSelector: React.FC<TrailerSelectorProps> = ({
                 <img
                   src={trailer.images[0].url}
                   alt={trailer.title}
-                  className="w-12 h-12 rounded-lg object-cover"
+                  className="w-12 h-12 rounded-md object-cover"
                 />
               )}
-              <h4 className="font-medium text-sm">{trailer.title}</h4>
+              <h4 className="font-medium text-sm text-ellipsis">
+                {trailer.title}
+              </h4>
             </div>
           </button>
         ))}

@@ -642,6 +642,28 @@
         "5": "S",
         "6": "S"
       }
+    },
+    "rentalDetails": {
+      "title": "Rental Details",
+      "perDay": "per day",
+      "renter": "Renter",
+      "period": "Rental Period",
+      "from": "From",
+      "to": "To",
+      "day": "day",
+      "days": "days",
+      "totalPrice": "Total Price",
+      "status": "Status",
+      "statuses": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "ACTIVE": "Active",
+        "CANCELLED": "Cancelled",
+        "COMPLETED": "Completed",
+        "LATE_RETURN": "Late Return",
+        "DISPUTED": "Disputed"
+      },
+      "viewAllRentals": "View All Rentals"
     }
   },
   "lessorHistory": {
