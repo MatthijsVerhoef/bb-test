@@ -17,7 +17,9 @@ interface BlogItem {
   coverImage: string | null;
   publishedAt: string | null;
   authorName: string;
-  categories: BlogCategory[];
+  categories: {
+    category: BlogCategory;
+  }[];
 }
 
 interface BlogListProps {
@@ -35,7 +37,13 @@ export default async function BlogList({ searchParams }: BlogListProps) {
   // Build filter conditions for blogs
   const blogWhere: any = { published: true };
   if (category) {
-    blogWhere.categories = { some: { slug: category } };
+    blogWhere.categories = {
+      some: {
+        category: {
+          slug: category,
+        },
+      },
+    };
   }
 
   // Fetch blogs, total count, and categories concurrently
@@ -52,9 +60,13 @@ export default async function BlogList({ searchParams }: BlogListProps) {
         authorName: true,
         categories: {
           select: {
-            id: true,
-            name: true,
-            slug: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
           },
         },
       },
@@ -64,7 +76,15 @@ export default async function BlogList({ searchParams }: BlogListProps) {
     }),
     prisma.blog.count({ where: blogWhere }),
     prisma.blogCategory.findMany({
-      where: { posts: { some: { published: true } } },
+      where: {
+        posts: {
+          some: {
+            blog: {
+              published: true,
+            },
+          },
+        },
+      },
       select: { id: true, name: true, slug: true },
       orderBy: { name: "asc" },
     }),
@@ -121,12 +141,12 @@ export default async function BlogList({ searchParams }: BlogListProps) {
                 <div className="pb-6">
                   {blog.categories.length > 0 && (
                     <div className="mb-2">
-                      {blog.categories.map((cat) => (
+                      {blog.categories.map((rel) => (
                         <span
-                          key={cat.id}
+                          key={rel.category.id}
                           className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded mr-2"
                         >
-                          {cat.name}
+                          {rel.category.name}
                         </span>
                       ))}
                     </div>

@@ -44,6 +44,9 @@ export default function TrailerDetailClient({
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showFixedHeader, setShowFixedHeader] = useState(false);
+  const [mobileSheetContent, setMobileSheetContent] = useState<
+    "booking" | "confirmation"
+  >("booking");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,8 +61,6 @@ export default function TrailerDetailClient({
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-
-    // Check initial scroll position
     handleScroll();
 
     return () => {
@@ -68,13 +69,25 @@ export default function TrailerDetailClient({
   }, []);
 
   const openBookingModal = () => {
+    setMobileSheetContent("booking");
     setMobileBookingOpen(true);
     setTimeout(() => setIsAnimating(true), 10);
   };
 
   const closeBookingModal = () => {
     setIsAnimating(false);
-    setTimeout(() => setMobileBookingOpen(false), 300);
+    setTimeout(() => {
+      setMobileBookingOpen(false);
+      setMobileSheetContent("booking");
+    }, 300);
+  };
+
+  const handleMobileConfirmation = () => {
+    setMobileSheetContent("confirmation");
+  };
+
+  const handleBackToBooking = () => {
+    setMobileSheetContent("booking");
   };
 
   return (
@@ -255,6 +268,8 @@ export default function TrailerDetailClient({
             availabilityData={availabilityData}
             trailerLatitude={trailer.latitude ?? 0}
             trailerLongitude={trailer.longitude ?? 0}
+            ownerId={trailer.owner?.id}
+            trailerTitle={trailer.title}
           />
         </div>
       </div>
@@ -281,7 +296,7 @@ export default function TrailerDetailClient({
 
       {/* Mobile Bottom Sheet Modal */}
       {mobileBookingOpen && (
-        <div className="fixed inset-0 z-[100] lg:hidden">
+        <div className="fixed inset-0 z-[98] lg:hidden">
           {/* Backdrop */}
           <div
             className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
@@ -308,7 +323,9 @@ export default function TrailerDetailClient({
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4">
               <h2 className="text-xl font-semibold text-gray-900">
-                {t("reserve")} {trailer.title}
+                {mobileSheetContent === "booking"
+                  ? `${t("reserve")} ${trailer.title}`
+                  : t("booking.confirmation.title")}
               </h2>
               <button
                 onClick={closeBookingModal}
@@ -336,6 +353,13 @@ export default function TrailerDetailClient({
                 maxRentalDuration={trailer.maxRentalDuration}
                 isMobile={true}
                 availabilityData={availabilityData}
+                trailerLatitude={trailer.latitude ?? 0}
+                trailerLongitude={trailer.longitude ?? 0}
+                ownerId={trailer.owner?.id}
+                trailerTitle={trailer.title}
+                onMobileConfirmation={handleMobileConfirmation}
+                currentMobileContent={mobileSheetContent}
+                onBackToBooking={handleBackToBooking}
               />
             </div>
           </div>

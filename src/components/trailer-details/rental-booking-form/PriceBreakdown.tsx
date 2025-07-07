@@ -48,10 +48,10 @@ export default function PriceBreakdown({
           </div>
 
           {/* Service fee - 5% for renters */}
-          <div className="flex justify-between">
+          {/* <div className="flex justify-between">
             <span>{t("booking.pricing.serviceFee")} (5%)</span>
             <span>€{renterServiceFee.toFixed(2)}</span>
-          </div>
+          </div> */}
 
           {/* Delivery fee */}
           {needsDelivery && deliveryFee && (
@@ -80,7 +80,6 @@ export default function PriceBreakdown({
           {/* Security deposit - shown separately as it's refundable */}
           {securityDeposit && securityDeposit > 0 && (
             <>
-              {/* <Separator className="my-2" /> */}
               <div className="flex justify-between text-gray-600">
                 <div className="flex items-center gap-2">
                   <span>{t("booking.pricing.deposit")}</span>
@@ -93,10 +92,10 @@ export default function PriceBreakdown({
 
         <Separator className="mt-2 mb-3" />
 
-        <div className="flex justify-between font-semibold">
+        {/* <div className="flex justify-between font-semibold">
           <span>{t("booking.pricing.total")}</span>
           <span>€{totalPrice.toFixed(2)}</span>
-        </div>
+        </div> */}
       </div>
     </>
   );

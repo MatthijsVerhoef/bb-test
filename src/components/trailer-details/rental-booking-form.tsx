@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, ChevronLeft, Shield } from "lucide-react";
 import { useAuth } from "@/stores/auth.store";
 import { useTranslation } from "@/lib/i18n/client";
 import { StripePaymentFormWrapper } from "@/components/payment/StripePaymentForm";
@@ -31,6 +34,13 @@ import type {
   BookingFormData,
 } from "@/app/types/booking.types";
 
+// Extend the interface to include mobile-specific props
+interface ExtendedRentalBookingFormProps extends RentalBookingFormProps {
+  onMobileConfirmation?: () => void;
+  currentMobileContent?: "booking" | "confirmation";
+  onBackToBooking?: () => void;
+}
+
 export default function RentalBookingForm({
   trailerId,
   pricePerDay,
@@ -51,7 +61,10 @@ export default function RentalBookingForm({
   availabilityData,
   trailerLatitude,
   trailerLongitude,
-}: RentalBookingFormProps) {
+  onMobileConfirmation,
+  currentMobileContent = "booking",
+  onBackToBooking,
+}: ExtendedRentalBookingFormProps) {
   const router = useRouter();
   const { user } = useAuth();
   const { t, locale } = useTranslation("trailer");
@@ -118,7 +131,6 @@ export default function RentalBookingForm({
       )
     : [];
 
-  // Then pass the actual options to the validation hook
   const { validationErrors, validateBookingForm, validateUserInfo } =
     useBookingValidation({
       formData,
@@ -152,7 +164,14 @@ export default function RentalBookingForm({
 
   const handleBookingSubmit = () => {
     if (!validateBookingForm()) return;
-    setIsConfirmDialogOpen(true);
+
+    // On mobile, trigger the content switch instead of opening dialog
+    if (isMobile && onMobileConfirmation) {
+      onMobileConfirmation();
+    } else {
+      // On desktop, open the dialog
+      setIsConfirmDialogOpen(true);
+    }
   };
 
   const handleConfirmBooking = () => {
@@ -180,7 +199,12 @@ export default function RentalBookingForm({
     };
 
     localStorage.setItem("rentalBookingData", JSON.stringify(bookingData));
-    setIsConfirmDialogOpen(false);
+
+    // Close dialog on desktop
+    if (!isMobile) {
+      setIsConfirmDialogOpen(false);
+    }
+
     router.push(`/reserveren/${trailerId}`);
   };
 
@@ -190,6 +214,174 @@ export default function RentalBookingForm({
     );
   };
 
+  // Mobile confirmation form rendering
+  if (isMobile && currentMobileContent === "confirmation") {
+    return (
+      <div className="space-y-4">
+        {/* Back button */}
+        {/* <Button
+          variant="ghost"
+          className="mb-4 -ml-2"
+          onClick={onBackToBooking}
+        >
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          {t("back")}
+        </Button> */}
+
+        {/* Form fields */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-4">
+            <div className="space-y-2.5">
+              <Label htmlFor="first-name">{t("booking.form.firstName")}</Label>
+              <Input
+                id="first-name"
+                className={`shadow-none h-10 rounded-lg ${
+                  validationErrors.firstName ? "border-red-500" : ""
+                }`}
+                value={formData.firstName}
+                onChange={(e) => updateFormData({ firstName: e.target.value })}
+                required
+              />
+              {validationErrors.firstName && (
+                <p className="text-xs text-red-500">
+                  {validationErrors.firstName}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2.5">
+              <Label htmlFor="last-name">{t("booking.form.lastName")}</Label>
+              <Input
+                id="last-name"
+                className={`shadow-none h-10 rounded-lg ${
+                  validationErrors.lastName ? "border-red-500" : ""
+                }`}
+                value={formData.lastName}
+                onChange={(e) => updateFormData({ lastName: e.target.value })}
+                required
+              />
+              {validationErrors.lastName && (
+                <p className="text-xs text-red-500">
+                  {validationErrors.lastName}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2.5">
+            <Label htmlFor="email">{t("booking.form.email")}</Label>
+            <Input
+              id="email"
+              type="email"
+              className={`shadow-none h-10 rounded-lg ${
+                validationErrors.email ? "border-red-500" : ""
+              }`}
+              value={formData.email}
+              onChange={(e) => updateFormData({ email: e.target.value })}
+              required
+            />
+            {validationErrors.email && (
+              <p className="text-xs text-red-500">{validationErrors.email}</p>
+            )}
+          </div>
+
+          <div className="space-y-2.5">
+            <Label htmlFor="phone">{t("booking.form.phone")}</Label>
+            <Input
+              id="phone"
+              type="tel"
+              className={`shadow-none h-10 rounded-lg ${
+                validationErrors.phone ? "border-red-500" : ""
+              }`}
+              value={formData.phone}
+              onChange={(e) => updateFormData({ phone: e.target.value })}
+              required
+            />
+            {validationErrors.phone && (
+              <p className="text-xs text-red-500">{validationErrors.phone}</p>
+            )}
+          </div>
+
+          <div className="space-y-2.5">
+            <Label
+              htmlFor="drivers-license"
+              className="flex items-center gap-2"
+            >
+              <Shield className="h-4 w-4 text-primary" />
+              {t("booking.form.driversLicense")}
+            </Label>
+            <Input
+              id="drivers-license"
+              value={formData.driversLicense}
+              className={`shadow-none h-10 rounded-lg ${
+                validationErrors.driversLicense ? "border-red-500" : ""
+              }`}
+              onChange={(e) =>
+                updateFormData({ driversLicense: e.target.value })
+              }
+              required
+            />
+            {validationErrors.driversLicense && (
+              <p className="text-xs text-red-500">
+                {validationErrors.driversLicense}
+              </p>
+            )}
+            <p className="text-xs text-gray-500">
+              {t("booking.form.driversLicenseInfo")}
+            </p>
+          </div>
+
+          <div className="flex items-start space-x-2 pt-2">
+            <Checkbox
+              id="terms"
+              checked={formData.termsAccepted}
+              onCheckedChange={(checked) =>
+                updateFormData({ termsAccepted: checked as boolean })
+              }
+              required
+            />
+            <div className="ms-1">
+              <Label
+                htmlFor="terms"
+                className="cursor-pointer text-[13px] -mt-[1px]"
+              >
+                {t("booking.terms.agree")}
+              </Label>
+              <p className="text-xs mt-0.5 text-gray-500">
+                {t("booking.terms.details")}
+              </p>
+              {validationErrors.terms && (
+                <p className="text-xs text-red-500">{validationErrors.terms}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <Button
+          className="w-full mt-6"
+          disabled={
+            !formData.firstName ||
+            !formData.lastName ||
+            !formData.email ||
+            !formData.driversLicense ||
+            !formData.termsAccepted
+          }
+          onClick={handleConfirmBooking}
+        >
+          {t("booking.submit.toPayment")}
+        </Button>
+        <Button
+          variant={"outline"}
+          className="w-full mt-0"
+          onClick={onBackToBooking}
+        >
+          Terug naar overzicht
+        </Button>
+      </div>
+    );
+  }
+
+  // Regular booking form content (both desktop and mobile booking view)
   return (
     <>
       <Card
@@ -316,6 +508,7 @@ export default function RentalBookingForm({
         </CardContent>
       </Card>
 
+      {/* Desktop Booking Confirmation Dialog - Only rendered on desktop */}
       <BookingConfirmationDialog
         isOpen={isConfirmDialogOpen}
         onClose={() => setIsConfirmDialogOpen(false)}
@@ -327,6 +520,7 @@ export default function RentalBookingForm({
         rentalDays={rentalDays}
       />
 
+      {/* Payment Modal */}
       {isPaymentModalOpen && (
         <StripePaymentFormWrapper
           isOpen={isPaymentModalOpen}

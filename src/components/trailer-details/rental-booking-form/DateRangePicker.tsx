@@ -333,7 +333,7 @@ export default function DateRangePicker({
     const isSelected = isRangeStart || isRangeEnd;
 
     return cn(
-      "relative h-11 w-11 p-0 font-normal text-sm rounded-md transition-all touch-manipulation",
+      "relative size-9 p-0 font-normal text-sm rounded-md transition-all touch-manipulation",
       "hover:bg-gray-100 focus:z-10 focus:outline-none focus:ring-2 focus:ring-primary/20",
       "active:bg-gray-200 active:scale-95",
       {
@@ -344,19 +344,14 @@ export default function DateRangePicker({
         // Today
         "font-semibold": isToday,
 
-        // Selected dates
         "bg-primary text-white hover:bg-primary/90": isSelected,
 
-        // Range states
         "bg-primary/10 hover:bg-primary/20 rounded-none":
           isInRange && !isSelected,
         "rounded-l-md": isRangeStart && endDate,
         "rounded-r-md": isRangeEnd && startDate,
 
-        // Hover range preview
         "bg-gray-100": isHovered && !isInRange,
-
-        // Outside current month
         "text-gray-300": !isSameMonth(date, currentMonth),
       }
     );
@@ -458,7 +453,7 @@ export default function DateRangePicker({
               {weekDays.map((day) => (
                 <div
                   key={day}
-                  className="h-11 w-11 flex items-center justify-center text-xs font-medium text-gray-500"
+                  className="size-9 flex items-center justify-center text-xs font-medium text-gray-500"
                 >
                   {day}
                 </div>
@@ -476,7 +471,9 @@ export default function DateRangePicker({
                   onTouchEnd={() => setHoveredDate(null)}
                   disabled={isDateDisabled(day)}
                   className={getDayClass(day)}
-                  aria-label={format(day, "EEEE, MMMM d, yyyy", { locale: dateLocale })}
+                  aria-label={format(day, "EEEE, MMMM d, yyyy", {
+                    locale: dateLocale,
+                  })}
                 >
                   <time dateTime={format(day, "yyyy-MM-dd")}>
                     {format(day, "d")}

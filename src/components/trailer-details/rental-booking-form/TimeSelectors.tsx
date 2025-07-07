@@ -60,7 +60,12 @@ export default function TimeSelectors({
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 w-full">
+      <div
+        className="grid grid-cols-2 gap-4 w-full"
+        onClick={() =>
+          console.log(available, startDate, pickupTimeOptions, isLoading)
+        }
+      >
         <div className="space-y-2 flex-1">
           <Label
             htmlFor="pickup-time"
@@ -83,6 +88,7 @@ export default function TimeSelectors({
               className={`bg-white w-full min-h-10 rounded-lg shadow-none ${
                 validationError ? "border-red-500" : ""
               }`}
+              onClick={() => console.log("triggered")}
             >
               <SelectValue placeholder={t("booking.time.selectTime")} />
             </SelectTrigger>
